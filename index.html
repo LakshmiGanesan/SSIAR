@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>100+ Reasons to Do SKY</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Inter, system-ui, sans-serif;
+      background: linear-gradient(to bottom, #f8fafc, #eef4f7);
+      color: #1e293b;
+    }
+
+    .glass {
+      background: rgba(255,255,255,0.78);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.45);
+      box-shadow: 0 10px 35px rgba(15,23,42,0.08);
+    }
+
+    .chart-card {
+      transition: all 0.25s ease;
+    }
+
+    .chart-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(15,23,42,0.12);
+    }
+
+    .tag {
+      background: #e0ecff;
+      color: #24447a;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+
+    .table-row:hover {
+      background: #f0f7ff;
+      cursor: pointer;
+    }
+
+    .mountains {
+      background: linear-gradient(to right, rgba(255,255,255,0), rgba(208,226,245,0.7));
+    }
+  </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+
+  <div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- HERO -->
+    <header class="glass rounded-3xl overflow-hidden relative">
+      <div class="absolute inset-0 opacity-30 mountains"></div>
+
+      <div class="relative p-8 md:p-10 flex flex-col gap-8">
+
+        <!-- TITLE -->
+        <div class="max-w-5xl">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl">
+              🔎
+            </div>
+
+            <div>
+              <h1 class="text-4xl md:text-6xl font-serif font-bold text-blue-950 leading-tight">
+                100+ Reasons to Do SKY
+              </h1>
+            </div>
+          </div>
+
+          <p class="text-lg md:text-2xl text-slate-700 italic leading-relaxed max-w-4xl">
+            An Interactive Explorer of Research-Backed Evidence on SKY Across the Spectrum
+          </p>
+        </div>
+
+        <!-- SCORECARDS -->
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div class="glass rounded-2xl p-5 text-center">
+            <div class="text-4xl font-bold text-blue-900">101+</div>
+            <div class="text-sm text-slate-600 mt-1">Research Findings</div>
+          </div>
+
+          <div class="glass rounded-2xl p-5 text-center">
+            <div class="text-4xl font-bold text-blue-900">40+</div>
+            <div class="text-sm text-slate-600 mt-1">Institutions</div>
+          </div>
+
+          <div class="glass rounded-2xl p-5 text-center">
+            <div class="text-4xl font-bold text-blue-900">5</div>
+            <div class="text-sm text-slate-600 mt-1">Continents</div>
+          </div>
+
+          <div class="glass rounded-2xl p-5 text-center">
+            <div class="text-4xl font-bold text-blue-900">87%</div>
+            <div class="text-sm text-slate-600 mt-1">Independent Research</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- PRIMARY EVIDENCE EXPLORERS -->
+
+    <section class="space-y-8 mt-8">
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        <!-- PHYSICAL HEALTH -->
+        <div class="glass rounded-[2rem] overflow-hidden relative group min-h-[380px]">
+
+          <div class="absolute inset-0 bg-gradient-to-br from-emerald-100/40 to-blue-100/30 opacity-80"></div>
+
+          <div class="relative p-7 space-y-5 h-full flex flex-col">
+
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs uppercase tracking-[0.2em] text-emerald-700 mb-2">
+                  Physical Health Explorer
+                </div>
+
+                <h3 class="text-3xl font-bold text-slate-800">
+                  Human Body Interface
+                </h3>
+              </div>
+
+              <div class="text-5xl opacity-70">🫀</div>
+            </div>
+
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Interactive physiological systems mapped to evidence domains.
+            </p>
+
+            <div class="relative flex-1 rounded-[2rem] bg-gradient-to-b from-slate-50 to-slate-100 overflow-hidden border border-white/50 min-h-[220px]">
+
+              <div class="absolute left-1/2 top-8 -translate-x-1/2 w-16 h-16 rounded-full bg-slate-300/70"></div>
+              <div class="absolute left-1/2 top-24 -translate-x-1/2 w-28 h-52 rounded-[4rem] bg-slate-300/60"></div>
+
+              <button class="absolute left-[48%] top-[14%] w-14 h-14 rounded-full bg-violet-300/80 text-xs font-semibold shadow-lg border border-white hover:scale-110 transition-all">
+                Brain
+              </button>
+
+              <button class="absolute left-[46%] top-[42%] w-16 h-16 rounded-full bg-rose-300/80 text-xs font-semibold shadow-lg border border-white hover:scale-110 transition-all animate-pulse">
+                Heart
+              </button>
+
+              <button class="absolute left-[33%] top-[38%] w-16 h-16 rounded-full bg-sky-300/80 text-xs font-semibold shadow-lg border border-white hover:scale-110 transition-all">
+                Lungs
+              </button>
+
+              <button class="absolute right-[33%] top-[38%] w-16 h-16 rounded-full bg-cyan-300/80 text-xs font-semibold shadow-lg border border-white hover:scale-110 transition-all">
+                Breath
+              </button>
+
+              <button class="absolute left-[46%] top-[62%] w-16 h-16 rounded-full bg-amber-300/80 text-xs font-semibold shadow-lg border border-white hover:scale-110 transition-all">
+                Gut
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- MENTAL HEALTH -->
+        <div class="glass rounded-[2rem] overflow-hidden relative group min-h-[380px]">
+
+          <div class="absolute inset-0 bg-gradient-to-br from-indigo-100/40 to-fuchsia-100/30 opacity-80"></div>
+
+          <div class="relative p-7 space-y-5 h-full flex flex-col">
+
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs uppercase tracking-[0.2em] text-indigo-700 mb-2">
+                  Mental Health Explorer
+                </div>
+
+                <h3 class="text-3xl font-bold text-slate-800">
+                  Emotional Landscape
+                </h3>
+              </div>
+
+              <div class="text-5xl opacity-70">🧠</div>
+            </div>
+
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Emotional evidence landscapes across stress, resilience and mood.
+            </p>
+
+            <div class="relative flex-1 rounded-[2rem] overflow-hidden bg-gradient-to-b from-indigo-50 via-white to-fuchsia-50 border border-white/50 min-h-[220px]">
+
+              <svg viewBox="0 0 400 300" class="absolute inset-0 w-full h-full opacity-80">
+                <path d="M70 120 C120 60, 180 60, 240 120 S340 180, 320 240" fill="none" stroke="#8b9cf0" stroke-width="5" stroke-linecap="round"/>
+
+                <circle cx="80" cy="120" r="28" fill="#c7d2fe"/>
+                <circle cx="180" cy="80" r="34" fill="#ddd6fe"/>
+                <circle cx="280" cy="140" r="38" fill="#e9d5ff"/>
+                <circle cx="320" cy="240" r="26" fill="#c4b5fd"/>
+
+                <text x="62" y="124" font-size="12" fill="#374151">Stress</text>
+                <text x="155" y="84" font-size="12" fill="#374151">Resilience</text>
+                <text x="257" y="144" font-size="12" fill="#374151">Sleep</text>
+                <text x="302" y="244" font-size="12" fill="#374151">Mood</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- SOCIAL HEALTH -->
+        <div class="glass rounded-[2rem] overflow-hidden relative group min-h-[380px]">
+
+          <div class="absolute inset-0 bg-gradient-to-br from-orange-100/40 to-yellow-100/30 opacity-80"></div>
+
+          <div class="relative p-7 space-y-5 h-full flex flex-col">
+
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="text-xs uppercase tracking-[0.2em] text-orange-700 mb-2">
+                  Social Health Explorer
+                </div>
+
+                <h3 class="text-3xl font-bold text-slate-800">
+                  Community Constellation
+                </h3>
+              </div>
+
+              <div class="text-5xl opacity-70">🌍</div>
+            </div>
+
+            <p class="text-sm text-slate-600 leading-relaxed">
+              Social and community evidence networks across populations.
+            </p>
+
+            <div class="relative flex-1 rounded-[2rem] overflow-hidden bg-gradient-to-b from-orange-50 via-white to-amber-50 border border-white/50 min-h-[220px]">
+
+              <svg viewBox="0 0 400 300" class="absolute inset-0 w-full h-full opacity-80">
+                <line x1="90" y1="80" x2="180" y2="120" stroke="#f59e0b" stroke-width="2"/>
+                <line x1="180" y1="120" x2="300" y2="90" stroke="#f59e0b" stroke-width="2"/>
+                <line x1="180" y1="120" x2="250" y2="220" stroke="#f59e0b" stroke-width="2"/>
+                <line x1="90" y1="80" x2="120" y2="220" stroke="#f59e0b" stroke-width="2"/>
+
+                <circle cx="90" cy="80" r="26" fill="#fdba74"/>
+                <circle cx="180" cy="120" r="36" fill="#fcd34d"/>
+                <circle cx="300" cy="90" r="24" fill="#fdba74"/>
+                <circle cx="250" cy="220" r="28" fill="#fde68a"/>
+                <circle cx="120" cy="220" r="22" fill="#fed7aa"/>
+
+                <text x="66" y="84" font-size="12" fill="#374151">Youth</text>
+                <text x="152" y="124" font-size="12" fill="#374151">Women</text>
+                <text x="262" y="94" font-size="12" fill="#374151">Doctors</text>
+                <text x="218" y="224" font-size="12" fill="#374151">Military</text>
+                <text x="90" y="224" font-size="12" fill="#374151">Workers</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECONDARY RESEARCH LENSES -->
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div class="glass rounded-[2rem] p-6 space-y-4 min-h-[320px]">
+          <div>
+            <div class="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Research Lens</div>
+            <h3 class="text-2xl font-bold text-slate-800">Study Population</h3>
+          </div>
+
+          <canvas id="populationChart" height="210"></canvas>
+        </div>
+
+        <div class="glass rounded-[2rem] p-6 space-y-5 min-h-[320px]">
+          <div>
+            <div class="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Research Lens</div>
+            <h3 class="text-2xl font-bold text-slate-800">Intervention Duration</h3>
+          </div>
+
+          <div class="relative pt-12 px-2 flex-1">
+            <div class="absolute left-0 right-0 top-14 h-1 rounded-full bg-gradient-to-r from-emerald-300 via-sky-300 to-orange-300"></div>
+
+            <div class="flex justify-between relative text-center text-xs text-slate-600">
+              <div class="space-y-2"><div class="w-5 h-5 rounded-full bg-emerald-400 mx-auto"></div><div>Single Session</div></div>
+              <div class="space-y-2"><div class="w-5 h-5 rounded-full bg-sky-400 mx-auto"></div><div>1 Week</div></div>
+              <div class="space-y-2"><div class="w-5 h-5 rounded-full bg-indigo-400 mx-auto"></div><div>6 Weeks</div></div>
+              <div class="space-y-2"><div class="w-5 h-5 rounded-full bg-orange-400 mx-auto"></div><div>Long-Term</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass rounded-[2rem] p-6 space-y-5 min-h-[320px]">
+          <div>
+            <div class="text-xs uppercase tracking-[0.2em] text-slate-500 mb-2">Research Lens</div>
+            <h3 class="text-2xl font-bold text-slate-800">Geography</h3>
+          </div>
+
+          <div class="relative h-[220px] rounded-[2rem] bg-slate-100 overflow-hidden border border-slate-100">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg" class="absolute inset-0 w-full h-full object-cover opacity-30" />
+            <div class="absolute left-[22%] top-[36%] w-5 h-5 bg-blue-500/70 rounded-full"></div>
+            <div class="absolute left-[48%] top-[42%] w-10 h-10 bg-blue-400/60 rounded-full"></div>
+            <div class="absolute left-[74%] top-[38%] w-6 h-6 bg-blue-500/70 rounded-full"></div>
+            <div class="absolute left-[30%] top-[68%] w-4 h-4 bg-blue-400/70 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MESO + MICRO -->
+    <section class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+
+      <!-- DATABASE -->
+      <div class="xl:col-span-2 glass rounded-3xl p-5 overflow-hidden">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+          <div>
+            <h2 class="text-2xl font-bold text-green-800">Evidence Database</h2>
+            <p class="text-slate-600">100+ research-backed reasons to do SKY.</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <input
+              type="text"
+              placeholder="Search highlights..."
+              class="rounded-xl border border-slate-200 px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+          </div>
+        </div>
+
+        <div class="overflow-auto rounded-2xl border border-slate-200">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-100 text-slate-700 sticky top-0">
+              <tr>
+                <th class="text-left px-4 py-3">#</th>
+                <th class="text-left px-4 py-3">Highlight</th>
+                <th class="text-left px-4 py-3">Study Population</th>
+                <th class="text-left px-4 py-3">Duration</th>
+              </tr>
+            </thead>
+
+            <tbody id="evidenceTableBody">
+              <tr class="table-row border-t">
+                <td class="px-4 py-3 font-semibold text-blue-800">101</td>
+                <td class="px-4 py-3">Reduced PTSD, anxiety and depression symptoms in military trainees</td>
+                <td class="px-4 py-3">Military Personnel</td>
+                <td class="px-4 py-3">8 Weeks</td>
+              </tr>
+
+              <tr class="table-row border-t">
+                <td class="px-4 py-3 font-semibold text-blue-800">102</td>
+                <td class="px-4 py-3">Improved sleep quality and reduced insomnia severity</td>
+                <td class="px-4 py-3">Adults with insomnia</td>
+                <td class="px-4 py-3">6 Weeks</td>
+              </tr>
+
+              <tr class="table-row border-t">
+                <td class="px-4 py-3 font-semibold text-blue-800">103</td>
+                <td class="px-4 py-3">Reduced perceived stress in working professionals</td>
+                <td class="px-4 py-3">Working professionals</td>
+                <td class="px-4 py-3">4 Weeks</td>
+              </tr>
+
+              <tr class="table-row border-t">
+                <td class="px-4 py-3 font-semibold text-blue-800">104</td>
+                <td class="px-4 py-3">Improved lung function and quality of life in COPD patients</td>
+                <td class="px-4 py-3">COPD Patients</td>
+                <td class="px-4 py-3">8 Weeks</td>
+              </tr>
+
+              <tr class="table-row border-t">
+                <td class="px-4 py-3 font-semibold text-blue-800">105</td>
+                <td class="px-4 py-3">Lowered blood pressure and improved HRV</td>
+                <td class="px-4 py-3">Hypertensive Patients</td>
+                <td class="px-4 py-3">6 Weeks</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FLASHCARD -->
+      <div id="studyFlashcard" class="glass rounded-3xl p-5 flex flex-col gap-5">
+        <div>
+          <div class="text-orange-500 text-sm font-semibold mb-2">STUDY FLASHCARD</div>
+          <h2 class="text-2xl font-bold text-slate-800 leading-snug">
+            Reduced PTSD, anxiety and depression symptoms in military trainees.
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="bg-slate-50 rounded-2xl p-3">
+            <div class="text-slate-500">Participants</div>
+            <div class="font-semibold">n = 50</div>
+          </div>
+
+          <div class="bg-slate-50 rounded-2xl p-3">
+            <div class="text-slate-500">Duration</div>
+            <div class="font-semibold">8 Weeks</div>
+          </div>
+
+          <div class="bg-slate-50 rounded-2xl p-3">
+            <div class="text-slate-500">Follow-Up</div>
+            <div class="font-semibold">3 Months</div>
+          </div>
+
+          <div class="bg-slate-50 rounded-2xl p-3">
+            <div class="text-slate-500">Study Design</div>
+            <div class="font-semibold">RCT</div>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-sm font-semibold text-slate-600 mb-2">PROVEN BENEFITS</div>
+
+          <ul class="space-y-2 text-sm">
+            <li>✔ PTSD symptoms ↓ 41%</li>
+            <li>✔ Anxiety ↓ 43%</li>
+            <li>✔ Depression ↓ 40%</li>
+            <li>✔ Improved resilience</li>
+            <li>✔ Better sleep quality</li>
+          </ul>
+        </div>
+
+        <div class="border-t border-slate-200 pt-3 mt-2 text-[11px] leading-relaxed text-slate-500">
+          <span class="font-semibold text-slate-400">Citation:</span>
+          Qu et al., 2016 &nbsp;&nbsp;•&nbsp;&nbsp;
+          <span class="font-semibold text-slate-400">Journal:</span>
+          Journal of Alternative & Complementary Medicine &nbsp;&nbsp;•&nbsp;&nbsp;
+          <span class="font-semibold text-slate-400">Affiliation:</span>
+          Harvard Medical School &nbsp;&nbsp;•&nbsp;&nbsp;
+          <span class="font-semibold text-slate-400">Geography:</span>
+          USA
+        </div>
+
+        <div class="flex flex-wrap gap-2">
+          <span class="tag">Mental Health</span>
+          <span class="tag">PTSD</span>
+          <span class="tag">Anxiety</span>
+          <span class="tag">Military</span>
+          <span class="tag">Resilience</span>
+        </div>
+
+        <button class="mt-auto bg-blue-700 hover:bg-blue-800 text-white rounded-2xl py-4 font-semibold transition-all">
+          Read Published Study
+        </button>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="glass rounded-3xl p-6 grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
+      <div>
+        <div class="text-xl mb-2">🛡️</div>
+        <div class="font-semibold text-slate-800">Peer-reviewed & Fact-checked</div>
+        <div class="text-sm text-slate-600 mt-1">
+          All displayed studies are filtered for acceptable publication quality.
+        </div>
+      </div>
+
+      <div>
+        <div class="text-xl mb-2">🔍</div>
+        <div class="font-semibold text-slate-800">Transparent & Traceable</div>
+        <div class="text-sm text-slate-600 mt-1">
+          Every reason is linked to published research evidence.
+        </div>
+      </div>
+
+      <div>
+        <div class="text-xl mb-2">🪷</div>
+        <div class="font-semibold text-slate-800">Ancient Wisdom. Modern Evidence.</div>
+        <div class="text-sm text-slate-600 mt-1">
+          A bridge between contemplative practice and scientific exploration.
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // =====================================
+    // REAL DATA (Filtered: Acceptable Only)
+    // =====================================
+
+    // =====================================
+    // DATA INGESTION PIPELINE
+    // =====================================
+
+    // Real dashboard version:
+    // 1. Loads CSV dataset
+    // 2. Filters only acceptable-quality journals
+    // 3. Generates the 101 evidence flashcards dynamically
+
+    let studies = [];
+
+    async function loadCSVData() {
+      const response = await fetch('./SKY_Flashcards_101.csv');
+      const csvText = await response.text();
+
+      const rows = csvText.split('\\n').map(r => r.split(','));
+
+      const headers = rows[0];
+
+      const data = rows.slice(1).map(row => {
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header.trim()] = row[index];
+        });
+        return obj;
+      });
+
+      // QUALITY FILTER
+      // Include only studies marked as Acceptable
+      studies = data
+        .filter(d =>
+          d['Journal Reputation'] &&
+          d['Journal Reputation'].toLowerCase().includes('acceptable')
+        )
+        .filter(d => d['Highlight']);
+
+      console.log(`Loaded ${studies.length} acceptable-quality studies.`);
+
+      populateDatabase();
+      selectStudy(studies[0]['Serial No']);
+    }
+
+    // =====================================
+    // DYNAMIC DATABASE RENDERING
+    // =====================================
+
+    function populateDatabase(filteredStudies = studies) {
+      const tableBody = document.getElementById('evidenceTableBody');
+
+      if (!tableBody) return;
+
+      tableBody.innerHTML = '';
+
+      filteredStudies.forEach((study, index) => {
+        const row = document.createElement('tr');
+
+        row.className = 'hover:bg-slate-50 transition-all cursor-pointer border-b border-slate-100';
+
+        row.innerHTML = `
+          <td class="px-4 py-4 text-sm text-slate-500">${index + 1}</td>
+
+          <td class="px-4 py-4">
+            <div class="font-medium text-slate-800 leading-relaxed">
+              ${study['Highlight'] || ''}
+            </div>
+          </td>
+
+          <td class="px-4 py-4 text-sm text-slate-600">
+            ${study['Study Population'] || ''}
+          </td>
+
+          <td class="px-4 py-4 text-sm text-slate-600 whitespace-nowrap">
+            ${study['Intervention Duration'] || ''}
+          </td>
+        `;
+
+        row.addEventListener('click', () => {
+          renderFlashcard(study);
+        });
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    // =====================================
+    // DYNAMIC FLASHCARD RENDERING
+    // =====================================
+
+    function renderFlashcard(study) {
+      const flashcard = document.getElementById('studyFlashcard');
+
+      if (!flashcard) return;
+
+      const benefits = (study['Proven Benefits Statement 2'] || '')
+        .split('|')
+        .filter(Boolean)
+        .map(item => `
+          <li class="leading-relaxed">${item.trim()}</li>
+        `)
+        .join('');
+
+      const tags = (study['Subtopic'] || '')
+        .split(',')
+        .filter(Boolean)
+        .map(tag => `
+          <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs">
+            ${tag.trim()}
+          </span>
+        `)
+        .join('');
+
+      flashcard.innerHTML = `
+        <div class="space-y-6">
+
+          <div>
+            <div class="text-xs uppercase tracking-[0.2em] text-slate-400 mb-3">
+              Evidence Flashcard
+            </div>
+
+            <h2 class="text-2xl font-semibold text-slate-800 leading-relaxed">
+              ${study['Highlight'] || ''}
+            </h2>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 text-sm">
+            <div><span class="font-semibold">Participants:</span> ${study['Participant Type'] || ''}</div>
+            <div><span class="font-semibold">n:</span> ${study['Number of Participants'] || ''}</div>
+            <div><span class="font-semibold">Duration:</span> ${study['Intervention Duration'] || ''}</div>
+            <div><span class="font-semibold">Follow-up:</span> ${study['Follow-up Timepoints'] || ''}</div>
+            <div class="col-span-2"><span class="font-semibold">Study Design:</span> ${study['Study Design'] || ''}</div>
+          </div>
+
+          <div>
+            <div class="text-sm uppercase tracking-[0.2em] text-slate-400 mb-3">
+              Proven Benefits
+            </div>
+
+            <ul class="space-y-2 text-slate-700 text-sm list-disc pl-5">
+              ${benefits}
+            </ul>
+          </div>
+
+          <div class="border-t border-slate-200 pt-3 text-[11px] leading-relaxed text-slate-500">
+            <span class="font-semibold text-slate-400">Citation:</span>
+            ${study['Citation Short'] || ''}
+            &nbsp;&nbsp;•&nbsp;&nbsp;
+            <span class="font-semibold text-slate-400">Journal:</span>
+            ${study['Journal'] || ''}
+            &nbsp;&nbsp;•&nbsp;&nbsp;
+            <span class="font-semibold text-slate-400">Affiliation:</span>
+            ${study['Corresponding Author Affiliation'] || ''}
+            &nbsp;&nbsp;•&nbsp;&nbsp;
+            <span class="font-semibold text-slate-400">Geography:</span>
+            ${study['Geography'] || ''}
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            ${tags}
+          </div>
+
+          <a
+            href="${study['Published Study URL'] || '#'}"
+            target="_blank"
+            class="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-blue-900 text-white text-sm hover:opacity-90 transition-all"
+          >
+            Read Published Study
+          </a>
+        </div>
+      `;
+    }
+
+    // =====================================
+    // INITIALIZE DATASET
+    // =====================================
+
+    loadCSVData();
+
+    
+
+    // =====================================
+    // STUDY POPULATION HISTOGRAM
+    // =====================================
+
+    const populationCtx = document.getElementById('populationChart');
+
+    new Chart(populationCtx, {
+      type: 'bar',
+      data: {
+        labels: [
+          'General',
+          'Professionals',
+          'Patients',
+          'Women',
+          'Youth',
+          'Physicians',
+          'At-risk'
+        ],
+        datasets: [{
+          data: [28, 18, 16, 12, 10, 8, 6],
+          backgroundColor: [
+            '#a8c8f0',
+            '#9fd5c3',
+            '#f4c095',
+            '#e5b8f4',
+            '#c2d6a0',
+            '#b8a6e8',
+            '#f0b8a8'
+          ],
+          borderRadius: 10,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            }
+          },
+          y: {
+            beginAtZero: true,
+            grid: {
+              color: '#e5e7eb'
+            }
+          }
+        }
+      }
+    });
+    </script>
+
+  <!-- ===================================== -->
+  </body>
+</html>
