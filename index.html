@@ -486,36 +486,46 @@
 
     let studies = [];
 
-    async function loadCSVData() {
-      const response = await fetch('./SKY_Flashcards_101.csv');
-      const csvText = await response.text();
+    
+async function loadCSVData() {
+  try {
+    const response = await fetch('./SKY_Flashcards_101.csv');
+    const csvText = await response.text();
 
-      const rows = csvText.split('\\n').map(r => r.split(','));
+    const rows = csvText.trim().split('
+');
 
-      const headers = rows[0];
+    const headers = rows[0].split(',').map(h => h.trim());
 
-      const data = rows.slice(1).map(row => {
-        const obj = {};
-        headers.forEach((header, index) => {
-          obj[header.trim()] = row[index];
-        });
-        return obj;
+    const data = rows.slice(1).map(row => {
+      const values = row.match(/(".*?"|[^",]+)(?=,|$)/g) || [];
+
+      const obj = {};
+
+      headers.forEach((header, index) => {
+        obj[header] = values[index]
+          ? values[index].replace(/^"|"$/g, '').trim()
+          : '';
       });
 
-      // QUALITY FILTER
-      // Include only studies marked as Acceptable
-      studies = data
-        .filter(d =>
-          d['Journal Reputation'] &&
-          d['Journal Reputation'].toLowerCase().includes('acceptable')
-        )
-        .filter(d => d['Highlight']);
+      return obj;
+    });
 
-      console.log(`Loaded ${studies.length} acceptable-quality studies.`);
+    studies = data.filter(d => d['Highlight']);
 
-      populateDatabase();
-      selectStudy(studies[0]['Serial No']);
+    console.log(`Loaded ${studies.length} studies.`);
+
+    populateDatabase(studies);
+
+    if (studies.length > 0) {
+      renderFlashcard(studies[0]);
     }
+
+  } catch (error) {
+    console.error('CSV loading error:', error);
+  }
+}
+
 
     // =====================================
     // DYNAMIC DATABASE RENDERING
