@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SKY Evidence Atlas</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
+<style>
+body {
+  background:#eef2f7;
+  font-family: Inter, sans-serif;
+}
+.card {
+  background:white;
+  border-radius:24px;
+  padding:24px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.05);
+}
+</style>
+</head>
+
+<body class="p-8">
+
+<div class="max-w-7xl mx-auto space-y-8">
+
+<div class="card">
+<h1 class="text-5xl font-bold text-slate-800 mb-4">100+ Reasons to Do SKY</h1>
+<p class="text-xl text-slate-600">
+An Interactive Explorer of Research‑Backed Evidence on SKY Across the Spectrum
+</p>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+<div class="lg:col-span-2 card">
+<div class="flex justify-between items-center mb-4">
+<h2 class="text-3xl font-bold text-green-800">Evidence Database</h2>
+<input id="searchInput" class="border rounded-xl px-4 py-2 w-64" placeholder="Search highlights..." />
+</div>
+
+<div class="overflow-auto max-h-[700px]">
+<table class="w-full text-sm">
+<thead class="sticky top-0 bg-slate-100">
+<tr>
+<th class="text-left p-3">#</th>
+<th class="text-left p-3">Highlight</th>
+<th class="text-left p-3">Population</th>
+<th class="text-left p-3">Duration</th>
+</tr>
+</thead>
+
+<tbody id="evidenceTableBody"></tbody>
+
+</table>
+</div>
+</div>
+
+<div id="studyFlashcard" class="card">
+<div class="text-slate-400">Loading evidence...</div>
+</div>
+
+</div>
+</div>
+
+<script>
+
+let studies = [];
+
+function renderFlashcard(study) {
+
+  const benefits = (study['Proven Benefits Statement 2'] || '')
+    .split('|')
+    .filter(Boolean)
+    .map(b => `<li>${b.trim()}</li>`)
+    .join('');
+
+  document.getElementById('studyFlashcard').innerHTML = `
+    <div class="space-y-5">
+
+      <div>
+        <div class="text-xs uppercase tracking-widest text-orange-500 mb-2">
+          Study Flashcard
+        </div>
+
+        <h2 class="text-3xl font-bold text-slate-800 leading-tight">
+          ${study['Highlight'] || ''}
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3 text-sm">
+
+        <div class="bg-slate-50 rounded-xl p-3">
+          <div class="text-slate-500">Participants</div>
+          <div class="font-semibold">${study['Participant Type'] || ''}</div>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-3">
+          <div class="text-slate-500">n</div>
+          <div class="font-semibold">${study['Number of Participants'] || ''}</div>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-3">
+          <div class="text-slate-500">Duration</div>
+          <div class="font-semibold">${study['Intervention Duration'] || ''}</div>
+        </div>
+
+        <div class="bg-slate-50 rounded-xl p-3">
+          <div class="text-slate-500">Study Design</div>
+          <div class="font-semibold">${study['Study Design'] || ''}</div>
+        </div>
+
+      </div>
+
+      <div>
+        <div class="text-xs uppercase tracking-widest text-slate-400 mb-2">
+          Proven Benefits
+        </div>
+
+        <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700">
+          ${benefits}
+        </ul>
+      </div>
+
+      <div class="border-t pt-4 text-xs text-slate-500 leading-relaxed">
+        <strong>Citation:</strong> ${study['Citation Short'] || ''}
+        <br>
+        <strong>Journal:</strong> ${study['Journal'] || ''}
+        <br>
+        <strong>Affiliation:</strong> ${study['Corresponding Author Affiliation'] || ''}
+        <br>
+        <strong>Geography:</strong> ${study['Geography'] || ''}
+      </div>
+
+      <a href="${study['Published Study URL'] || '#'}"
+         target="_blank"
+         class="inline-block bg-blue-900 text-white px-5 py-3 rounded-xl text-sm">
+         Read Published Study
+      </a>
+
+    </div>
+  `;
+}
+
+function populateDatabase(data) {
+
+  const tbody = document.getElementById('evidenceTableBody');
+  tbody.innerHTML = '';
+
+  data.forEach((study, index) => {
+
+    const tr = document.createElement('tr');
+
+    tr.className = 'border-b hover:bg-slate-50 cursor-pointer';
+
+    tr.innerHTML = `
+      <td class="p-3 font-medium text-blue-700">${study['Serial No'] || index+1}</td>
+      <td class="p-3">${study['Highlight'] || ''}</td>
+      <td class="p-3">${study['Study Population'] || ''}</td>
+      <td class="p-3">${study['Intervention Duration'] || ''}</td>
+    `;
+
+    tr.addEventListener('click', () => renderFlashcard(study));
+
+    tbody.appendChild(tr);
+
+  });
+
+}
+
+Papa.parse('./SKY_Flashcards_101.csv', {
+  download: true,
+  header: true,
+  skipEmptyLines: true,
+
+  complete: function(results) {
+
+    studies = results.data.filter(row => row['Highlight']);
+
+    console.log('Loaded studies:', studies.length);
+
+    populateDatabase(studies);
+
+    if (studies.length > 0) {
+      renderFlashcard(studies[0]);
+    }
+  },
+
+  error: function(error) {
+    console.error(error);
+    document.getElementById('studyFlashcard').innerHTML =
+      '<div class="text-red-500">CSV failed to load.</div>';
+  }
+});
+
+document.getElementById('searchInput').addEventListener('input', function(e){
+
+  const q = e.target.value.toLowerCase();
+
+  const filtered = studies.filter(s =>
+    (s['Highlight'] || '').toLowerCase().includes(q)
+  );
+
+  populateDatabase(filtered);
+
+});
+
+</script>
+
+</body>
+</html>
