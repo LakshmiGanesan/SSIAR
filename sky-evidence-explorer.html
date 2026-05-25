@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>100+ Reasons to Do SKY — Evidence Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<style>
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1c1b18;--ink2:#3a3830;--ink3:#78746b;--ink4:#aaa69e;
+  --paper:#f8f6f1;--paper2:#f1ede5;--paper3:#e5dfd2;--paper4:#d2ccbe;
+  --teal:#0a7865;--teal-l:#ddf0ea;--teal-m:#12a68c;--teal-d:#075c4d;
+  --rose:#7e1e3c;--rose-l:#fae2ea;--rose-m:#ad2b55;
+  --blue:#1a4880;--blue-l:#e2ecf8;--blue-m:#2460b5;
+  --amber:#7b5006;--amber-l:#fdf0d6;--amber-m:#b0740f;
+  --border:#cec8b8;--border2:#bdb6a5;
+  --serif:"EB Garamond",Georgia,serif;
+  --sans:"DM Sans",system-ui,sans-serif;
+  --card-r:13px;--r:8px;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;font-size:14px;overflow-x:hidden;min-height:100vh}
+
+/* ── MASTHEAD ── */
+.masthead{padding:44px 0 30px;text-align:center;background:var(--paper);border-bottom:1px solid var(--border)}
+.masthead h1{font-family:var(--serif);font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:-.015em;color:var(--ink);line-height:1.08;margin-bottom:9px;font-weight:500}
+.masthead-sub{font-size:.9rem;color:var(--ink3);font-weight:300;font-style:italic;letter-spacing:.01em}
+
+/* ── STICKY SEARCH BAR ── */
+.searchbar-wrap{background:rgba(248,246,241,.96);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:0;z-index:300;backdrop-filter:blur(10px)}
+.searchbar-inner{display:flex;flex-direction:column;gap:8px}
+.sb-top{display:flex;align-items:center;gap:10px}
+.search-field{flex:1;max-width:660px;position:relative}
+.search-field input{width:100%;padding:9px 36px 9px 38px;border:1px solid var(--border);border-radius:8px;background:var(--paper2);font-size:13px;font-family:var(--sans);color:var(--ink);outline:none;transition:border .18s,box-shadow .18s}
+.search-field input:focus{border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1)}
+.search-field input::placeholder{color:var(--ink4)}
+.srch-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink4);font-size:15px;pointer-events:none}
+.srch-clr{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink3);font-size:18px;line-height:1;padding:2px;display:none;font-family:var(--sans)}
+.srch-clr.show{display:block}
+.clear-all-btn{display:none;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--paper2);font-family:var(--sans);font-size:12.5px;color:var(--ink3);cursor:pointer;transition:all .14s;white-space:nowrap}
+.clear-all-btn.show{display:flex}
+.clear-all-btn:hover{border-color:var(--teal-m);color:var(--teal)}
+.filters-row{display:none;align-items:center;gap:6px;flex-wrap:wrap}
+.filters-row.show{display:flex}
+.filter-row-lbl{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);font-weight:500;flex-shrink:0}
+.fchip{display:inline-flex;align-items:center;gap:3px;padding:3px 9px 3px 10px;border-radius:14px;font-size:12px;background:var(--teal);color:#fff;border:none;cursor:pointer;font-family:var(--sans);transition:opacity .12s;line-height:1.4}
+.fchip:hover{opacity:.8}
+.fchip-x{opacity:.7;font-size:14px;margin-left:1px;line-height:1}
+
+/* ── LAYOUT ── */
+.container{max-width:1280px;margin:0 auto;padding:0 24px}
+.page-body{padding:22px 0 60px}
+
+/* ── EXPLORER ROWS ── */
+.exp-row{display:grid;gap:14px;margin-bottom:14px}
+.row-1{grid-template-columns:1fr 1fr}
+.row-2{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:900px){.row-1,.row-2{grid-template-columns:1fr}}
+
+/* ── EXPLORER CARD ── */
+.exp-card{background:var(--paper2);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
+.exp-card-head{padding:13px 18px 9px;border-bottom:1px solid var(--border)}
+.exp-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);font-weight:500;margin-bottom:2px}
+.exp-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);font-weight:500}
+.exp-card-body{padding:18px 18px 14px}
+.exp-hint{font-size:10.5px;color:var(--ink4);margin-top:12px;font-style:italic;text-align:center}
+
+/* ── BODY EXPLORER ── */
+.body-layout{display:grid;grid-template-columns:1fr 96px 1fr;align-items:center;min-height:224px;gap:2px}
+.body-col{display:flex;flex-direction:column;gap:7px}
+.body-col-l{align-items:flex-end}
+.body-col-r{align-items:flex-start}
+.bnode{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:all .15s;border:1px solid rgba(10,120,101,.15);user-select:none;white-space:nowrap;font-family:var(--sans);background:var(--teal-l);color:var(--teal-d)}
+.bnode:hover{border-color:var(--teal-m);background:rgba(18,166,140,.18)}
+.bnode.on{background:var(--teal);color:#fff;border-color:var(--teal)}
+.bnode-ico{font-size:14px;flex-shrink:0}
+.bnode-label{font-size:11.5px;line-height:1.2}
+.bnode-n{font-size:9.5px;opacity:.65;margin-left:1px}
+.bnode.on .bnode-n{opacity:.85}
+.body-svg-center{display:flex;align-items:center;justify-content:center}
+
+/* ── MIND EXPLORER ── */
+.mind-layout{position:relative;width:100%;height:244px}
+.mind-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);pointer-events:none}
+.mnode{position:absolute;display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:all .15s;border:1px solid rgba(126,30,60,.14);user-select:none;white-space:nowrap;font-family:var(--sans);background:var(--rose-l);color:var(--rose);z-index:5}
+.mnode:hover{border-color:var(--rose-m);background:rgba(173,43,85,.13)}
+.mnode.on{background:var(--rose-m);color:#fff;border-color:var(--rose-m)}
+.mnode-ico{font-size:14px;flex-shrink:0}
+.mnode-n{font-size:9.5px;opacity:.65;margin-left:1px}
+.mnode.on .mnode-n{opacity:.85}
+
+/* ── POPULATION BARS ── */
+.pop-list{display:flex;flex-direction:column;gap:6px}
+.pop-row{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .12s;user-select:none}
+.pop-row:hover{background:rgba(18,166,140,.08)}
+.pop-row.on{background:var(--teal-l)}
+.pop-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.pop-lbl{font-size:11.5px;color:var(--ink2);width:118px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pop-row.on .pop-lbl{color:var(--teal-d);font-weight:500}
+.pop-track{flex:1;height:11px;background:var(--paper3);border-radius:4px;overflow:hidden}
+.pop-fill{height:100%;border-radius:4px;background:var(--teal-m);opacity:.6;transition:width .28s ease}
+.pop-row.on .pop-fill{opacity:1}
+.pop-pct{font-size:10px;color:var(--ink3);width:30px;text-align:right;flex-shrink:0}
+.pop-row.on .pop-pct{color:var(--teal);font-weight:500}
+
+/* ── DURATION TIMELINE ── */
+.dur-outer{position:relative;padding:28px 4px 0;margin-bottom:6px}
+.dur-line{position:absolute;left:4px;right:4px;top:34px;height:1.5px;background:var(--border2)}
+.dur-progress{position:absolute;left:4px;top:34px;height:1.5px;background:var(--teal-m);opacity:.55;transition:width .22s ease}
+.dur-nodes{display:flex;justify-content:space-between;position:relative;z-index:2}
+.dur-node{display:flex;flex-direction:column;align-items:center;cursor:pointer;user-select:none}
+.dur-dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--border2);background:var(--paper);transition:all .15s;margin-bottom:7px}
+.dur-node:hover .dur-dot{border-color:var(--teal-m);transform:scale(1.15)}
+.dur-node.on .dur-dot{background:var(--teal-m);border-color:var(--teal-m);box-shadow:0 0 0 4px rgba(18,166,140,.18)}
+.dur-lbl{font-size:9.5px;color:var(--ink3);text-align:center;line-height:1.3;width:62px}
+.dur-node.on .dur-lbl{color:var(--teal-d);font-weight:500}
+.dur-pcts{display:flex;justify-content:space-between;margin-top:4px;padding:0 4px}
+.dur-pct{font-size:9.5px;color:var(--ink4);text-align:center;width:62px}
+
+/* ── GEO MAP ── */
+.geo-wrap{width:100%;border-radius:var(--r);overflow:hidden;background:#e0d9ce;line-height:0}
+.geo-note{font-size:10px;color:var(--ink4);margin-top:7px;font-style:italic;text-align:center}
+#geo-tt{position:fixed;background:rgba(28,27,24,.9);color:#fff;font-family:var(--sans);font-size:12px;padding:8px 12px;border-radius:7px;pointer-events:none;z-index:999;display:none;max-width:220px;line-height:1.5}
+#geo-tt strong{display:block;font-weight:500;font-size:13px;margin-bottom:2px}
+
+/* ── DATABASE ── */
+.db-section{margin-top:4px}
+.db-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:10px}
+.db-meta{font-size:12.5px;color:var(--ink3)}
+.db-meta strong{color:var(--ink2);font-weight:500}
+.db-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.view-toggle{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden;background:var(--paper2)}
+.vtbtn{padding:6px 12px;font-size:12px;cursor:pointer;border:none;background:none;font-family:var(--sans);color:var(--ink3);display:flex;align-items:center;gap:5px;transition:all .12s;white-space:nowrap}
+.vtbtn:first-child{border-right:1px solid var(--border)}
+.vtbtn.on{background:var(--paper);color:var(--ink);font-weight:500}
+.vtbtn:hover:not(.on){background:var(--paper3)}
+
+/* LINE TABLE */
+.db-shell{border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;background:var(--paper)}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--paper3)}
+th{padding:9px 15px;text-align:left;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);font-weight:500;font-family:var(--sans);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;transition:color .12s}
+th:hover{color:var(--ink)}
+th.sorted{color:var(--teal)}
+.col-sno{width:50px}
+.col-pt{width:162px}
+.col-dur{width:112px}
+.col-arr{width:32px}
+td{padding:11px 15px;vertical-align:top;border-bottom:1px solid var(--border);color:var(--ink2);font-size:13px;line-height:1.45}
+tr:last-child td{border-bottom:none}
+.study-row{cursor:pointer;transition:background .1s}
+.study-row:hover{background:var(--paper2)}
+.study-row.sel{background:var(--teal-l)}
+.sno{font-size:11px;color:var(--ink4);line-height:1.4}
+.sno-star{display:block;font-size:9px;color:var(--amber-m);margin-top:1px}
+.s-hl{color:var(--ink);font-size:13.5px;line-height:1.42}
+.s-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.stag{font-size:9.5px;padding:2px 7px;border-radius:4px;font-family:var(--sans)}
+.stag-ph{background:var(--teal-l);color:var(--teal-d)}
+.stag-mh{background:var(--rose-l);color:var(--rose)}
+.stag-sh{background:var(--blue-l);color:var(--blue-m)}
+.sarr{font-size:9px;margin-left:3px;opacity:.3}
+.sarr.on{opacity:1}
+.row-chevron{color:var(--ink4);font-size:14px;text-align:right}
+@media(max-width:680px){.col-pt,.col-dur,.col-arr{display:none}.col-sno{width:38px}}
+
+/* CARD VIEW */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:13px;padding:16px}
+.ev-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--card-r);padding:16px;cursor:pointer;transition:all .15s;position:relative}
+.ev-card:hover{border-color:var(--teal-m);box-shadow:0 2px 14px rgba(10,120,101,.09);transform:translateY(-1px)}
+.ev-card.sel{border-color:var(--teal);background:var(--teal-l)}
+.ev-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.ev-card-num{font-size:10px;color:var(--ink4)}
+.ev-card-star{font-size:11px;color:var(--amber-m)}
+.ev-card-hl{font-size:13.5px;color:var(--ink);line-height:1.4;margin-bottom:9px}
+.ev-card-meta{font-size:11.5px;color:var(--ink3);display:flex;flex-direction:column;gap:2px}
+.ev-card-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
+
+/* EMPTY */
+.empty-state{padding:52px 20px;text-align:center;color:var(--ink3)}
+.empty-state h3{font-family:var(--serif);font-size:1.15rem;margin-bottom:7px;color:var(--ink2)}
+.empty-reset{margin-top:14px;padding:8px 20px;border-radius:20px;border:1px solid var(--border2);background:var(--paper2);cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--ink2);transition:all .14s}
+.empty-reset:hover{border-color:var(--teal-m);color:var(--teal)}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.pg-pages{display:flex;gap:4px;align-items:center}
+.pgbtn{min-width:30px;height:30px;padding:0 5px;border-radius:6px;border:1px solid var(--border);background:var(--paper2);cursor:pointer;font-size:12.5px;color:var(--ink2);font-family:var(--sans);transition:all .12s;display:inline-flex;align-items:center;justify-content:center}
+.pgbtn:hover:not(:disabled){border-color:var(--teal-m);color:var(--teal)}
+.pgbtn.cur{background:var(--teal);color:#fff;border-color:var(--teal);font-weight:500}
+.pgbtn:disabled{opacity:.25;cursor:default}
+.pg-ell{color:var(--ink4);font-size:12px;padding:0 2px}
+.pg-info{font-size:12px;color:var(--ink3)}
+
+/* LOADING / ERROR */
+.status-banner{text-align:center;padding:60px 20px}
+.status-banner h2{font-family:var(--serif);font-size:1.4rem;color:var(--ink2);margin-bottom:10px}
+.status-banner p{font-size:13px;color:var(--ink3);max-width:500px;margin:0 auto}
+.status-banner code{font-size:12px;background:var(--paper3);padding:2px 7px;border-radius:4px;color:var(--ink2)}
+
+/* ── DRAWER ── */
+.overlay{position:fixed;inset:0;background:rgba(28,27,24,.26);z-index:400;display:none;backdrop-filter:blur(2px)}
+.overlay.open{display:block}
+.drawer{position:fixed;top:0;right:0;width:min(478px,100vw);height:100dvh;background:var(--paper);z-index:401;transform:translateX(100%);transition:transform .32s cubic-bezier(.2,1,.3,1);overflow-y:auto;border-left:1px solid var(--border);box-shadow:-8px 0 32px rgba(0,0,0,.09)}
+.drawer.open{transform:none}
+.drw-top{position:sticky;top:0;background:var(--paper2);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.drw-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:500;background:var(--teal-l);padding:3px 9px;border-radius:10px}
+.drw-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);background:var(--paper);cursor:pointer;font-size:15px;color:var(--ink3);display:flex;align-items:center;justify-content:center;transition:all .12s}
+.drw-close:hover{background:var(--paper3);color:var(--ink)}
+.drw-body{padding:22px 20px 32px}
+.drw-title{font-family:var(--serif);font-size:1.42rem;color:var(--ink);line-height:1.28;margin-bottom:6px;font-weight:500}
+.drw-star-row{margin-bottom:16px;font-size:12px;color:var(--amber-m);font-family:var(--sans)}
+.drw-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px}
+.drw-meta-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:20px}
+.drw-mc{padding:10px 13px;border-bottom:1px solid var(--border)}
+.drw-mc:nth-child(odd){border-right:1px solid var(--border)}
+.drw-mc:nth-last-child(-n+2){border-bottom:none}
+.drw-mc:nth-last-child(1):nth-child(odd){border-right:none}
+.drw-ml{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink4);margin-bottom:3px;font-weight:500}
+.drw-mv{font-size:12.5px;color:var(--ink2);line-height:1.35}
+.drw-section-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);font-weight:500;margin-bottom:9px}
+.drw-benefits{margin-bottom:20px}
+.drw-ben{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.drw-ben:last-child{border-bottom:none}
+.drw-arr{font-size:13px;font-weight:700;min-width:14px;line-height:1.5;flex-shrink:0}
+.a-up{color:var(--teal)}.a-dn{color:var(--rose-m)}.a-nu{color:var(--ink4)}
+.drw-bt{font-size:13px;color:var(--ink2);line-height:1.45}
+.drw-citation{margin-top:6px;padding-top:16px;border-top:1px solid var(--border)}
+.drw-cite1{font-family:var(--serif);font-size:13.5px;color:var(--ink2);font-style:italic;margin-bottom:3px}
+.drw-cite2{font-size:11.5px;color:var(--ink4);line-height:1.5}
+.drw-view-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:18px;padding:11px 16px;border-radius:9px;border:1px solid var(--border2);background:var(--paper2);cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--ink2);transition:all .16s;text-decoration:none;font-weight:400}
+.drw-view-btn:hover{border-color:var(--teal-m);color:var(--teal);background:var(--teal-l)}
+
+footer{border-top:1px solid var(--border);padding:24px 0;text-align:center}
+footer p{font-size:11.5px;color:var(--ink4)}
+
+</style>
+</head>
+<body>
+
+<div id="geo-tt"></div>
+
+<header class="masthead">
+  <div class="container">
+    <h1>100+ Reasons to Do SKY</h1>
+    <p class="masthead-sub">An Interactive Explorer of Research-Backed Evidence on Sudarshan Kriya Yoga (SKY) Across the Spectrum</p>
+  </div>
+</header>
+
+<div class="searchbar-wrap">
+  <div class="container">
+    <div class="searchbar-inner">
+      <div class="sb-top">
+        <div class="search-field">
+          <span class="srch-ico">🔍</span>
+          <input type="text" id="search-input" placeholder="Search findings, populations, outcomes, geography, institutions…" autocomplete="off">
+          <button class="srch-clr" id="srch-clr">×</button>
+        </div>
+        <button class="clear-all-btn" id="clear-all">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="4" x2="9" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="9" y1="4" x2="4" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Clear All
+        </button>
+      </div>
+      <div class="filters-row" id="filters-row">
+        <span class="filter-row-lbl">Active Filters:</span>
+        <div id="active-chips"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="page-body">
+  <div class="container">
+
+    <div id="loading-state" class="db-shell" style="margin-bottom:16px">
+      <div class="status-banner">
+        <h2>Loading evidence data…</h2>
+        <p>Reading <code>sky_data.csv</code></p>
+      </div>
+    </div>
+
+    <div id="app-content" style="display:none">
+
+      <div class="exp-row row-1">
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow">Physical Health Explorer</div>
+            <div class="exp-title">Human Body Interface</div>
+          </div>
+          <div class="exp-card-body">
+            <div class="body-layout" id="body-explorer"></div>
+            <p class="exp-hint">☝ Click on a body system to filter evidence</p>
+          </div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow">Mental Health Explorer</div>
+            <div class="exp-title">Emotional Landscape</div>
+          </div>
+          <div class="exp-card-body">
+            <div class="mind-layout" id="mind-explorer"></div>
+            <p class="exp-hint">☝ Click on a domain to filter evidence</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-row row-2">
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow">Study Population Distribution</div>
+            <div class="exp-title">Who Was Studied?</div>
+          </div>
+          <div class="exp-card-body">
+            <div class="pop-list" id="pop-list"></div>
+            <p class="exp-hint">☝ Click a population to filter evidence</p>
+          </div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow">Intervention Duration</div>
+            <div class="exp-title">Length of Intervention</div>
+          </div>
+          <div class="exp-card-body">
+            <div class="dur-outer" id="dur-explorer"></div>
+            <p class="exp-hint">☝ Click a duration to filter evidence</p>
+          </div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow">Global Research Spread</div>
+            <div class="exp-title">Where Is SKY Studied?</div>
+          </div>
+          <div class="exp-card-body" style="padding-bottom:10px">
+            <div class="geo-wrap">
+              <svg id="geo-svg" width="100%" height="155" viewBox="0 0 500 155" preserveAspectRatio="xMidYMid meet"></svg>
+            </div>
+            <p class="geo-note">Geographies based on corresponding author affiliations. ☝ Click a bubble to filter.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-section">
+        <div class="db-header">
+          <div>
+            <div class="exp-eyebrow" style="margin-bottom:2px">Evidence Database</div>
+            <div style="font-family:var(--serif);font-size:1.25rem;color:var(--ink)">Research-Backed Findings</div>
+          </div>
+          <div class="db-right">
+            <span class="db-meta"><strong id="vis-count">—</strong> studies shown</span>
+            <div class="view-toggle">
+              <button class="vtbtn on" id="btn-line" onclick="setView('line')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="1" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="5.5" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="10" width="13" height="1.6" rx=".8" fill="currentColor"/></svg>
+                Line View
+              </button>
+              <button class="vtbtn" id="btn-card" onclick="setView('card')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="0" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/></svg>
+                Card View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-shell">
+          <div id="line-view">
+            <table>
+              <thead><tr>
+                <th class="col-sno" data-col="rating_sort">S.No <span class="sarr on" id="sa-rating_sort">↓</span></th>
+                <th data-col="highlight">Research Highlight <span class="sarr" id="sa-highlight">↕</span></th>
+                <th class="col-pt" data-col="participant_type">Participant Type <span class="sarr" id="sa-participant_type">↕</span></th>
+                <th class="col-dur" data-col="duration">Duration <span class="sarr" id="sa-duration">↕</span></th>
+                <th class="col-arr"></th>
+              </tr></thead>
+              <tbody id="ev-body"></tbody>
+            </table>
+            <div id="ev-empty" class="empty-state" style="display:none">
+              <h3>No findings match your current filters</h3>
+              <p style="font-size:13px;margin-top:6px">Adjust or clear filters to explore the full evidence base</p>
+              <button class="empty-reset" onclick="resetAll()">Reset all filters</button>
+            </div>
+          </div>
+          <div id="card-view" style="display:none">
+            <div class="card-grid" id="card-grid"></div>
+            <div id="card-empty" class="empty-state" style="display:none">
+              <h3>No findings match your current filters</h3>
+              <p style="font-size:13px;margin-top:6px">Adjust or clear filters to explore the full evidence base</p>
+              <button class="empty-reset" onclick="resetAll()">Reset all filters</button>
+            </div>
+          </div>
+          <div class="pagination" id="pagination" style="display:none">
+            <div class="pg-pages" id="pg-pages"></div>
+            <span class="pg-info" id="pg-info"></span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /app-content -->
+
+    <div id="error-state" class="db-shell" style="display:none;margin-bottom:16px">
+      <div class="status-banner">
+        <h2>Could not load data</h2>
+        <p>Make sure <code>sky_data.csv</code> is in the same folder as this HTML file, then open via a local server (not <code>file://</code>). See the README for setup instructions.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>100+ Reasons to Do SKY &nbsp;·&nbsp; Evidence Atlas &nbsp;·&nbsp; Data source: <code>sky_data.csv</code> &nbsp;·&nbsp; Displaying Acceptable-reputation studies only</p>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drw-top">
+    <span class="drw-lbl">Highlight</span>
+    <button class="drw-close" id="drw-close">×</button>
+  </div>
+  <div class="drw-body" id="drw-body"></div>
+</div>
+
+<script>
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONFIG — update CSV_FILE to match your filename if you rename it
+// ─────────────────────────────────────────────────────────────────────────────
+const CSV_FILE = 'sky_data.csv';
+const FILTER_REPUTATION = 'Acceptable'; // only rows matching this are shown
+const PER_PAGE = 10;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAXONOMY CONFIG — derived from dataset, update if schema changes
+// ─────────────────────────────────────────────────────────────────────────────
+const PH_LEFT  = ['PH: Brain','PH: Breath / Lungs','PH: Vagus Nerve','PH: Gut Health','PH: Genes'];
+const PH_RIGHT = ['PH: Heart','PH: Biomarkers','PH: Immunity','PH: Diabetes','PH: Cancer'];
+const MH_ORDER = ['MH: Stress','MH: Anxiety','MH: Depression','MH: Sleep','MH: Cognition','MH: Happiness'];
+const POP_ORDER= ['General Population','Patients','Youth & Students','At-risk Communities','Professionals','Practitioners / Meditators','Women'];
+const POP_ICONS= {
+  'General Population':'🧑','Patients':'🏥','Youth & Students':'🎓',
+  'At-risk Communities':'🛡️','Professionals':'💼','Practitioners / Meditators':'🧘','Women':'♀️'
+};
+const PH_ICONS = {
+  'PH: Brain':'🧠','PH: Heart':'❤️','PH: Breath / Lungs':'🫁',
+  'PH: Vagus Nerve':'⚡','PH: Biomarkers':'🔬','PH: Immunity':'🛡️',
+  'PH: Genes':'🧬','PH: Diabetes':'💉','PH: Cancer':'🎗️','PH: Gut Health':'🫄'
+};
+const MH_ICONS = {
+  'MH: Stress':'🌊','MH: Anxiety':'💭','MH: Depression':'🌧️',
+  'MH: Sleep':'🌙','MH: Cognition':'💡','MH: Happiness':'☀️'
+};
+// Positions for mental health nodes (% left, % top) around the head centre
+const MH_POS = {
+  'MH: Stress':    [3,  6],
+  'MH: Anxiety':   [54, 3],
+  'MH: Depression':[70, 34],
+  'MH: Sleep':     [62, 68],
+  'MH: Cognition': [32, 76],
+  'MH: Happiness': [2,  56],
+};
+const DUR_BUCKETS = [
+  {label:'Single\nSession',  pct:'≤1 day',  match:s=>/single/i.test(s.duration)},
+  {label:'≤1 Week',          pct:'1–4 wks', match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);const d=s.duration.match(/^(\d+)\s*day/i);return !!(w&&+w[1]<=1)||(!!d&&+d[1]<=7&&!(/single/i.test(s.duration)))}},
+  {label:'1–4 Weeks',        pct:'',        match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);return !!(w&&+w[1]>=2&&+w[1]<=4)}},
+  {label:'1–3 Months',       pct:'',        match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);const m=s.duration.match(/^(\d+)\s*month/i);const d=s.duration.match(/^(\d+)\s*day/i);return !!(w&&+w[1]>=5&&+w[1]<=12)||(!!m&&+m[1]<=3)||(!!d&&+d[1]>=30&&+d[1]<=90)}},
+  {label:'3–6 Months',       pct:'',        match:s=>{const m=s.duration.match(/^(\d+)\s*month/i);return !!(m&&+m[1]>=4&&+m[1]<=6)}},
+  {label:'> 6 Months',       pct:'',        match:s=>/long.term|year|\d\+\s*year|5\+|6\s*month/i.test(s.duration)&&!/^[1-6]\s*month/i.test(s.duration)},
+];
+const COUNTRY_COORDS = {
+  India:[78.9,20.6],USA:[-95.7,37.1],Canada:[-96.8,56.1],UK:[-3.4,55.4],
+  Italy:[12.6,41.9],Australia:[133.8,-25.3],Norway:[8.5,60.5],Sweden:[18.6,60.1],
+  Japan:[138.3,36.2],Ukraine:[31.2,48.4],Nepal:[84.1,28.4],Poland:[19.1,52.1],
+  Kuwait:[47.5,29.3],'South Africa':[25.1,-29]
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let STUDIES = [];
+let state = {
+  search:'', phFilter:[], mhFilter:[], popFilter:'', durFilter:'', countryFilter:'',
+  sort:{col:'rating_sort', dir:'desc'},
+  page:1, view:'line', selected:null
+};
+let geoBuilt = false;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.split(/\r?\n/);
+  const headers = splitCSVLine(lines[0]);
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const vals = splitCSVLine(lines[i]);
+    const row = {};
+    headers.forEach((h, j) => row[h.trim()] = (vals[j] || '').trim());
+    rows.push(row);
+  }
+  return rows;
+}
+function splitCSVLine(line) {
+  const result = []; let cur = ''; let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (ch === ',' && !inQ) { result.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  result.push(cur);
+  return result;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOAD DATA
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const resp = await fetch(CSV_FILE);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+    const raw = parseCSV(text);
+    // Filter by reputation, map fields, add sort key
+    STUDIES = raw
+      .filter(r => r['Journal Reputation'] === FILTER_REPUTATION)
+      .map((r, idx) => {
+        const subtopics = r['Subtopic'].split(',').map(s=>s.trim()).filter(Boolean);
+        const benefits  = r['Proven Benefits Statement'].split('|').map(s=>s.trim()).filter(Boolean);
+        const aff = (r['Corresponding Author Affiliation']||'').replace(/\s+/g,' ').trim();
+        const rating = (r['Rating']||'').trim();
+        return {
+          idx,
+          id:       r['Flashcard ID'],
+          serial:   r['Serial No'],
+          year:     r['Year'],
+          highlight:r['Highlight'] || benefits[0] || '',
+          population:    r['Study Population'],
+          participant_type: r['Participant Type'],
+          n:        r['Participants (n)'],
+          duration: r['Intervention Duration'],
+          followup: r['Follow-up Timepoints'],
+          design:   r['Study Design'],
+          benefits,
+          subtopics,
+          citation: r['Citation Short'],
+          journal:  r['Journal'],
+          affiliation: aff,
+          country:  r['Country'],
+          link:     r['Link to Published Study'],
+          rating,
+          rating_sort: rating ? 1 : 0,  // starred = 1, unstarred = 0
+        };
+      });
+    document.getElementById('loading-state').style.display='none';
+    document.getElementById('app-content').style.display='block';
+    initApp();
+  } catch(e) {
+    console.error(e);
+    document.getElementById('loading-state').style.display='none';
+    document.getElementById('error-state').style.display='block';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAXONOMY (computed from loaded data)
+// ─────────────────────────────────────────────────────────────────────────────
+function tagCount(tag) { return STUDIES.filter(s=>s.subtopics.includes(tag)).length; }
+function popCount(p)   { return STUDIES.filter(s=>s.population===p).length; }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FILTER ENGINE
+// ─────────────────────────────────────────────────────────────────────────────
+function applyFilters() {
+  return STUDIES.filter(s => {
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      const hay = [s.highlight, s.population, s.participant_type, s.journal,
+                   s.affiliation, s.country, s.citation, s.year,
+                   ...s.subtopics, ...s.benefits].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (state.phFilter.length && !state.phFilter.some(t=>s.subtopics.includes(t))) return false;
+    if (state.mhFilter.length && !state.mhFilter.some(t=>s.subtopics.includes(t))) return false;
+    if (state.popFilter && s.population !== state.popFilter) return false;
+    if (state.durFilter) {
+      const b = DUR_BUCKETS.find(b=>b.label===state.durFilter);
+      if (b && !b.match(s)) return false;
+    }
+    if (state.countryFilter) {
+      const cs = s.country.split(',').map(c=>c.trim());
+      if (!cs.includes(state.countryFilter)) return false;
+    }
+    return true;
+  });
+}
+
+function sortedFiltered() {
+  const filtered = applyFilters();
+  return [...filtered].sort((a,b) => {
+    let va = a[state.sort.col]; let vb = b[state.sort.col];
+    if (va == null) va = ''; if (vb == null) vb = '';
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    if (va === vb) return 0;
+    const dir = state.sort.dir === 'asc' ? 1 : -1;
+    return va > vb ? dir : -dir;
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: PHYSICAL BODY EXPLORER
+// ─────────────────────────────────────────────────────────────────────────────
+function buildBodyExplorer() {
+  const wrap = document.getElementById('body-explorer');
+  const leftData  = PH_LEFT.filter(t=>tagCount(t)>0);
+  const rightData = PH_RIGHT.filter(t=>tagCount(t)>0);
+
+  let h = `<div class="body-col body-col-l">`;
+  leftData.forEach(t => {
+    const on = state.phFilter.includes(t) ? ' on' : '';
+    const label = t.replace('PH: ','');
+    const ico = PH_ICONS[t] || '●';
+    h += `<span class="bnode${on}" data-tag="${t}"><span class="bnode-ico">${ico}</span><span class="bnode-label">${label}<span class="bnode-n"> ${tagCount(t)}</span></span></span>`;
+  });
+  h += `</div>`;
+
+  // Body SVG — anatomical silhouette
+  h += `<div class="body-svg-center"><svg viewBox="0 0 90 216" width="90" height="216" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#c6e5dd"/><stop offset="100%" stop-color="#e4f3ef"/>
+  </linearGradient>
+</defs>
+<ellipse cx="45" cy="22" rx="17.5" ry="19.5" fill="url(#bg1)" stroke="#12a68c" stroke-width="1.1" opacity=".72"/>
+<rect x="37" y="40" width="16" height="10" rx="5" fill="url(#bg1)" stroke="#12a68c" stroke-width=".9" opacity=".62"/>
+<path d="M20 52 Q13 72 15 112 Q17 127 45 130 Q73 127 75 112 Q77 72 70 52 Q59 47 45 47 Q31 47 20 52Z" fill="url(#bg1)" stroke="#12a68c" stroke-width="1.1" opacity=".68"/>
+<path d="M20 57 Q8 76 10 112 Q11 119 17 119 Q21 119 20 112 Q18 82 27 64Z" fill="url(#bg1)" stroke="#12a68c" stroke-width=".85" opacity=".58"/>
+<path d="M70 57 Q82 76 80 112 Q79 119 73 119 Q69 119 70 112 Q72 82 63 64Z" fill="url(#bg1)" stroke="#12a68c" stroke-width=".85" opacity=".58"/>
+<path d="M27 128 Q23 165 25 196 Q26 202 32 202 Q38 202 38 196 Q37 167 36 130Z" fill="url(#bg1)" stroke="#12a68c" stroke-width=".85" opacity=".58"/>
+<path d="M63 128 Q67 165 65 196 Q64 202 58 202 Q52 202 52 196 Q53 167 54 130Z" fill="url(#bg1)" stroke="#12a68c" stroke-width=".85" opacity=".58"/>
+<ellipse cx="45" cy="18" rx="11" ry="10" fill="#0a7865" opacity=".1"/>
+<ellipse cx="38" cy="72" rx="6.5" ry="5.5" fill="#0a7865" opacity=".1"/>
+<ellipse cx="31" cy="78" rx="5.5" ry="10" fill="#0a7865" opacity=".09"/>
+<ellipse cx="59" cy="78" rx="5.5" ry="10" fill="#0a7865" opacity=".09"/>
+<ellipse cx="45" cy="100" rx="13" ry="10" fill="#0a7865" opacity=".08"/>
+</svg></div>`;
+
+  h += `<div class="body-col body-col-r">`;
+  rightData.forEach(t => {
+    const on = state.phFilter.includes(t) ? ' on' : '';
+    const label = t.replace('PH: ','');
+    const ico = PH_ICONS[t] || '●';
+    h += `<span class="bnode${on}" data-tag="${t}"><span class="bnode-ico">${ico}</span><span class="bnode-label">${label}<span class="bnode-n"> ${tagCount(t)}</span></span></span>`;
+  });
+  h += `</div>`;
+
+  wrap.innerHTML = h;
+  wrap.querySelectorAll('.bnode[data-tag]').forEach(el => {
+    el.addEventListener('click', () => {
+      const t = el.dataset.tag;
+      const i = state.phFilter.indexOf(t);
+      i > -1 ? state.phFilter.splice(i,1) : state.phFilter.push(t);
+      state.page = 1; refresh();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: MENTAL HEALTH EXPLORER
+// ─────────────────────────────────────────────────────────────────────────────
+function buildMindExplorer() {
+  const wrap = document.getElementById('mind-explorer');
+  // Head SVG
+  let h = `<div class="mind-center"><svg viewBox="0 0 130 148" width="106" height="120" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="hg" cx="50%" cy="38%" r="58%">
+    <stop offset="0%" stop-color="#fae2ea" stop-opacity=".82"/>
+    <stop offset="100%" stop-color="#f8f6f1" stop-opacity="0"/>
+  </radialGradient>
+</defs>
+<circle cx="65" cy="74" r="62" fill="url(#hg)"/>
+<ellipse cx="65" cy="60" rx="34" ry="41" fill="#fae2ea" stroke="#ad2b55" stroke-width="1.1" opacity=".62"/>
+<rect x="54" y="98" width="22" height="14" rx="5" fill="#fae2ea" stroke="#ad2b55" stroke-width=".9" opacity=".52"/>
+<ellipse cx="52" cy="55" rx="4.5" ry="3.5" fill="#ad2b55" opacity=".28"/>
+<ellipse cx="78" cy="55" rx="4.5" ry="3.5" fill="#ad2b55" opacity=".28"/>
+<path d="M55 75 Q65 83 75 75" stroke="#ad2b55" stroke-width="1.3" fill="none" opacity=".42" stroke-linecap="round"/>
+<ellipse cx="65" cy="45" rx="21" ry="15" fill="#ad2b55" opacity=".06"/>
+<ellipse cx="65" cy="45" rx="13" ry="9" fill="#ad2b55" opacity=".07"/>
+<ellipse cx="65" cy="72" rx="58" ry="64" fill="none" stroke="#ad2b55" stroke-width=".5" stroke-dasharray="3 6" opacity=".18"/>
+</svg></div>`;
+
+  // Absolutely positioned nodes
+  MH_ORDER.filter(t => tagCount(t) > 0).forEach(t => {
+    const on = state.mhFilter.includes(t) ? ' on' : '';
+    const pos = MH_POS[t] || [10,10];
+    const label = t.replace('MH: ','');
+    const ico = MH_ICONS[t] || '●';
+    h += `<span class="mnode${on}" data-tag="${t}" style="left:${pos[0]}%;top:${pos[1]}%"><span class="mnode-ico">${ico}</span>${label}<span class="mnode-n"> ${tagCount(t)}</span></span>`;
+  });
+
+  wrap.innerHTML = h;
+  wrap.querySelectorAll('.mnode[data-tag]').forEach(el => {
+    el.addEventListener('click', () => {
+      const t = el.dataset.tag;
+      const i = state.mhFilter.indexOf(t);
+      i > -1 ? state.mhFilter.splice(i,1) : state.mhFilter.push(t);
+      state.page = 1; refresh();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: POPULATION BARS
+// ─────────────────────────────────────────────────────────────────────────────
+function buildPopList() {
+  const wrap = document.getElementById('pop-list');
+  const counts = POP_ORDER.map(p => ({ pop:p, count:popCount(p) })).filter(d=>d.count>0);
+  const total = STUDIES.length;
+  const max = Math.max(...counts.map(d=>d.count));
+  wrap.innerHTML = counts.map(d => {
+    const on = state.popFilter === d.pop ? ' on' : '';
+    const pct = Math.round(d.count/total*100);
+    const barW = Math.round(d.count/max*100);
+    const ico = POP_ICONS[d.pop] || '👤';
+    return `<div class="pop-row${on}" data-pop="${d.pop}">
+      <span class="pop-ico">${ico}</span>
+      <span class="pop-lbl">${d.pop}</span>
+      <div class="pop-track"><div class="pop-fill" style="width:${barW}%"></div></div>
+      <span class="pop-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('.pop-row').forEach(el => {
+    el.addEventListener('click', () => {
+      state.popFilter = state.popFilter === el.dataset.pop ? '' : el.dataset.pop;
+      state.page = 1; refresh();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: DURATION TIMELINE
+// ─────────────────────────────────────────────────────────────────────────────
+function buildDurExplorer() {
+  const wrap = document.getElementById('dur-explorer');
+  const total = STUDIES.length;
+  const counts = DUR_BUCKETS.map(b => STUDIES.filter(b.match).length);
+  const ai = state.durFilter ? DUR_BUCKETS.findIndex(b=>b.label===state.durFilter) : -1;
+  const pct = ai >= 0 ? (ai/(DUR_BUCKETS.length-1)*100) : 0;
+
+  let h = `<div class="dur-line"></div>
+<div class="dur-progress" style="width:${ai>=0?pct+'%':'0%'}"></div>
+<div class="dur-nodes">`;
+  DUR_BUCKETS.forEach((b,i) => {
+    const on = state.durFilter === b.label ? ' on' : '';
+    const countPct = counts[i] ? Math.round(counts[i]/total*100)+'%' : '—';
+    h += `<div class="dur-node${on}" data-lbl="${b.label}">
+      <div class="dur-dot"></div>
+      <div class="dur-lbl">${b.label.replace('\n','<br>')}</div>
+    </div>`;
+  });
+  h += `</div><div class="dur-pcts">`;
+  DUR_BUCKETS.forEach((_,i) => {
+    const p = counts[i] ? Math.round(counts[i]/total*100)+'%' : '';
+    h += `<span class="dur-pct">${p}</span>`;
+  });
+  h += `</div>`;
+  wrap.innerHTML = h;
+  wrap.querySelectorAll('.dur-node').forEach(el => {
+    el.addEventListener('click', () => {
+      state.durFilter = state.durFilter === el.dataset.lbl ? '' : el.dataset.lbl;
+      state.page = 1; refresh();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: GEO MAP
+// ─────────────────────────────────────────────────────────────────────────────
+function buildGeoMap() {
+  if (geoBuilt) return; geoBuilt = true;
+  const W=500, H=155;
+  const svg = d3.select('#geo-svg').attr('viewBox',`0 0 ${W} ${H}`);
+  const proj = d3.geoNaturalEarth1().scale(80).translate([W/2, H/2+6]);
+  const pathGen = d3.geoPath(proj);
+  const tt = document.getElementById('geo-tt');
+
+  // Build country data from loaded studies
+  const cdata = {};
+  STUDIES.forEach(s => {
+    s.country.split(',').forEach(raw => {
+      const c = raw.trim();
+      if (!c) return;
+      if (!cdata[c]) cdata[c] = { count:0, affs:new Set() };
+      cdata[c].count++;
+      if (s.affiliation) cdata[c].affs.add(s.affiliation.split(',')[0].trim().slice(0,44));
+    });
+  });
+  const maxC = Math.max(...Object.values(cdata).map(d=>d.count), 1);
+  const rScale = d3.scaleSqrt([1, maxC], [5, 16]);
+
+  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
+    svg.append('g').selectAll('path')
+      .data(topojson.feature(world, world.objects.countries).features)
+      .join('path').attr('d', pathGen)
+      .attr('fill','#d4ccbe').attr('stroke','#f1ede5').attr('stroke-width',.32);
+
+    Object.entries(COUNTRY_COORDS).forEach(([country,[lon,lat]]) => {
+      const cd = cdata[country];
+      if (!cd || !cd.count) return;
+      const pt = proj([lon, lat]);
+      if (!pt) return;
+      const [x,y] = pt;
+      const affsText = [...cd.affs].slice(0,2).join(', ');
+      svg.append('circle')
+        .attr('cx',x).attr('cy',y).attr('r', rScale(cd.count))
+        .attr('class','geo-bubble').attr('data-country', country)
+        .attr('fill','rgba(18,166,140,.62)').attr('stroke','rgba(10,120,101,.42)')
+        .attr('stroke-width',1.4).attr('cursor','pointer')
+        .on('mouseenter', function(e) {
+          if (state.countryFilter !== country) d3.select(this).attr('fill','rgba(10,120,101,.88)');
+          tt.style.display='block';
+          tt.innerHTML=`<strong>${country}</strong>${cd.count} ${cd.count===1?'study':'studies'}${affsText?`<br><span style="opacity:.62;font-size:10.5px">${affsText}</span>`:''}`;
+        })
+        .on('mousemove', e => { tt.style.left=(e.clientX+14)+'px'; tt.style.top=(e.clientY-10)+'px'; })
+        .on('mouseleave', function() {
+          d3.select(this).attr('fill', state.countryFilter===country?'#0a7865':'rgba(18,166,140,.62)');
+          tt.style.display='none';
+        })
+        .on('click', function() {
+          state.countryFilter = state.countryFilter === country ? '' : country;
+          state.page = 1; refresh();
+        });
+    });
+  }).catch(() => {
+    svg.append('text').attr('x',W/2).attr('y',H/2).attr('text-anchor','middle')
+      .attr('font-size',12).attr('fill','#999').text('Map unavailable — search by country name');
+  });
+}
+
+function refreshGeoBubbles() {
+  d3.selectAll('.geo-bubble').each(function() {
+    const c = this.getAttribute('data-country');
+    const on = state.countryFilter === c;
+    d3.select(this)
+      .attr('fill', on ? '#0a7865' : 'rgba(18,166,140,.62)')
+      .attr('stroke', on ? '#075c4d' : 'rgba(10,120,101,.42)');
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATABASE — LINE VIEW
+// ─────────────────────────────────────────────────────────────────────────────
+function renderLineView(pageStudies) {
+  const tbody = document.getElementById('ev-body');
+  const empty = document.getElementById('ev-empty');
+  if (!pageStudies.length && state.page === 1) {
+    tbody.innerHTML = ''; empty.style.display = 'block'; return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = pageStudies.map(s => {
+    const num = s.idx + 1;
+    const tags = s.subtopics.slice(0,3).map(t => {
+      const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
+      return `<span class="stag ${cl}">${t}</span>`;
+    }).join('');
+    const star = s.rating ? `<span class="sno-star">${s.rating}</span>` : '';
+    const sel = state.selected?.id === s.id ? ' sel' : '';
+    return `<tr class="study-row${sel}" data-id="${s.id}">
+      <td class="sno">${num}${star}</td>
+      <td><div class="s-hl">${s.highlight}</div><div class="s-tags">${tags}</div></td>
+      <td style="font-size:12px;color:var(--ink3)">${s.participant_type||s.population}</td>
+      <td style="font-size:12px;color:var(--ink3)">${s.duration||'—'}</td>
+      <td class="row-chevron">›</td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('.study-row').forEach(row => {
+    row.addEventListener('click', () => openDrawer(STUDIES.find(s=>s.id===row.dataset.id)));
+  });
+}
+
+// DATABASE — CARD VIEW
+function renderCardView(pageStudies) {
+  const grid = document.getElementById('card-grid');
+  const empty = document.getElementById('card-empty');
+  if (!pageStudies.length && state.page === 1) {
+    grid.innerHTML = ''; empty.style.display = 'block'; return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = pageStudies.map(s => {
+    const num = s.idx + 1;
+    const tags = s.subtopics.slice(0,3).map(t => {
+      const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
+      return `<span class="stag ${cl}">${t}</span>`;
+    }).join('');
+    const sel = state.selected?.id === s.id ? ' sel' : '';
+    return `<div class="ev-card${sel}" data-id="${s.id}">
+      <div class="ev-card-top">
+        <span class="ev-card-num">${num}</span>
+        ${s.rating ? `<span class="ev-card-star">${s.rating}</span>` : ''}
+      </div>
+      <div class="ev-card-hl">${s.highlight}</div>
+      <div class="ev-card-meta">
+        <span>${s.participant_type||s.population}</span>
+        <span>${s.duration||'—'}</span>
+      </div>
+      <div class="ev-card-tags">${tags}</div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.ev-card').forEach(card => {
+    card.addEventListener('click', () => openDrawer(STUDIES.find(s=>s.id===card.dataset.id)));
+  });
+}
+
+// MAIN TABLE RENDER
+function renderTable() {
+  const sorted = sortedFiltered();
+  const total = sorted.length;
+  document.getElementById('vis-count').textContent = total;
+
+  const totalPages = Math.ceil(total / PER_PAGE);
+  if (state.page > totalPages) state.page = Math.max(1, totalPages);
+  const start = (state.page - 1) * PER_PAGE;
+  const page = sorted.slice(start, start + PER_PAGE);
+
+  if (state.view === 'line') {
+    document.getElementById('line-view').style.display = '';
+    document.getElementById('card-view').style.display = 'none';
+    renderLineView(page);
+  } else {
+    document.getElementById('line-view').style.display = 'none';
+    document.getElementById('card-view').style.display = '';
+    renderCardView(page);
+  }
+  renderPagination(total, start, page.length);
+}
+
+function renderPagination(total, start, pageLen) {
+  const pg = document.getElementById('pagination');
+  const pages = Math.ceil(total / PER_PAGE);
+  const info = document.getElementById('pg-info');
+  info.textContent = total ? `Showing ${start+1}–${start+pageLen} of ${total} studies` : '';
+  pg.style.display = total ? 'flex' : 'none';
+  if (pages <= 1) { document.getElementById('pg-pages').innerHTML=''; return; }
+  let h = `<button class="pgbtn" ${state.page===1?'disabled':''} onclick="gp(${state.page-1})">‹</button>`;
+  for (let i=1; i<=pages; i++) {
+    if (pages > 9 && i > 2 && i < pages-1 && Math.abs(i-state.page) > 1) {
+      if (i===3||i===pages-2) h += `<span class="pg-ell">…</span>`;
+      continue;
+    }
+    h += `<button class="pgbtn${state.page===i?' cur':''}" onclick="gp(${i})">${i}</button>`;
+  }
+  h += `<button class="pgbtn" ${state.page===pages?'disabled':''} onclick="gp(${state.page+1})">›</button>`;
+  document.getElementById('pg-pages').innerHTML = h;
+}
+window.gp = n => { state.page = n; renderTable(); };
+
+// VIEW TOGGLE
+window.setView = v => {
+  state.view = v; state.page = 1;
+  document.getElementById('btn-line').classList.toggle('on', v==='line');
+  document.getElementById('btn-card').classList.toggle('on', v==='card');
+  renderTable();
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FILTER STRIP
+// ─────────────────────────────────────────────────────────────────────────────
+function renderFilterStrip() {
+  const chips = [];
+  state.phFilter.forEach(t => chips.push({ label:'Body: '+t.replace('PH: ',''), clear:()=>{ state.phFilter=state.phFilter.filter(x=>x!==t); } }));
+  state.mhFilter.forEach(t => chips.push({ label:'Mind: '+t.replace('MH: ',''), clear:()=>{ state.mhFilter=state.mhFilter.filter(x=>x!==t); } }));
+  if (state.popFilter) chips.push({ label:state.popFilter, clear:()=>{ state.popFilter=''; } });
+  if (state.durFilter) chips.push({ label:state.durFilter.replace(/\n/g,' '), clear:()=>{ state.durFilter=''; } });
+  if (state.countryFilter) chips.push({ label:state.countryFilter, clear:()=>{ state.countryFilter=''; } });
+  if (state.search) chips.push({ label:`"${state.search.length>18?state.search.slice(0,18)+'…':state.search}"`, clear:()=>{ state.search=''; document.getElementById('search-input').value=''; document.getElementById('srch-clr').classList.remove('show'); } });
+
+  const chipsDiv = document.getElementById('active-chips');
+  chipsDiv.innerHTML = chips.map((c,i) => `<button class="fchip" data-i="${i}">${c.label}<span class="fchip-x">×</span></button>`).join('');
+  chipsDiv.querySelectorAll('.fchip').forEach((el,i) => {
+    el.addEventListener('click', () => { chips[i].clear(); state.page=1; refresh(); });
+  });
+
+  const hasFilters = chips.length > 0;
+  const filtersRow = document.getElementById('filters-row');
+  const clearAll = document.getElementById('clear-all');
+  filtersRow.classList.toggle('show', hasFilters);
+  clearAll.classList.toggle('show', hasFilters);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SORT
+// ─────────────────────────────────────────────────────────────────────────────
+function initSortHeaders() {
+  document.querySelectorAll('th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (state.sort.col === col) state.sort.dir = state.sort.dir==='asc'?'desc':'asc';
+      else { state.sort.col = col; state.sort.dir = col==='rating_sort'?'desc':'asc'; }
+      document.querySelectorAll('th').forEach(t=>t.classList.remove('sorted'));
+      th.classList.add('sorted');
+      document.querySelectorAll('.sarr').forEach(a=>{a.classList.remove('on');a.textContent='↕';});
+      const sa = document.getElementById('sa-'+col);
+      if (sa) { sa.classList.add('on'); sa.textContent = state.sort.dir==='asc'?'↑':'↓'; }
+      state.page = 1; renderTable();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESET
+// ─────────────────────────────────────────────────────────────────────────────
+function resetAll() {
+  state.search=''; state.phFilter=[]; state.mhFilter=[];
+  state.popFilter=''; state.durFilter=''; state.countryFilter='';
+  state.sort={col:'rating_sort',dir:'desc'};
+  state.page=1;
+  document.getElementById('search-input').value='';
+  document.getElementById('srch-clr').classList.remove('show');
+  // Reset sort UI
+  document.querySelectorAll('th').forEach(t=>t.classList.remove('sorted'));
+  document.querySelectorAll('.sarr').forEach(a=>{a.classList.remove('on');a.textContent='↕';});
+  const sa=document.getElementById('sa-rating_sort');
+  if(sa){sa.classList.add('on');sa.textContent='↓';}
+  refresh();
+}
+window.resetAll = resetAll;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DRAWER
+// ─────────────────────────────────────────────────────────────────────────────
+function openDrawer(s) {
+  if (!s) return;
+  state.selected = s;
+  const tags = s.subtopics.map(t => {
+    const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
+    return `<span class="stag ${cl}" style="font-size:10.5px;padding:3px 9px">${t}</span>`;
+  }).join(' ');
+  const benefits = s.benefits.map(b => {
+    const up=b.startsWith('↑'), dn=b.startsWith('↓');
+    return `<div class="drw-ben"><span class="drw-arr ${up?'a-up':dn?'a-dn':'a-nu'}">${up?'↑':dn?'↓':'·'}</span><span class="drw-bt">${b.replace(/^[↑↓·]\s*/,'')}</span></div>`;
+  }).join('');
+  const cite2Parts = [s.affiliation, s.country].filter(Boolean).join(' · ');
+
+  document.getElementById('drw-body').innerHTML = `
+    <div class="drw-title">${s.highlight}</div>
+    ${s.rating ? `<div class="drw-star-row">${s.rating} Featured Study</div>` : ''}
+    <div class="drw-tags">${tags}</div>
+    <div class="drw-meta-grid">
+      <div class="drw-mc"><div class="drw-ml">Number of Participants</div><div class="drw-mv">${s.n&&s.n!=='-'?'n = '+s.n:'Not reported'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Duration</div><div class="drw-mv">${s.duration||'—'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Study Design</div><div class="drw-mv">${s.design||'—'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Follow-up</div><div class="drw-mv">${s.followup||'Not reported'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Participant Type</div><div class="drw-mv">${s.participant_type||s.population}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Year</div><div class="drw-mv">${s.year||'—'}</div></div>
+    </div>
+    <div class="drw-section-lbl">Proven Benefits</div>
+    <div class="drw-benefits">${benefits}</div>
+    <div class="drw-citation">
+      <div class="drw-cite1">${s.citation}</div>
+      <div class="drw-cite2">${s.journal}</div>
+      ${cite2Parts ? `<div class="drw-cite2" style="margin-top:2px">${cite2Parts}</div>` : ''}
+    </div>
+    ${s.link ? `<a href="${s.link}" target="_blank" rel="noopener" class="drw-view-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      View Published Study
+    </a>` : ''}`;
+
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  document.querySelectorAll('.study-row,.ev-card').forEach(r=>r.classList.toggle('sel', r.dataset.id===s.id));
+}
+function closeDrawer() {
+  state.selected = null;
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  document.querySelectorAll('.study-row,.ev-card').forEach(r=>r.classList.remove('sel'));
+}
+document.getElementById('overlay').onclick = closeDrawer;
+document.getElementById('drw-close').onclick = closeDrawer;
+document.getElementById('clear-all').onclick = resetAll;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEARCH
+// ─────────────────────────────────────────────────────────────────────────────
+let _st;
+document.getElementById('search-input').addEventListener('input', e => {
+  clearTimeout(_st);
+  const v = e.target.value;
+  document.getElementById('srch-clr').classList.toggle('show', v.length > 0);
+  _st = setTimeout(() => { state.search=v; state.page=1; refresh(); }, 180);
+});
+document.getElementById('srch-clr').addEventListener('click', () => {
+  state.search='';
+  document.getElementById('search-input').value='';
+  document.getElementById('srch-clr').classList.remove('show');
+  state.page=1; refresh();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MASTER REFRESH + INIT
+// ─────────────────────────────────────────────────────────────────────────────
+function refresh() {
+  buildBodyExplorer();
+  buildMindExplorer();
+  buildPopList();
+  buildDurExplorer();
+  refreshGeoBubbles();
+  renderTable();
+  renderFilterStrip();
+}
+
+function initApp() {
+  buildBodyExplorer();
+  buildMindExplorer();
+  buildPopList();
+  buildDurExplorer();
+  buildGeoMap();
+  initSortHeaders();
+  renderTable();
+}
+
+// Boot
+loadData();
+
+</script>
+</body>
+</html>
