@@ -578,5 +578,56 @@ function ambientTick() {
 }
 ambientTick();
 </script>
+  // ─────────────────────────────────────────────────────────────────────────────
+// CONFIG — update CSV_FILE to match your filename if you rename it
+// ─────────────────────────────────────────────────────────────────────────────
+const CSV_FILE = 'sky_data.csv';
+const FILTER_REPUTATION = 'Acceptable'; // only rows matching this are shown
+const PER_PAGE = 10;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAXONOMY CONFIG — derived from dataset, update if schema changes
+// ─────────────────────────────────────────────────────────────────────────────
+const PH_LEFT  = ['PH: Brain','PH: Breath / Lungs','PH: Vagus Nerve','PH: Gut Health','PH: Genes'];
+const PH_RIGHT = ['PH: Heart','PH: Biomarkers','PH: Immunity','PH: Diabetes','PH: Cancer'];
+const MH_ORDER = ['MH: Stress','MH: Anxiety','MH: Depression','MH: Sleep','MH: Cognition','MH: Happiness'];
+const POP_ORDER= ['General Population','Patients','Youth & Students','At-risk Communities','Professionals','Practitioners / Meditators','Women'];
+const POP_ICONS= {
+  'General Population':'🧑','Patients':'🏥','Youth & Students':'🎓',
+  'At-risk Communities':'🛡️','Professionals':'💼','Practitioners / Meditators':'🧘','Women':'♀️'
+};
+const PH_ICONS = {
+  'PH: Brain':'🧠','PH: Heart':'❤️','PH: Breath / Lungs':'🫁',
+  'PH: Vagus Nerve':'⚡','PH: Biomarkers':'🔬','PH: Immunity':'🛡️',
+  'PH: Genes':'🧬','PH: Diabetes':'💉','PH: Cancer':'🎗️','PH: Gut Health':'🫄'
+};
+const MH_ICONS = {
+  'MH: Stress':'🌊','MH: Anxiety':'💭','MH: Depression':'🌧️',
+  'MH: Sleep':'🌙','MH: Cognition':'💡','MH: Happiness':'☀️'
+};
+// Positions for mental health nodes (% left, % top) around the head centre
+const MH_POS = {
+  'MH: Stress':    [3,  6],
+  'MH: Anxiety':   [54, 3],
+  'MH: Depression':[70, 34],
+  'MH: Sleep':     [62, 68],
+  'MH: Cognition': [32, 76],
+  'MH: Happiness': [2,  56],
+};
+const DUR_BUCKETS = [
+  {label:'Single\nSession',  pct:'≤1 day',  match:s=>/single/i.test(s.duration)},
+  {label:'≤1 Week',          pct:'1–4 wks', match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);const d=s.duration.match(/^(\d+)\s*day/i);return !!(w&&+w[1]<=1)||(!!d&&+d[1]<=7&&!(/single/i.test(s.duration)))}},
+  {label:'1–4 Weeks',        pct:'',        match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);return !!(w&&+w[1]>=2&&+w[1]<=4)}},
+  {label:'1–3 Months',       pct:'',        match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);const m=s.duration.match(/^(\d+)\s*month/i);const d=s.duration.match(/^(\d+)\s*day/i);return !!(w&&+w[1]>=5&&+w[1]<=12)||(!!m&&+m[1]<=3)||(!!d&&+d[1]>=30&&+d[1]<=90)}},
+  {label:'3–6 Months',       pct:'',        match:s=>{const m=s.duration.match(/^(\d+)\s*month/i);return !!(m&&+m[1]>=4&&+m[1]<=6)}},
+  {label:'> 6 Months',       pct:'',        match:s=>/long.term|year|\d\+\s*year|5\+|6\s*month/i.test(s.duration)&&!/^[1-6]\s*month/i.test(s.duration)},
+];
+const COUNTRY_COORDS = {
+  India:[78.9,20.6],USA:[-95.7,37.1],Canada:[-96.8,56.1],UK:[-3.4,55.4],
+  Italy:[12.6,41.9],Australia:[133.8,-25.3],Norway:[8.5,60.5],Sweden:[18.6,60.1],
+  Japan:[138.3,36.2],Ukraine:[31.2,48.4],Nepal:[84.1,28.4],Poland:[19.1,52.1],
+  Kuwait:[47.5,29.3],'South Africa':[25.1,-29]
+};
+
 </body>
 </html>
