@@ -323,7 +323,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
     <div id="loading-state" class="db-shell" style="margin-bottom:16px">
       <div class="status-banner">
         <h2>Loading evidence data…</h2>
-        <p>Reading <code>sky_data.csv</code></p>
+        <p>Reading <code>sky_atlas_data.csv</code></p>
       </div>
     </div>
 
@@ -446,7 +446,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
     <div id="error-state" class="db-shell" style="display:none;margin-bottom:16px">
       <div class="status-banner">
         <h2>Could not load data</h2>
-        <p>Make sure <code>sky_data.csv</code> is in the same folder as this HTML file, then open via a local server (not <code>file://</code>). See the README for setup instructions.</p>
+        <p>Make sure <code>sky_atlas_data.csv</code> is in the same folder as this HTML file, then open via a local server (not <code>file://</code>). See the README for setup instructions.</p>
       </div>
     </div>
 
@@ -455,7 +455,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
 
 <footer>
   <div class="container">
-    <p>100+ Reasons to Do SKY &nbsp;·&nbsp; Evidence Atlas &nbsp;·&nbsp; Data source: <code>sky_data.csv</code> &nbsp;·&nbsp; Displaying Acceptable-reputation studies only</p>
+    <p>100+ Reasons to Do SKY &nbsp;·&nbsp; Evidence Atlas &nbsp;·&nbsp; Data source: <code>sky_atlas_data.csv</code> &nbsp;·&nbsp; Displaying Acceptable-reputation studies only</p>
   </div>
 </footer>
 
@@ -474,7 +474,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
 // ─────────────────────────────────────────────────────────────────────────────
 // CONFIG — update CSV_FILE to match your filename if you rename it
 // ─────────────────────────────────────────────────────────────────────────────
-const CSV_FILE = 'sky_data.csv';
+const CSV_FILE = 'sky_atlas_data.csv';
 const FILTER_REPUTATION = 'Acceptable'; // only rows matching this are shown
 const PER_PAGE = 10;
 
@@ -637,10 +637,18 @@ function splitCSVLine(line) {
 // LOAD DATA
 // ─────────────────────────────────────────────────────────────────────────────
 async function loadData() {
+  // Try primary filename, then legacy fallbacks
+  const FALLBACK_FILES = [CSV_FILE, 'sky_data.csv', 'sky_atlas_data.csv'];
+  let text = null;
+  let loadError = null;
+  for (const fname of FALLBACK_FILES) {
+    try {
+      const r = await fetch(fname);
+      if (r.ok) { text = await r.text(); break; }
+    } catch(e) { loadError = e; }
+  }
   try {
-    const resp = await fetch(CSV_FILE);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const text = await resp.text();
+    if (!text) throw loadError || new Error('No CSV file found');
     const raw = parseCSV(text);
     // Filter by reputation, map fields, add sort key
     STUDIES = raw
