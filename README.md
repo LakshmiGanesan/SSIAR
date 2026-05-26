@@ -2,125 +2,141 @@
 
 An interactive, data-driven evidence explorer for peer-reviewed research on Sudarshan Kriya Yoga (SKY).
 
+Live site: https://lakshmiganesan.github.io/SKY-Evidence-Altas/
+
 ---
 
-## File Structure
+## Repository Structure
 
 ```
 /
-├── sky-evidence-explorer.html   ← Dashboard (presentation layer — do not edit for data updates)
-├── sky_data.csv                 ← Dataset (content layer — update this file to refresh the dashboard)
+├── index.html          ← Dashboard (presentation layer — never edit for data updates)
+├── sky_atlas_data.csv  ← Dataset    (content layer — replace this to update content)
 └── README.md
 ```
 
----
-
-## How It Works
-
-The dashboard reads `sky_data.csv` at runtime using the Fetch API.  
-**To update the evidence base: replace `sky_data.csv` with an updated version using the same filename.**  
-No changes to the HTML file are needed.
-
-The pipeline automatically:
-- Filters to rows where `Journal Reputation = Acceptable`
-- Sorts featured studies (`Rating = ⭐⭐⭐⭐⭐`) to the top by default
-- Derives all explorer taxonomy (subtopics, populations, countries) from the live dataset
-- Scales gracefully as the dataset grows beyond 127 records
+**Two-layer architecture:** The dashboard fetches `sky_atlas_data.csv` at runtime.
+To update research content, replace the CSV only. No HTML changes needed.
 
 ---
 
-## CSV Schema
+## Updating the Dataset
 
-The dashboard reads the following columns. Column names must match exactly (case-sensitive):
+1. Open `sky_atlas_data.csv` in Excel, Google Sheets, or any CSV editor
+2. Add or edit rows — existing columns must keep their names exactly
+3. Save as **CSV UTF-8**
+4. Replace the file in the repository (same filename: `sky_atlas_data.csv`)
+5. Commit and push — the live dashboard updates automatically
+
+**The dashboard automatically:**
+- Filters to rows where `Journal Reputation = Acceptable` (currently 101 studies)
+- Surfaces starred studies (⭐⭐⭐⭐⭐ in the `Rating` column) at the top
+- Derives all explorer nodes and counts from the live data
+- Scales as the dataset grows beyond the current record count
+
+---
+
+## CSV Column Schema
+
+Column names are case-sensitive. The dashboard reads these fields:
 
 | Column | Purpose |
 |--------|---------|
 | `Flashcard ID` | Unique study identifier |
-| `Serial No` | Display number |
+| `Serial No` | Display serial number |
 | `Year` | Publication year |
-| `Subtopic` | Comma-separated tags e.g. `PH: Brain, MH: Stress` |
-| `Study Population` | Population category for filtering |
-| `Highlight` | One-line research highlight (primary display text) |
-| `Participant Type` | Specific participant description |
+| `Subtopic` | Comma-separated topic tags — e.g. `PH: Brain, MH: Stress` |
+| `Study Population` | Population category used for filtering |
+| `Highlight` | One-line research headline (primary display text) |
+| `Participant Type` | Specific participant description shown in flashcard |
 | `Participants (n)` | Sample size |
-| `Intervention Duration` | Duration string |
-| `Follow-up Timepoints` | Follow-up duration |
-| `Study Design` | RCT, Observational, etc. |
-| `Proven Benefits Statement` | Pipe-separated `|` list of outcomes |
+| `Intervention Duration` | Duration string — e.g. `6 weeks`, `Single SKY Session` |
+| `Follow-up Timepoints` | Follow-up period if applicable |
+| `Study Design` | RCT, Observational, Cross-Sectional, etc. |
+| `Proven Benefits Statement` | Pipe-separated `\|` list of outcome bullets |
 | `Journal Reputation` | `Acceptable` / `Mixed Reputation` / `Predatory` |
-| `Citation Short` | Short citation e.g. `Smith et al., 2023` |
+| `Citation Short` | Short citation — e.g. `Smith et al., 2023` |
 | `Journal` | Full journal name |
-| `Corresponding Author Affiliation` | Institution |
-| `Country` | Geography (comma-separated for multi-country) |
-| `Link to Published Study` | URL |
+| `Corresponding Author Affiliation` | Institution name |
+| `Country` | Geography; comma-separate for multi-country studies |
+| `Link to Published Study` | DOI or full URL |
 | `Rating` | `⭐⭐⭐⭐⭐` for featured studies, blank otherwise |
 
-**Adding new columns:** Future schema extensions are safe — the dashboard only reads the columns it needs and ignores extras.
+**Adding new columns** is safe — the dashboard only reads the columns it uses and ignores extras.
+
+**Adding new subtopic tags** (e.g. `PH: Metabolism`) will automatically create a new filter node
+in the Physical Health Explorer on the next page load — no code changes needed.
 
 ---
 
-## Filtering Logic (Built-in)
+## Subtopic Tag Format
 
-- **Journal Reputation filter:** Only rows marked `Acceptable` are shown. Change `FILTER_REPUTATION` at the top of the `<script>` block to adjust.
-- **Default sort:** Featured studies (⭐) appear first, then all others in original order.
-- **All explorer interactions** act as live filters on the database.
+Tags in the `Subtopic` column must use the prefix format below for explorer categorisation:
+
+- **Physical Health:** `PH: Brain`, `PH: Heart`, `PH: Breath / Lungs`, `PH: Vagus Nerve`,
+  `PH: Biomarkers`, `PH: Immunity`, `PH: Genes`, `PH: Diabetes`, `PH: Cancer`, `PH: Gut Health`
+- **Mental Health:** `MH: Stress`, `MH: Anxiety`, `MH: Depression`, `MH: Sleep`,
+  `MH: Cognition`, `MH: Happiness`
+- **Social / Community:** `SH: Women`, `SH: Youth & Students`, `SH: At-risk Communities`
+
+Multiple tags per study: separate with commas — `PH: Brain, MH: Stress, SH: Youth & Students`
 
 ---
 
-## Hosting on GitHub Pages
+## Duration Categorisation
 
-1. Push both files (`sky-evidence-explorer.html` + `sky_data.csv`) to a GitHub repository
+The Intervention Duration panel groups studies into three segments:
+
+| Segment | Matches |
+|---------|---------|
+| **Short-Term** | Single session, up to 4 weeks, up to 30 days, up to 1 month |
+| **Medium-Term** | 5–12 weeks, 2–6 months, 90 days |
+| **Long-Term** | > 6 months, 1+ years, long-term practice |
+
+---
+
+## Configuration
+
+At the top of the `<script>` block in `index.html`:
+
+```javascript
+const CSV_FILE          = 'sky_atlas_data.csv'; // rename here if you rename the file
+const FILTER_REPUTATION = 'Acceptable';          // which rows to include
+```
+
+---
+
+## GitHub Pages Deployment
+
+1. Push `index.html` + `sky_atlas_data.csv` + `README.md` to your repository root
 2. Go to **Settings → Pages → Source → Deploy from branch → main / root**
-3. GitHub Pages will serve the site at `https://yourusername.github.io/your-repo/sky-evidence-explorer.html`
+3. Your live URL will be: `https://yourusername.github.io/your-repo/`
 
-> **Important:** GitHub Pages serves files over HTTPS, so the `fetch()` call to `sky_data.csv` works correctly. Opening the HTML file directly via `file://` in a browser will block the fetch due to CORS. Use a local server for local development (see below).
+> **Note:** GitHub Pages serves files over HTTPS, so `fetch('sky_atlas_data.csv')` works correctly.
+> Opening `index.html` via `file://` locally will fail due to browser CORS policy.
 
 ---
 
 ## Local Development
 
 ```bash
-# Python 3
+# Serve with Python (from the project folder):
 python3 -m http.server 8080
 
-# Then open:
-# http://localhost:8080/sky-evidence-explorer.html
+# Then visit:
+http://localhost:8080/
 ```
 
 ---
 
-## Updating the Dataset
+## Explorer Features
 
-1. Open `sky_data.csv` in Excel, Google Sheets, or any CSV editor
-2. Add or edit rows — new studies are automatically picked up on the next page load
-3. Save as CSV (UTF-8 encoding recommended)
-4. Replace the existing `sky_data.csv` in the repository
-5. Commit and push — the dashboard updates automatically
-
-**No changes to the HTML file are required.**
-
----
-
-## Configuration (Advanced)
-
-At the top of the `<script>` block in `sky-evidence-explorer.html`:
-
-```javascript
-const CSV_FILE = 'sky_data.csv';          // change filename here if needed
-const FILTER_REPUTATION = 'Acceptable';   // reputation filter value
-const PER_PAGE = 10;                      // studies per page in database view
-```
-
----
-
-## Explorer Taxonomy
-
-All explorer nodes are generated dynamically from the dataset:
-
-- **Physical Health nodes** — derived from `PH:` prefixed subtopics
-- **Mental Health nodes** — derived from `MH:` prefixed subtopics  
-- **Population bars** — derived from `Study Population` field
-- **Geography bubbles** — derived from `Country` field
-- **Duration buckets** — matched against `Intervention Duration` field
-
-Adding a new subtopic tag to the CSV (e.g. `PH: Metabolism`) will automatically create a new node in the explorer on next load.
+| Explorer | Behaviour |
+|----------|-----------|
+| **Physical Health** | Illustrated body figure with organ-system nodes on left/right; each is a live filter |
+| **Mental Health** | Stylised brain illustration with floating emotional-domain nodes; each is a live filter |
+| **Study Population** | Horizontal bar chart per population group; click to filter |
+| **Intervention Duration** | Three segment cards (Short / Medium / Long-Term) with study counts; click to filter |
+| **Global Research Spread** | D3 world map with proportional bubbles; hover for country detail, click to filter |
+| **Evidence Database** | Searchable, sortable table with Line View / Card View toggle; starred studies ranked first |
+| **Study Flashcard** | Slide-in drawer with full metadata, proven benefits, citation, and link to published study |

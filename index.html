@@ -4,584 +4,547 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>100+ Reasons to Do SKY — Evidence Atlas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
+
+
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0d1117;--bg2:#111820;--bg3:#161f2c;--bg4:#1c2840;
-  --surface:rgba(255,255,255,.04);--surface2:rgba(255,255,255,.07);--surface3:rgba(255,255,255,.11);
-  --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.13);
-  --ink:#e8ecf0;--ink2:#a8b4c0;--ink3:#6a7a8a;--ink4:#3d4e5e;
-  --teal:#4ecdc4;--teal-d:#2aada4;--teal-l:rgba(78,205,196,.15);
-  --cyan:#5bc8e8;--cyan-l:rgba(91,200,232,.12);
-  --sage:#6aab82;--sage-l:rgba(106,171,130,.13);
-  --amber:#d4a76a;--amber-l:rgba(212,167,106,.13);
-  --lavender:#a78bda;--lav-l:rgba(167,139,218,.14);
-  --coral:#d47a7a;--coral-l:rgba(212,122,122,.13);
+  --ink:#1c1b18;--ink2:#3a3830;--ink3:#78746b;--ink4:#aaa69e;
+  --paper:#f8f6f1;--paper2:#f1ede5;--paper3:#e5dfd2;--paper4:#d2ccbe;
+  --teal:#0a7865;--teal-l:#ddf0ea;--teal-m:#12a68c;--teal-d:#075c4d;
+  --rose:#7e1e3c;--rose-l:#fae2ea;--rose-m:#ad2b55;
+  --blue:#1a4880;--blue-l:#e2ecf8;--blue-m:#2460b5;
+  --amber:#7b5006;--amber-l:#fdf0d6;--amber-m:#b0740f;
+  --border:#cec8b8;--border2:#bdb6a5;
   --serif:"EB Garamond",Georgia,serif;
   --sans:"DM Sans",system-ui,sans-serif;
+  --card-r:13px;--r:8px;
 }
-html,body{height:100%;overflow:hidden}
-body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:14px;line-height:1.6}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;font-size:14px;overflow-x:hidden;min-height:100vh}
 
-/* ── TOP NAV ── */
-.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;
-  display:flex;align-items:center;gap:16px;padding:0 28px;
-  background:rgba(13,17,23,.85);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border)}
-.nav-brand{font-family:var(--serif);font-size:1.05rem;color:var(--ink);white-space:nowrap;flex-shrink:0;letter-spacing:.01em}
-.nav-brand span{color:var(--teal)}
-.nav-search{flex:1;max-width:420px;position:relative}
-.nav-search input{width:100%;padding:7px 34px 7px 34px;border:1px solid var(--border);
-  border-radius:20px;background:var(--surface2);font-size:12.5px;font-family:var(--sans);
-  color:var(--ink);outline:none;transition:border .18s,box-shadow .18s}
-.nav-search input:focus{border-color:rgba(78,205,196,.4);box-shadow:0 0 0 3px rgba(78,205,196,.08)}
-.nav-search input::placeholder{color:var(--ink3)}
-.nav-sico{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink3);font-size:14px;pointer-events:none}
-.srch-clr{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink3);font-size:17px;display:none;font-family:var(--sans);line-height:1}
+/* ── MASTHEAD ── */
+.masthead{padding:44px 0 30px;text-align:center;background:var(--paper);border-bottom:1px solid var(--border)}
+.masthead h1{font-family:var(--serif);font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:-.015em;color:var(--ink);line-height:1.08;margin-bottom:9px;font-weight:500}
+.masthead-sub{font-size:.9rem;color:var(--ink3);font-weight:300;font-style:italic;letter-spacing:.01em}
+
+/* ── STICKY SEARCH BAR ── */
+.searchbar-wrap{background:rgba(248,246,241,.96);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:0;z-index:300;backdrop-filter:blur(10px)}
+.searchbar-inner{display:flex;flex-direction:column;gap:8px}
+.sb-top{display:flex;align-items:center;gap:10px}
+.search-field{flex:1;max-width:660px;position:relative}
+.search-field input{width:100%;padding:9px 36px 9px 38px;border:1px solid var(--border);border-radius:8px;background:var(--paper2);font-size:13px;font-family:var(--sans);color:var(--ink);outline:none;transition:border .18s,box-shadow .18s}
+.search-field input:focus{border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1)}
+.search-field input::placeholder{color:var(--ink4)}
+.srch-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink4);font-size:15px;pointer-events:none}
+.srch-clr{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--ink3);font-size:18px;line-height:1;padding:2px;display:none;font-family:var(--sans)}
 .srch-clr.show{display:block}
-.nav-stats{display:flex;gap:18px;margin-left:auto;flex-shrink:0}
-.nav-stat{text-align:center}
-.nav-stat-n{font-family:var(--serif);font-size:1.1rem;color:var(--teal);line-height:1}
-.nav-stat-l{font-size:9.5px;color:var(--ink3);letter-spacing:.05em;margin-top:1px;text-transform:uppercase}
-.nav-reset{padding:6px 13px;border-radius:16px;border:1px solid var(--border2);background:none;
-  font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;transition:all .14s;display:none;white-space:nowrap}
-.nav-reset.show{display:block}
-.nav-reset:hover{border-color:var(--teal);color:var(--teal)}
-@media(max-width:780px){.nav-stats{display:none}}
+.clear-all-btn{display:none;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--paper2);font-family:var(--sans);font-size:12.5px;color:var(--ink3);cursor:pointer;transition:all .14s;white-space:nowrap}
+.clear-all-btn.show{display:flex}
+.clear-all-btn:hover{border-color:var(--teal-m);color:var(--teal)}
+.filters-row{display:none;align-items:center;gap:6px;flex-wrap:wrap}
+.filters-row.show{display:flex}
+.filter-row-lbl{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);font-weight:500;flex-shrink:0}
+.fchip{display:inline-flex;align-items:center;gap:3px;padding:3px 9px 3px 10px;border-radius:14px;font-size:12px;background:var(--teal);color:#fff;border:none;cursor:pointer;font-family:var(--sans);transition:opacity .12s;line-height:1.4}
+.fchip:hover{opacity:.8}
+.fchip-x{opacity:.7;font-size:14px;margin-left:1px;line-height:1}
 
-/* ── MAIN CANVAS ── */
-.canvas{position:fixed;top:56px;left:0;right:0;bottom:0;display:flex;overflow:hidden}
-.atlas-wrap{flex:1;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
-svg#atlas{width:100%;height:100%;max-width:880px;max-height:880px}
+/* ── LAYOUT ── */
+.container{max-width:1280px;margin:0 auto;padding:0 24px}
+.page-body{padding:22px 0 60px}
 
-/* ── RIGHT PANEL ── */
-.panel{position:fixed;top:56px;right:0;bottom:0;width:380px;
-  background:rgba(13,17,23,.92);backdrop-filter:blur(16px);
-  border-left:1px solid var(--border);
-  transform:translateX(100%);transition:transform .35s cubic-bezier(.2,1,.3,1);
-  display:flex;flex-direction:column;overflow:hidden;z-index:100}
-.panel.open{transform:none}
-.panel-top{padding:18px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;
-  display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-.panel-close{width:26px;height:26px;border-radius:50%;border:1px solid var(--border2);
-  background:var(--surface2);cursor:pointer;font-size:14px;color:var(--ink3);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .12s}
-.panel-close:hover{background:var(--surface3);color:var(--ink)}
-.panel-domain-label{font-size:9px;letter-spacing:.15em;text-transform:uppercase;
-  padding:3px 9px;border-radius:10px;margin-bottom:8px;display:inline-block}
-.panel-title{font-family:var(--serif);font-size:1.35rem;color:var(--ink);line-height:1.25;font-weight:500}
-.panel-summary{font-size:12.5px;color:var(--ink2);line-height:1.6;margin-top:8px}
-.panel-body{flex:1;overflow-y:auto;padding:0 0 20px}
-.panel-body::-webkit-scrollbar{width:4px}
-.panel-body::-webkit-scrollbar-track{background:transparent}
-.panel-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.panel-section-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--teal);font-weight:500;padding:14px 20px 8px}
-.study-item{padding:10px 20px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
-.study-item:hover{background:var(--surface)}
-.study-item.sel{background:rgba(78,205,196,.07);border-left:2px solid var(--teal)}
-.study-item-hl{font-size:13px;color:var(--ink);line-height:1.4;margin-bottom:5px}
-.study-item-meta{display:flex;gap:8px;flex-wrap:wrap}
-.smeta{font-size:10.5px;color:var(--ink3);display:flex;align-items:center;gap:3px}
-.study-star{font-size:10px;color:var(--amber)}
+/* ── EXPLORER ROWS ── */
+.exp-row{display:grid;gap:14px;margin-bottom:14px}
+.row-1{grid-template-columns:1fr 1fr}
+.row-2{grid-template-columns:1fr 1fr 1fr}
+@media(max-width:900px){.row-1,.row-2{grid-template-columns:1fr}}
 
-/* STUDY DRAWER (nested) */
-.study-drawer{position:fixed;top:56px;right:380px;bottom:0;width:420px;
-  background:rgba(11,15,22,.95);backdrop-filter:blur(20px);
-  border-left:1px solid var(--border);
-  transform:translateX(100%);transition:transform .3s cubic-bezier(.2,1,.3,1);
-  display:flex;flex-direction:column;overflow:hidden;z-index:99}
-.study-drawer.open{transform:translateX(380px)}
-.sd-top{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.sd-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);background:var(--teal-l);padding:3px 9px;border-radius:10px}
-.sd-close{width:26px;height:26px;border-radius:50%;border:1px solid var(--border2);background:var(--surface2);cursor:pointer;font-size:14px;color:var(--ink3);display:flex;align-items:center;justify-content:center;transition:all .12s}
-.sd-close:hover{background:var(--surface3);color:var(--ink)}
-.sd-body{flex:1;overflow-y:auto;padding:20px 18px 28px}
-.sd-body::-webkit-scrollbar{width:4px}
-.sd-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.sd-title{font-family:var(--serif);font-size:1.3rem;color:var(--ink);line-height:1.28;margin-bottom:8px;font-weight:500}
-.sd-star{font-size:11.5px;color:var(--amber);margin-bottom:12px}
-.sd-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
-.sdtag{font-size:10px;padding:2px 8px;border-radius:4px}
-.sdtag-ph{background:rgba(78,205,196,.12);color:var(--teal)}
-.sdtag-mh{background:rgba(167,139,218,.14);color:var(--lavender)}
-.sdtag-sh{background:rgba(91,200,232,.12);color:var(--cyan)}
-.sd-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:18px}
-.sd-cell{padding:9px 13px;border-bottom:1px solid var(--border)}
-.sd-cell:nth-child(odd){border-right:1px solid var(--border)}
-.sd-cell:nth-last-child(-n+2){border-bottom:none}
-.sd-cell:nth-last-child(1):nth-child(odd){border-right:none}
-.sd-lbl2{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3);margin-bottom:2px;font-weight:500}
-.sd-val{font-size:12.5px;color:var(--ink2);line-height:1.3}
-.sd-blbl{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);font-weight:500;margin-bottom:8px}
-.sd-ben{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);align-items:flex-start}
-.sd-ben:last-child{border-bottom:none}
-.sd-arr{font-weight:700;font-size:13px;min-width:14px;line-height:1.5;flex-shrink:0}
-.a-up{color:var(--teal)}.a-dn{color:var(--coral)}.a-nu{color:var(--ink3)}
-.sd-bt{font-size:12.5px;color:var(--ink2);line-height:1.45}
-.sd-cite{margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
-.sd-c1{font-family:var(--serif);font-size:13px;color:var(--ink2);font-style:italic}
-.sd-c2{font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.5}
-.sd-link{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:16px;
-  padding:10px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--surface2);
-  cursor:pointer;font-family:var(--sans);font-size:12.5px;color:var(--ink2);
-  transition:all .15s;text-decoration:none}
-.sd-link:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-l)}
+/* ── EXPLORER CARD ── */
+.exp-card{background:var(--paper2);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
+.exp-card-head{padding:13px 18px 9px;border-bottom:1px solid var(--border)}
+.exp-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);font-weight:500;margin-bottom:2px}
+.exp-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);font-weight:500}
+.exp-card-body{padding:18px 18px 14px}
+.exp-hint{font-size:10.5px;color:var(--ink4);margin-top:12px;font-style:italic;text-align:center}
 
-/* search results overlay */
-.search-results{position:fixed;top:56px;left:0;right:0;bottom:0;
-  background:rgba(13,17,23,.96);backdrop-filter:blur(12px);
-  z-index:150;display:none;flex-direction:column;overflow:hidden}
-.search-results.open{display:flex}
-.sr-header{padding:14px 28px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
-.sr-count{font-size:12.5px;color:var(--ink2)}
-.sr-list{flex:1;overflow-y:auto;padding:0 28px 20px}
-.sr-list::-webkit-scrollbar{width:4px}
-.sr-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.sr-item{padding:13px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:color .1s}
-.sr-item:hover .sr-hl{color:var(--teal)}
-.sr-num{font-size:10px;color:var(--ink3);margin-bottom:3px}
-.sr-hl{font-size:14px;color:var(--ink);line-height:1.4;transition:color .1s;font-family:var(--serif)}
-.sr-meta{font-size:11.5px;color:var(--ink3);margin-top:4px}
+/* ── POPULATION BARS ── */
+.pop-list{display:flex;flex-direction:column;gap:6px}
+.pop-row{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .12s;user-select:none}
+.pop-row:hover{background:rgba(18,166,140,.08)}
+.pop-row.on{background:var(--teal-l)}
+.pop-ico{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.pop-lbl{font-size:11.5px;color:var(--ink2);width:118px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pop-row.on .pop-lbl{color:var(--teal-d);font-weight:500}
+.pop-track{flex:1;height:11px;background:var(--paper3);border-radius:4px;overflow:hidden}
+.pop-fill{height:100%;border-radius:4px;background:var(--teal-m);opacity:.6;transition:width .28s ease}
+.pop-row.on .pop-fill{opacity:1}
+.pop-pct{font-size:10px;color:var(--ink3);width:30px;text-align:right;flex-shrink:0}
+.pop-row.on .pop-pct{color:var(--teal);font-weight:500}
 
-/* Pulse animation */
-@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
-@keyframes orbitGlow{0%,100%{filter:drop-shadow(0 0 4px currentColor)}50%{filter:drop-shadow(0 0 10px currentColor)}}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.fade-in{animation:fadeIn .3s ease forwards}
+/* ── GEO MAP ── */
+.geo-wrap{width:100%;border-radius:var(--r);overflow:hidden;background:#e0d9ce;line-height:0}
+.geo-note{font-size:10px;color:var(--ink4);margin-top:7px;font-style:italic;text-align:center}
+#geo-tt{position:fixed;background:rgba(28,27,24,.9);color:#fff;font-family:var(--sans);font-size:12px;padding:8px 12px;border-radius:7px;pointer-events:none;z-index:999;display:none;max-width:220px;line-height:1.5}
+#geo-tt strong{display:block;font-weight:500;font-size:13px;margin-bottom:2px}
+
+/* ── DATABASE ── */
+.db-section{margin-top:4px}
+.db-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;flex-wrap:wrap;gap:10px}
+.db-meta{font-size:12.5px;color:var(--ink3)}
+.db-meta strong{color:var(--ink2);font-weight:500}
+.db-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.view-toggle{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden;background:var(--paper2)}
+.vtbtn{padding:6px 12px;font-size:12px;cursor:pointer;border:none;background:none;font-family:var(--sans);color:var(--ink3);display:flex;align-items:center;gap:5px;transition:all .12s;white-space:nowrap}
+.vtbtn:first-child{border-right:1px solid var(--border)}
+.vtbtn.on{background:var(--paper);color:var(--ink);font-weight:500}
+.vtbtn:hover:not(.on){background:var(--paper3)}
+
+/* LINE TABLE */
+.db-shell{border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;background:var(--paper)}
+table{width:100%;border-collapse:collapse}
+thead{background:var(--paper3)}
+th{padding:9px 15px;text-align:left;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);font-weight:500;font-family:var(--sans);border-bottom:1px solid var(--border);cursor:pointer;user-select:none;white-space:nowrap;transition:color .12s}
+th:hover{color:var(--ink)}
+th.sorted{color:var(--teal)}
+.col-sno{width:50px}
+.col-pt{width:162px}
+.col-dur{width:112px}
+.col-arr{width:32px}
+td{padding:11px 15px;vertical-align:top;border-bottom:1px solid var(--border);color:var(--ink2);font-size:13px;line-height:1.45}
+tr:last-child td{border-bottom:none}
+.study-row{cursor:pointer;transition:background .1s}
+.study-row:hover{background:var(--paper2)}
+.study-row.sel{background:var(--teal-l)}
+.sno{font-size:11px;color:var(--ink4);line-height:1.4}
+.sno-star{display:block;font-size:9px;color:var(--amber-m);margin-top:1px}
+.s-hl{color:var(--ink);font-size:13.5px;line-height:1.42}
+.s-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+.stag{font-size:9.5px;padding:2px 7px;border-radius:4px;font-family:var(--sans)}
+.stag-ph{background:var(--teal-l);color:var(--teal-d)}
+.stag-mh{background:var(--rose-l);color:var(--rose)}
+.stag-sh{background:var(--blue-l);color:var(--blue-m)}
+.sarr{font-size:9px;margin-left:3px;opacity:.3}
+.sarr.on{opacity:1}
+.row-chevron{color:var(--ink4);font-size:14px;text-align:right}
+@media(max-width:680px){.col-pt,.col-dur,.col-arr{display:none}.col-sno{width:38px}}
+
+/* CARD VIEW */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:13px;padding:16px}
+.ev-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--card-r);padding:16px;cursor:pointer;transition:all .15s;position:relative}
+.ev-card:hover{border-color:var(--teal-m);box-shadow:0 2px 14px rgba(10,120,101,.09);transform:translateY(-1px)}
+.ev-card.sel{border-color:var(--teal);background:var(--teal-l)}
+.ev-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.ev-card-num{font-size:10px;color:var(--ink4)}
+.ev-card-star{font-size:11px;color:var(--amber-m)}
+.ev-card-hl{font-size:13.5px;color:var(--ink);line-height:1.4;margin-bottom:9px}
+.ev-card-meta{font-size:11.5px;color:var(--ink3);display:flex;flex-direction:column;gap:2px}
+.ev-card-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
+
+/* EMPTY */
+.empty-state{padding:52px 20px;text-align:center;color:var(--ink3)}
+.empty-state h3{font-family:var(--serif);font-size:1.15rem;margin-bottom:7px;color:var(--ink2)}
+.empty-reset{margin-top:14px;padding:8px 20px;border-radius:20px;border:1px solid var(--border2);background:var(--paper2);cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--ink2);transition:all .14s}
+.empty-reset:hover{border-color:var(--teal-m);color:var(--teal)}
+
+/* PAGINATION */
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.pg-pages{display:flex;gap:4px;align-items:center}
+.pgbtn{min-width:30px;height:30px;padding:0 5px;border-radius:6px;border:1px solid var(--border);background:var(--paper2);cursor:pointer;font-size:12.5px;color:var(--ink2);font-family:var(--sans);transition:all .12s;display:inline-flex;align-items:center;justify-content:center}
+.pgbtn:hover:not(:disabled){border-color:var(--teal-m);color:var(--teal)}
+.pgbtn.cur{background:var(--teal);color:#fff;border-color:var(--teal);font-weight:500}
+.pgbtn:disabled{opacity:.25;cursor:default}
+.pg-ell{color:var(--ink4);font-size:12px;padding:0 2px}
+.pg-info{font-size:12px;color:var(--ink3)}
+
+/* LOADING / ERROR */
+.status-banner{text-align:center;padding:60px 20px}
+.status-banner h2{font-family:var(--serif);font-size:1.4rem;color:var(--ink2);margin-bottom:10px}
+.status-banner p{font-size:13px;color:var(--ink3);max-width:500px;margin:0 auto}
+.status-banner code{font-size:12px;background:var(--paper3);padding:2px 7px;border-radius:4px;color:var(--ink2)}
+
+/* ── DRAWER ── */
+.overlay{position:fixed;inset:0;background:rgba(28,27,24,.26);z-index:400;display:none;backdrop-filter:blur(2px)}
+.overlay.open{display:block}
+.drawer{position:fixed;top:0;right:0;width:min(478px,100vw);height:100dvh;background:var(--paper);z-index:401;transform:translateX(100%);transition:transform .32s cubic-bezier(.2,1,.3,1);overflow-y:auto;border-left:1px solid var(--border);box-shadow:-8px 0 32px rgba(0,0,0,.09)}
+.drawer.open{transform:none}
+.drw-top{position:sticky;top:0;background:var(--paper2);border-bottom:1px solid var(--border);padding:12px 18px;display:flex;align-items:center;justify-content:space-between;z-index:5}
+.drw-lbl{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);font-weight:500;background:var(--teal-l);padding:3px 9px;border-radius:10px}
+.drw-close{width:28px;height:28px;border-radius:50%;border:1px solid var(--border2);background:var(--paper);cursor:pointer;font-size:15px;color:var(--ink3);display:flex;align-items:center;justify-content:center;transition:all .12s}
+.drw-close:hover{background:var(--paper3);color:var(--ink)}
+.drw-body{padding:22px 20px 32px}
+.drw-title{font-family:var(--serif);font-size:1.42rem;color:var(--ink);line-height:1.28;margin-bottom:6px;font-weight:500}
+.drw-star-row{margin-bottom:16px;font-size:12px;color:var(--amber-m);font-family:var(--sans)}
+.drw-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px}
+.drw-meta-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:20px}
+.drw-mc{padding:10px 13px;border-bottom:1px solid var(--border)}
+.drw-mc:nth-child(odd){border-right:1px solid var(--border)}
+.drw-mc:nth-last-child(-n+2){border-bottom:none}
+.drw-mc:nth-last-child(1):nth-child(odd){border-right:none}
+.drw-ml{font-size:9px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink4);margin-bottom:3px;font-weight:500}
+.drw-mv{font-size:12.5px;color:var(--ink2);line-height:1.35}
+.drw-section-lbl{font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--teal);font-weight:500;margin-bottom:9px}
+.drw-benefits{margin-bottom:20px}
+.drw-ben{display:flex;align-items:flex-start;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)}
+.drw-ben:last-child{border-bottom:none}
+.drw-arr{font-size:13px;font-weight:700;min-width:14px;line-height:1.5;flex-shrink:0}
+.a-up{color:var(--teal)}.a-dn{color:var(--rose-m)}.a-nu{color:var(--ink4)}
+.drw-bt{font-size:13px;color:var(--ink2);line-height:1.45}
+.drw-citation{margin-top:6px;padding-top:16px;border-top:1px solid var(--border)}
+.drw-cite1{font-family:var(--serif);font-size:13.5px;color:var(--ink2);font-style:italic;margin-bottom:3px}
+.drw-cite2{font-size:11.5px;color:var(--ink4);line-height:1.5}
+.drw-view-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:18px;padding:11px 16px;border-radius:9px;border:1px solid var(--border2);background:var(--paper2);cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--ink2);transition:all .16s;text-decoration:none;font-weight:400}
+.drw-view-btn:hover{border-color:var(--teal-m);color:var(--teal);background:var(--teal-l)}
+
+footer{border-top:1px solid var(--border);padding:24px 0;text-align:center}
+footer p{font-size:11.5px;color:var(--ink4)}
+
+/* ── RICH BODY EXPLORER ── */
+.body-explorer-wrap{display:flex;align-items:stretch;gap:0;position:relative;min-height:260px;width:100%}
+.body-side-nodes{display:flex;flex-direction:column;justify-content:center;gap:9px;flex:1;padding:8px 0}
+.body-side-nodes-l{align-items:flex-end;padding-right:10px}
+.body-side-nodes-r{align-items:flex-start;padding-left:10px}
+.rich-bnode{display:inline-flex;align-items:center;gap:8px;padding:7px 13px 7px 10px;
+  border-radius:22px;font-size:12px;cursor:pointer;user-select:none;
+  border:1.2px solid transparent;font-family:var(--sans);transition:all .2s;
+  background:var(--paper);position:relative;white-space:nowrap}
+.rich-bnode-l{flex-direction:row-reverse;padding:7px 10px 7px 13px}
+.rich-bnode .rbn-ico{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:17px;flex-shrink:0;transition:transform .2s}
+.rich-bnode:hover .rbn-ico{transform:scale(1.12)}
+.rich-bnode .rbn-text{display:flex;flex-direction:column;line-height:1.2}
+.rbn-label{font-size:12px;font-weight:500;color:var(--ink)}
+.rbn-count{font-size:9.5px;color:var(--ink3);margin-top:1px}
+/* teal variant */
+.rbn-teal{background:var(--teal-l);border-color:rgba(10,120,101,.18)}
+.rbn-teal .rbn-ico{background:rgba(10,120,101,.12);color:var(--teal-d)}
+.rbn-teal .rbn-label{color:var(--teal-d)}
+.rbn-teal:hover{border-color:var(--teal-m);box-shadow:0 2px 10px rgba(10,120,101,.12)}
+.rbn-teal.on{background:var(--teal-d);border-color:var(--teal-d);box-shadow:0 3px 14px rgba(10,120,101,.28)}
+.rbn-teal.on .rbn-label{color:#fff}
+.rbn-teal.on .rbn-count{color:rgba(255,255,255,.7)}
+.rbn-teal.on .rbn-ico{background:rgba(255,255,255,.15);color:#fff}
+/* connector dashes drawn by JS into SVG overlay */
+.body-svg-col{width:130px;flex-shrink:0;position:relative;display:flex;align-items:center;justify-content:center}
+.body-connector-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.body-figure-svg{display:block;filter:drop-shadow(0 4px 16px rgba(10,120,101,.10))}
+
+/* ── RICH MIND EXPLORER ── */
+.mind-explorer-wrap{position:relative;width:100%;height:280px;display:flex;align-items:center;justify-content:center}
+.mind-bg-circle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(167,139,218,.12) 0%,rgba(167,139,218,.04) 60%,transparent 100%);
+  pointer-events:none}
+.mind-orbit-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.mind-center-img{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);
+  width:108px;height:108px;z-index:2;pointer-events:none}
+.rich-mnode{position:absolute;display:inline-flex;flex-direction:column;align-items:center;
+  gap:5px;cursor:pointer;user-select:none;z-index:5;transition:all .2s;
+  text-align:center;width:82px}
+.rich-mnode .rmn-ico{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:19px;border:1.5px solid transparent;
+  transition:all .2s;background:var(--paper);flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.rich-mnode .rmn-label{font-size:10.5px;font-weight:500;line-height:1.2;transition:color .18s}
+.rich-mnode .rmn-count{font-size:9px;color:var(--ink4);line-height:1}
+/* rose variant */
+.rmn-rose .rmn-ico{background:var(--rose-l);border-color:rgba(126,30,60,.14);color:var(--rose)}
+.rmn-rose .rmn-label{color:var(--rose)}
+.rmn-rose:hover .rmn-ico{border-color:var(--rose-m);box-shadow:0 3px 12px rgba(126,30,60,.18);transform:scale(1.08)}
+.rmn-rose.on .rmn-ico{background:var(--rose-m);border-color:var(--rose-m);color:#fff;box-shadow:0 4px 16px rgba(126,30,60,.35)}
+.rmn-rose.on .rmn-label{color:var(--rose-m)}
+.rmn-rose.on .rmn-count{color:var(--rose-m);opacity:.7}
+
+/* ── RICH DURATION TIMELINE ── */
+.dur-rich-wrap{width:100%}
+.dur-segments{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.dur-seg{border-radius:10px;padding:13px 12px;cursor:pointer;user-select:none;
+  border:1.5px solid var(--border);background:var(--paper);transition:all .2s;position:relative;text-align:center}
+.dur-seg:hover{border-color:var(--teal-m);background:var(--teal-l);transform:translateY(-1px)}
+.dur-seg.on{border-color:var(--teal-d);background:var(--teal-l);box-shadow:0 3px 14px rgba(10,120,101,.15)}
+.dur-seg-ico{font-size:22px;margin-bottom:6px;display:block;line-height:1}
+.dur-seg-title{font-size:11.5px;font-weight:500;color:var(--ink);margin-bottom:3px;font-family:var(--sans)}
+.dur-seg.on .dur-seg-title{color:var(--teal-d)}
+.dur-seg-range{font-size:9.5px;color:var(--ink3);margin-bottom:7px;font-style:italic}
+.dur-seg.on .dur-seg-range{color:var(--teal)}
+.dur-seg-bar{height:4px;border-radius:2px;background:var(--paper3);overflow:hidden}
+.dur-seg-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--teal-m),var(--teal-d));transition:width .3s ease;opacity:.7}
+.dur-seg.on .dur-seg-fill{opacity:1}
+.dur-seg-count{font-size:11px;font-weight:500;color:var(--ink2);margin-top:6px}
+.dur-seg.on .dur-seg-count{color:var(--teal-d)}
+
+/* connector line between segments */
+.dur-connector{display:flex;align-items:center;justify-content:space-between;
+  padding:0 calc(33.3%/2 + 5px);margin-bottom:4px}
+.dur-conn-line{flex:1;height:1px;background:linear-gradient(90deg,var(--teal-m),rgba(10,120,101,.3));opacity:.3}
+.dur-conn-dot{width:6px;height:6px;border-radius:50%;background:var(--teal-m);opacity:.4;flex-shrink:0}
+
 </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav">
-  <div class="nav-brand"><span>SKY</span> Research Atlas</div>
-  <div class="nav-search">
-    <span class="nav-sico">🔍</span>
-    <input type="text" id="search-input" placeholder="Search outcomes, studies, conditions…" autocomplete="off">
-    <button class="srch-clr" id="srch-clr">×</button>
-  </div>
-  <button class="nav-reset" id="nav-reset" onclick="resetAll()">× Clear filters</button>
-  <div class="nav-stats">
-    <div class="nav-stat"><div class="nav-stat-n" id="stat-studies">101</div><div class="nav-stat-l">Studies</div></div>
-    <div class="nav-stat"><div class="nav-stat-n" id="stat-countries">14</div><div class="nav-stat-l">Countries</div></div>
-    <div class="nav-stat"><div class="nav-stat-n" id="stat-rcts">—</div><div class="nav-stat-l">RCTs</div></div>
-    <div class="nav-stat"><div class="nav-stat-n" id="stat-years">28</div><div class="nav-stat-l">Years of Research</div></div>
-  </div>
-</nav>
+<div id="geo-tt"></div>
 
-<!-- MAIN CANVAS -->
-<div class="canvas">
-  <div class="atlas-wrap">
-    <svg id="atlas" viewBox="-440 -440 880 880" xmlns="http://www.w3.org/2000/svg"></svg>
+<header class="masthead">
+  <div class="container">
+    <h1>100+ Reasons to Do SKY</h1>
+    <p class="masthead-sub">An Interactive Explorer of Research-Backed Evidence on Sudarshan Kriya Yoga (SKY) Across the Spectrum</p>
   </div>
-</div>
+</header>
 
-<!-- DOMAIN PANEL -->
-<div class="panel" id="domain-panel">
-  <div class="panel-top">
-    <div style="flex:1;min-width:0">
-      <div class="panel-domain-label" id="panel-domain-label"></div>
-      <div class="panel-title" id="panel-title"></div>
-      <div class="panel-summary" id="panel-summary"></div>
+<div class="searchbar-wrap">
+  <div class="container">
+    <div class="searchbar-inner">
+      <div class="sb-top">
+        <div class="search-field">
+          <span class="srch-ico">🔍</span>
+          <input type="text" id="search-input" placeholder="Search findings, populations, outcomes, geography, institutions…" autocomplete="off">
+          <button class="srch-clr" id="srch-clr">×</button>
+        </div>
+        <button class="clear-all-btn" id="clear-all">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="4" x2="9" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="9" y1="4" x2="4" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
+          Clear All
+        </button>
+      </div>
+      <div class="filters-row" id="filters-row">
+        <span class="filter-row-lbl">Active Filters:</span>
+        <div id="active-chips"></div>
+      </div>
     </div>
-    <button class="panel-close" id="panel-close">×</button>
-  </div>
-  <div class="panel-body">
-    <div class="panel-section-lbl">Research Highlights</div>
-    <div id="panel-studies"></div>
   </div>
 </div>
 
-<!-- STUDY DRAWER -->
-<div class="study-drawer" id="study-drawer">
-  <div class="sd-top">
-    <span class="sd-lbl">Study Detail</span>
-    <button class="sd-close" id="sd-close">×</button>
+<div class="page-body">
+  <div class="container">
+
+    <div id="loading-state" class="db-shell" style="margin-bottom:16px">
+      <div class="status-banner">
+        <h2>Loading evidence data…</h2>
+        <p>Reading <code>sky_data.csv</code></p>
+      </div>
+    </div>
+
+    <div id="app-content" style="display:none">
+
+      <div class="exp-row row-1">
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow" style="font-size:11px;letter-spacing:.08em;font-weight:500;color:var(--ink2);text-transform:none">Physical Health Explorer</div>
+            
+          </div>
+          <div class="exp-card-body">
+            <div class="body-layout" id="body-explorer"></div>
+            <p class="exp-hint">☝ Click on a body system to filter evidence</p>
+          </div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow" style="font-size:11px;letter-spacing:.08em;font-weight:500;color:var(--ink2);text-transform:none">Mental Health Explorer</div>
+            
+          </div>
+          <div class="exp-card-body">
+            <div class="mind-layout" id="mind-explorer"></div>
+            <p class="exp-hint">☝ Click on a domain to filter evidence</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="exp-row row-2">
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow" style="font-size:11px;letter-spacing:.08em;font-weight:500;color:var(--ink2);text-transform:none">Study Population Distribution</div>
+            
+          </div>
+          <div class="exp-card-body">
+            <div class="pop-list" id="pop-list"></div>
+            <p class="exp-hint">☝ Click a population to filter evidence</p>
+          </div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow" style="font-size:11px;letter-spacing:.08em;font-weight:500;color:var(--ink2);text-transform:none">Intervention Duration</div>
+            
+          </div>
+          <div class="exp-card-body">
+            <div class="dur-outer" id="dur-explorer"></div>
+            <p class="exp-hint">☝ Click a duration to filter evidence</p>
+          </div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-head">
+            <div class="exp-eyebrow" style="font-size:11px;letter-spacing:.08em;font-weight:500;color:var(--ink2);text-transform:none">Global Research Spread</div>
+            
+          </div>
+          <div class="exp-card-body" style="padding-bottom:10px">
+            <div class="geo-wrap">
+              <svg id="geo-svg" width="100%" height="155" viewBox="0 0 500 155" preserveAspectRatio="xMidYMid meet"></svg>
+            </div>
+            <p class="geo-note">Geographies based on corresponding author affiliations. ☝ Click a bubble to filter.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="db-section">
+        <div class="db-header">
+          <div>
+            <div class="exp-eyebrow" style="margin-bottom:2px">Evidence Database</div>
+            <div style="font-family:var(--serif);font-size:1.25rem;color:var(--ink)">Research-Backed Findings</div>
+          </div>
+          <div class="db-right">
+            <span class="db-meta"><strong id="vis-count">—</strong> studies shown</span>
+            <div class="view-toggle">
+              <button class="vtbtn on" id="btn-line" onclick="setView('line')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="1" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="5.5" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="10" width="13" height="1.6" rx=".8" fill="currentColor"/></svg>
+                Line View
+              </button>
+              <button class="vtbtn" id="btn-card" onclick="setView('card')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="0" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/></svg>
+                Card View
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="db-shell">
+          <div id="line-view">
+            <table>
+              <thead><tr>
+                <th class="col-sno" data-col="rating_sort">S.No <span class="sarr on" id="sa-rating_sort">↓</span></th>
+                <th data-col="highlight">Research Highlight <span class="sarr" id="sa-highlight">↕</span></th>
+                <th class="col-pt" data-col="participant_type">Participant Type <span class="sarr" id="sa-participant_type">↕</span></th>
+                <th class="col-dur" data-col="duration">Duration <span class="sarr" id="sa-duration">↕</span></th>
+                <th class="col-arr"></th>
+              </tr></thead>
+              <tbody id="ev-body"></tbody>
+            </table>
+            <div id="ev-empty" class="empty-state" style="display:none">
+              <h3>No findings match your current filters</h3>
+              <p style="font-size:13px;margin-top:6px">Adjust or clear filters to explore the full evidence base</p>
+              <button class="empty-reset" onclick="resetAll()">Reset all filters</button>
+            </div>
+          </div>
+          <div id="card-view" style="display:none">
+            <div class="card-grid" id="card-grid"></div>
+            <div id="card-empty" class="empty-state" style="display:none">
+              <h3>No findings match your current filters</h3>
+              <p style="font-size:13px;margin-top:6px">Adjust or clear filters to explore the full evidence base</p>
+              <button class="empty-reset" onclick="resetAll()">Reset all filters</button>
+            </div>
+          </div>
+          <div class="pagination" id="pagination" style="display:none">
+            <div class="pg-pages" id="pg-pages"></div>
+            <span class="pg-info" id="pg-info"></span>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /app-content -->
+
+    <div id="error-state" class="db-shell" style="display:none;margin-bottom:16px">
+      <div class="status-banner">
+        <h2>Could not load data</h2>
+        <p>Make sure <code>sky_data.csv</code> is in the same folder as this HTML file, then open via a local server (not <code>file://</code>). See the README for setup instructions.</p>
+      </div>
+    </div>
+
   </div>
-  <div class="sd-body" id="sd-body"></div>
 </div>
 
-<!-- SEARCH RESULTS -->
-<div class="search-results" id="search-results">
-  <div class="sr-header">
-    <span class="sr-count" id="sr-count"></span>
-    <button class="panel-close" onclick="closeSearch()">×</button>
+<footer>
+  <div class="container">
+    <p>100+ Reasons to Do SKY &nbsp;·&nbsp; Evidence Atlas &nbsp;·&nbsp; Data source: <code>sky_data.csv</code> &nbsp;·&nbsp; Displaying Acceptable-reputation studies only</p>
   </div>
-  <div class="sr-list" id="sr-list"></div>
-</div>
+</footer>
 
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="drawer">
+  <div class="drw-top">
+    <span class="drw-lbl">Highlight</span>
+    <button class="drw-close" id="drw-close">×</button>
+  </div>
+  <div class="drw-body" id="drw-body"></div>
+</div>
 
 <script>
-const STUDIES = [{"id": "AGTE_2008_01", "year": "2008", "highlight": "Reduces anxiety and improves physical balance in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "37", "duration": "2 months", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 19% reduced anxiety", "↓ 13% decreased malondialdehyde (MDA)", "↑ 28% increased superoxide dismutase (SOD)"], "subtopics": ["PH: Biomarkers", "MH: Anxiety"], "citation": "Agte and Chiplonkar, 2008", "journal": "Alternative and Complementary Therapies", "affiliation": "Agharkar Research Institute, Pune", "country": "India", "link": "https://journals.sagepub.com/doi/10.1089/act.2008.14204?cf-mal-redirected=true&", "rating": ""}, {"id": "AHMAD_2016_01", "year": "2016", "highlight": "Improves breathing and lung capacity in medical students", "population": "Youth & Students", "participant_type": "Medical Students", "n": "30", "duration": "90 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↑ 12% increased Vital Capacity (FVC)", "↑ 15% increased Peak Expiratory Flow Rate (PEFR)"], "subtopics": ["PH: Breath / Lungs", "MH: Stress"], "citation": "Ahmad et al., 2016", "journal": "Indian Journal of Basic and Applied Medical Research", "affiliation": "Hind Institute of Medical Sciences", "country": "India", "link": "https://www.ijbamr.com/assets/images/issues/pdf/June%202016%20748-752.pdf.pdf", "rating": ""}, {"id": "AYYILDIZ_2017_01", "year": "2017", "highlight": "Supports immune function at the cellular level in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "10", "duration": "4 days", "followup": "", "design": "Observational Study", "benefits": ["↑ 217 genes showed altered expression in immune cells, including cancer regulation pathways", "↓ Reduced expression of genes linked to cell death and DNA damage"], "subtopics": ["PH: Cancer", "PH: Genes", "PH: Biomarkers"], "citation": "Ayyildiz and Arga, 2017", "journal": "OMICS: A Journal of Integrative Biology", "affiliation": "University of Udine, Udine, Italy.", "country": "Italy", "link": "https://pubmed.ncbi.nlm.nih.gov/28692417/", "rating": "⭐⭐⭐⭐⭐"}, {"id": "BALASUBRAMANIAN_2025_01", "year": "2025", "highlight": "Reduces inflammation and strengthens immunity in healthcare workers", "population": "Professionals", "participant_type": "Healthcare Workers", "n": "38", "duration": "12 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Reduced markers of inflammation (ESR, CRP, N:L ratio)", "↑ Increased anti-inflammatory cytokine IL-4", "↑ Increased CD56+ and CD8+ immune cell counts"], "subtopics": ["PH: Biomarkers", "PH: Immunity"], "citation": "Balasubramanian et al., 2025", "journal": "Traditional and Integrative Medicine", "affiliation": "Sri Ramachandra Institute, Chennai", "country": "India", "link": "https://publish.kne-publishing.com/index.php/tim/article/view/17474/16332", "rating": ""}, {"id": "BAYLEY_2022_01", "year": "2022", "highlight": "Reduces PTSD and depression symptoms in war veterans", "population": "At-risk Communities", "participant_type": "War Veterans with PTSD", "n": "85", "duration": "6 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Reduced PTSD and depression symptoms", "Improved overall mood", "Found as effective as standard Cognitive Processing Therapy (CPT)"], "subtopics": ["SH: At-risk Communities", "MH: Stress"], "citation": "Bayley et al., 2022", "journal": "BMJ Open", "affiliation": "War Related Illness and Injury Study Center, VA Palo Alto Health Care System, Palo Alto, California, USA", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/36008059/", "rating": "⭐⭐⭐⭐⭐"}, {"id": "BHASKAR_2017_01", "year": "2017", "highlight": "Improves heart recovery and stress response in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "30", "duration": "Single SKY Session", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 13% reduced heart rate", "↑ 18% improved sympathovagal balance", "Increased heart efficiency"], "subtopics": ["PH: Heart", "PH: Vagus Nerve"], "citation": "Bhaskar et al., 2017", "journal": "Journal of Alternative and Complementary Medicine", "affiliation": "AIIMS, New Delhi, SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/28691853/", "rating": ""}, {"id": "BHASKAR_2020_01", "year": "2020", "highlight": "Boosts alertness and relaxation while improving brain coordination in practitioners", "population": "Practitioners / Meditators", "participant_type": "Regular Practitioners", "n": "40", "duration": "Single SKY Session", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↑ 10-15% increased Gamma and Beta activity (cognition/alertness)", "↑ 4-8% increased Delta, Theta and Alpha activity (relaxation)", "Improved synchrony between left and right hemispheres"], "subtopics": ["PH: Brain", "MH: Cognition"], "citation": "Bhaskar et al., 2020", "journal": "International Journal of Yoga", "affiliation": "SSIAR, Bengaluru", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/32669767/", "rating": ""}, {"id": "BHATIA_2002_01", "year": "2002", "highlight": "Enhances deep relaxation and alertness in long-term practitioners", "population": "Practitioners / Meditators", "participant_type": "Long-Term Practitioners", "n": "5", "duration": "Single SKY Session", "followup": "", "design": "Observational Study", "benefits": ["Increased coherence in fronto-central beta band", "↑ alpha activity in posterior regions reflecting deep relaxation", "Central midline theta activity suggests activation and alertness"], "subtopics": ["PH: Brain", "MH: Cognition"], "citation": "Bhatia, 2002", "journal": "All India Institute of Medical Sciences, New Delhi - AIIMS Research Book", "affiliation": "AIIMS, New Delhi, India", "country": "India", "link": "https://aolresearch.org/pdf/other/EEG_M_Bhatia.pdf", "rating": ""}, {"id": "BHATIA_2003_01", "year": "2003", "highlight": "Improves mental focus in long-term SKY practitioners", "population": "General Population", "participant_type": "SKY Practitioners", "n": "35", "duration": "Long-Term SKY Practice", "followup": "", "design": "Cross-Sectional Study", "benefits": ["Significant increase in beta activity linked to mental focus"], "subtopics": ["PH: Brain", "MH: Cognition"], "citation": "Bhatia et al., 2003", "journal": "Indian Journal of Physiology and Pharmacology", "affiliation": "AIIMS, New Delhi, India", "country": "India", "link": "https://www.ncbi.nlm.nih.gov/pubmed/15255618", "rating": ""}, {"id": "BROWN_2005_01", "year": "2005", "highlight": "Enhances stress resilience and social connection through vagal activation", "population": "General Population", "participant_type": "-", "n": "-", "duration": "-", "followup": "-", "design": "Review", "benefits": ["SKY stimulates the vagus nerve and enhances vagal tone", "Enhances heart rate variability (HRV)", "Contributes to improved social bonding through neuroendocrine shifts"], "subtopics": ["PH: Vagus Nerve"], "citation": "Brown and Gerbarg, 2005", "journal": "Journal of Integrative and Complementary Medicine", "affiliation": "New York Medical College", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/15750381/", "rating": ""}, {"id": "CHANDER_2022_01", "year": "2022", "highlight": "Improves relaxation and serving performance in women volleyball players", "population": "Youth & Students", "participant_type": "Women Volleyball Players", "n": "14", "duration": "5 weeks", "followup": "", "design": "Quasi-Experimental Study", "benefits": ["Reported increase in relaxation levels", "Reported improvement in serving accuracy"], "subtopics": ["SH: Youth & Students", "PH: Women"], "citation": "Chander, 2022", "journal": "Towards Excellence", "affiliation": "Gujarat University", "country": "India", "link": "https://www.researchgate.net/publication/370119290_EFFECT_OF_INDIGENOUS_YOGA_PRACTICES_ON_RELAXATION_AND_SERVING_ACCURACY_OF_VOLLEYBALL_PLAYERS", "rating": ""}, {"id": "CHANDRA_2016_01", "year": "2016", "highlight": "Improves memory and cognitive performance in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "25", "duration": "90 days", "followup": "", "design": "Non-Randomised Controlled Trial", "benefits": ["Higher memory test scores", "Improved working memory during cognitive tasks", "More efficient use of brain rhythms (gamma, alpha, theta)"], "subtopics": ["PH: Brain", "MH: Cognition"], "citation": "Chandra et al., 2016", "journal": "International Journal of Yoga", "affiliation": "Institute of Nuclear Medicine and Science, DRDO, New Delhi, India", "country": "India", "link": "https://journals.lww.com/ijoy/fulltext/2016/09010/effect_of_sudarshan_kriya__meditation__on_gamma,.12.aspx", "rating": ""}, {"id": "CHANDRA_2016_02", "year": "2016", "highlight": "Improves memory, focus, and mental performance in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "25", "duration": "90 days", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↑ Memory test scores", "↑ improved working memory during cognitive tasks", "Enhanced focus, brain efficiency and mental performance"], "subtopics": ["PH: Brain", "PH: Vagus Nerve", "MH: Cognition"], "citation": "Chandra et al., 2016", "journal": "Brain Informatics", "affiliation": "Institute of Nuclear Medicine and Science, DRDO, New Delhi, India", "country": "India", "link": "https://link.springer.com/article/10.1007/s40708-016-0055-1", "rating": ""}, {"id": "CHANDRA_2017_01", "year": "2017", "highlight": "Improves reaction speed and focus in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "20", "duration": "30 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 9% decreased reaction time", "↑ 13% total reactions", "↓ 37% delayed reactions", "↓ 48% omitted responses", "Improved alpha activity (relaxation/focus)"], "subtopics": ["PH: Brain", "MH: Stress", "MH: Cognition"], "citation": "Chandra et al., 2017", "journal": "International Journal of Yoga", "affiliation": "Institute of Nuclear Medicine and Science, DRDO, New Delhi, India", "country": "India", "link": "https://journals.lww.com/ijoy/fulltext/2017/10020/Mental_Stress__Neurophysiology_and_Its_Regulation.3.aspx", "rating": ""}, {"id": "CHAUDHARI_2020_01", "year": "2020", "highlight": "Reduces daytime drowsiness in young adults, especially in those with obesity", "population": "General Population", "participant_type": "Young Adults", "n": "105", "duration": "8 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 31% decreased daytime drowsiness", "Significant improvements observed in obese participants"], "subtopics": ["MH: Sleep"], "citation": "Chaudhari et al., 2020", "journal": "Journal of Complementary and Integrative Medicine", "affiliation": "Surana Sethia Hospital, Mumbai", "country": "India", "link": "https://www.degruyterbrill.com/document/doi/10.1515/jcim-2020-0172/html", "rating": ""}, {"id": "CHHABRA_2024_01", "year": "2024", "highlight": "Improves breathing efficiency and heart–breath coordination in long-term practitioners", "population": "Practitioners / Meditators", "participant_type": "Long-Term Practitioners", "n": "22", "duration": "Single SKY Session", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["Increased vagal tone", "Increased cardiovascular-respiratory synchronisation", "Increased parasympathetic activity", "Increased respiratory efficiency"], "subtopics": ["PH: Vagus Nerve", "PH: Breath / Lungs"], "citation": "Chhabra et al., 2024", "journal": "Journal of Ayurveda and Integrative Medicine", "affiliation": "SSIAR, Bengaluru", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/38244476/", "rating": ""}, {"id": "CHHAJER_2024_01", "year": "2024", "highlight": "Reduces stress and anxiety in managers within one week", "population": "Professionals", "participant_type": "Managers", "n": "64", "duration": "1 week", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 28% reduced stress", "↓ 29% reduced anxiety"], "subtopics": ["MH: Stress", "MH: Anxiety"], "citation": "Chhajer and Dagar, 2024", "journal": "Frontiers in Psychology", "affiliation": "IIM Indore", "country": "India", "link": "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2024.1327119/full", "rating": ""}, {"id": "DANIEL_2022_01", "year": "2022", "highlight": "Improves accuracy and reduces errors under stress in students", "population": "Youth & Students", "participant_type": "Undergraduate Students", "n": "18", "duration": "1 month", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↑ 72% more correct responses under stress", "↓ 67% fewer errors", "↓ 54% fewer omitted responses"], "subtopics": ["MH: Cognition", "MH: Stress", "SH: Youth & Students"], "citation": "Daniel et al., 2022", "journal": "International Journal of Yoga", "affiliation": "Institute of Nuclear Medicine and Allied Sciences, DRDO, New Delhi, India.", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/35444365/", "rating": ""}, {"id": "DAS_2002_01", "year": "2002", "highlight": "Increases immune cell levels in cancer patients and healthy practitioners", "population": "Practitioners / Meditators", "participant_type": "Cancer Patients and Healthy Adults", "n": "97", "duration": "", "followup": "", "design": "Cross-Sectional Study", "benefits": ["↑ 1.6x higher NK cell levels compared to non-practising cancer patients", "↑ 1.8x higher NK cell levels compared to healthy non-practitioners"], "subtopics": ["PH: Cancer"], "citation": "Das and Kochupillai, 2002", "journal": "AIIMS Research Book", "affiliation": "AIIMS, New Delhi", "country": "India", "link": "https://aolresearch.org/pdf/other/Flowcyt_Das.pdf", "rating": ""}, {"id": "DASAPPA_2016_01", "year": "2016", "highlight": "Lowers blood sugar and improves diabetes control in urban T2D patients", "population": "Patients", "participant_type": "T2D Patients (Urban Slums)", "n": "109", "duration": "40 days", "followup": "", "design": "Non-Randomised Controlled Trial", "benefits": ["↓ 13% reduction in HbA1c", "↓ 40% drop in random blood sugar levels", "Improved adherence to dietary changes and self-care habits"], "subtopics": ["PH: Diabetes"], "citation": "Dasappa et al., 2016", "journal": "Journal of Family Medicine and Primary Care", "affiliation": "Art of Living Foundation, Bengaluru, Karnataka, India", "country": "India", "link": "https://journals.lww.com/jfmpc/fulltext/2016/05030/Effectiveness_of_yoga_program_in_the_management_of.21.aspx", "rating": ""}, {"id": "DESCILO_2010_01", "year": "2010", "highlight": "Reduces depression and PTSD in tsunami survivors with lasting effects", "population": "At-risk Communities", "participant_type": "Tsunami Survivors", "n": "183", "duration": "6 weeks", "followup": "24 weeks", "design": "Non-Randomised Controlled Trial", "benefits": ["↓ 87% reduced depression", "↓ 64% reduced PTSD symptoms", "Benefits sustained up to 24-week follow-up"], "subtopics": ["MH: Depression", "SH: At-risk Communities"], "citation": "Descilo et al., 2010", "journal": "Acta Psychiatrica Scandinavica", "affiliation": "The Trauma Resolution Center of Miami", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/19694633/", "rating": ""}, {"id": "DEUCHAR_2019_01", "year": "2019", "highlight": "Reduces substance use and improves emotional control in former gang members", "population": "At-risk Communities", "participant_type": "Former Gang Members", "n": "17", "duration": "", "followup": "", "design": "Qualitative Study", "benefits": ["Reduced cannabis use and alcohol consumption", "Improved emotional control and reduced aggression", "Improved sleep and calmness"], "subtopics": ["SH: At-risk Communities", "MH: Stress"], "citation": "Deuchar, 2019", "journal": "Youth Justice", "affiliation": "Division of Social Sciences, School of Education & Social Sciences, University of the West of Scotland, Paisley PA1 2BE, UK.", "country": "UK", "link": "https://journals.sagepub.com/doi/10.1177/1473225419889195", "rating": ""}, {"id": "DHAWAN_2015_01", "year": "2015", "highlight": "Achieves zero relapse and improves quality of life in opioid-dependent users", "population": "At-risk Communities", "participant_type": "Opioid-Dependent Users", "n": "84", "duration": "6 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["100% of participants had drug-free urine tests at 6 months (zero relapse)", "Improved physical and psychological quality of life"], "subtopics": ["SH: At-risk Communities", "PH: Immunity"], "citation": "Dhawan et al., 2015", "journal": "International Journal of Yoga", "affiliation": "All India Institute of Medical Sciences (AIIMS), New Delhi, India.", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/26170596/", "rating": "⭐⭐⭐⭐⭐"}, {"id": "DORIA_2015_01", "year": "2015", "highlight": "Reduces anxiety and depression in patients with generalized anxiety disorder", "population": "Patients", "participant_type": "Patients with Generalized Anxiety Disorder (GAD)", "n": "69", "duration": "6 months", "followup": "", "design": "Quasi-Experimental Study", "benefits": ["↓35% anxiety (on medication)", "↓51% anxiety (off medication)", "↓36% depression (on/off medication)"], "subtopics": ["MH: Anxiety"], "citation": "Doria et al., 2015", "journal": "Journal of Affective Disorders", "affiliation": "Department of Neuroscience, “Fatebenefratelli e Oftalmico” Hospital, Milano, Italy", "country": "Italy", "link": "https://pubmed.ncbi.nlm.nih.gov/26142611/", "rating": ""}, {"id": "GEETHA_2014_01", "year": "2014", "highlight": "Improves antioxidant defence and reduces oxidative stress in menopausal women", "population": "General Population", "participant_type": "Menopausal Women", "n": "190", "duration": "30 days", "followup": "", "design": "Non-Randomised Controlled Trial", "benefits": ["↑ 212% increased superoxide dismutase (SOD)", "↑ 112% improved plasma glutathione peroxidase (GPx)", "↓ 66% reduced malondialdehyde (MDA)"], "subtopics": ["PH: Biomarkers", "SH: Women"], "citation": "Geetha et al., 2014", "journal": "Biomedical Research", "affiliation": "Dhanalakshmi Srinivasan Medical College and Hospital, Perambalur, Tamil- nadu, India", "country": "India", "link": "https://www.alliedacademies.org/articles/quality-of-life-after-menopause-effects-of-hormone-replacement-therapyvitamin-e-and-sudarhana-kriya-yoga-practice-a-comparative-study.pdf", "rating": ""}, {"id": "GERBARG_2005_01", "year": "2005", "highlight": "Improves sleep, energy, and trauma recovery in disaster survivors", "population": "At-risk Communities", "participant_type": "Hurricane Katrina Survivors", "n": "", "duration": "", "followup": "", "design": "Qualitative Study", "benefits": ["Improved sleep and energy levels", "Reduced feelings of tension and aggression", "Fewer flashbacks and trauma symptoms"], "subtopics": ["SH: At-risk Communities", "MH: Stress"], "citation": "Gerbarg and Brown, 2005", "journal": "Current Psychiatry Online", "affiliation": "New York Medical College, Valhalla, NY", "country": "USA", "link": "https://www.researchgate.net/publication/288024346_Yoga_A_breath_of_relief_for_Hurricane_Katrina_refugees", "rating": ""}, {"id": "GHAHREMANI_2013_01", "year": "2013", "highlight": "Improves self-control and planning in high school students", "population": "Youth & Students", "participant_type": "High School Students", "n": "445", "duration": "4 weeks", "followup": "", "design": "Two-Arm Pre-Post Study", "benefits": ["Reduced impulsive behaviour in daily life", "Improved planning and reduced acting without thinking"], "subtopics": ["SH: Youth & Students", "MH: Cognition"], "citation": "Ghahremani et al., 2013", "journal": "Journal of Adolescent Health", "affiliation": "University of California, Los Angeles (UCLA)", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/23601502/", "rating": "⭐⭐⭐⭐⭐"}, {"id": "GHOLAM_2021_01", "year": "2021", "highlight": "Supports cognitive function and brain processing efficiency with age", "population": "General Population", "participant_type": "Healthy Adults (40–65 yrs)", "n": "60", "duration": "Long-Term SKY Practice", "followup": "", "design": "Cross-Sectional Study", "benefits": ["2.3x higher P300 amplitudes in long-term practitioners", "↓ 7.7% shorter P300 latency indicating faster cognitive processing", "Supports preservation of cognitive function with age"], "subtopics": ["PH: Brain", "MH: Cognition"], "citation": "Gholam et al., 2021", "journal": "International Tinnitus Journal", "affiliation": "Kasturba Medical College, MAHE, Mangalore, Karnataka,", "country": "India", "link": "https://www.ncbi.nlm.nih.gov/pubmed/33944527", "rating": ""}, {"id": "GOLDSTEIN_2016_01", "year": "2016", "highlight": "Improves heart recovery and stress regulation in young adults", "population": "Youth & Students", "participant_type": "Young Adults", "n": "11", "duration": "4 weeks", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↑ 48% increased heart rate recovery", "Increased vagal tone", "Increased autonomic regulation after stress"], "subtopics": ["PH: Heart", "PH: Vagus Nerve", "SH: Youth & Students"], "citation": "Goldstein et al., 2016", "journal": "International Journal of Yoga", "affiliation": "University of Arizona", "country": "USA", "link": "https://journals.lww.com/ijoy/fulltext/2016/09010/Improvements_in_well_being_and_vagal_tone.4.aspx", "rating": "⭐⭐⭐⭐⭐"}, {"id": "GOLDSTEIN_2020_01", "year": "2020", "highlight": "Reduces stress and improves wellbeing in college students", "population": "Youth & Students", "participant_type": "College Students", "n": "69", "duration": "3 months", "followup": "3 months", "design": "Randomised Controlled Trial", "benefits": ["↓ 22% reduced perceived stress", "Trend-level decrease in sleep disturbances", "↑ Improved social connectedness", "↑ Increased self-esteem"], "subtopics": ["MH: Stress", "MH: Sleep", "MH: Happiness", "SH: Youth & Students"], "citation": "Goldstein et al., 2020", "journal": "Journal of American College Health", "affiliation": "Harvard Medical School, Boston, MA USA", "country": "USA", "link": "https://www.tandfonline.com/doi/abs/10.1080/07448481.2020.1781867", "rating": ""}, {"id": "GUPTA_2022_01", "year": "2022", "highlight": "Reduces altitude sickness symptoms and improves wellbeing in healthy participants", "population": "General Population", "participant_type": "Healthy Participants", "n": "29", "duration": "4 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 71% reduction in Acute Mountain Sickness (AMS) symptoms", "Improved mental well-being and lipid profile", "Trend toward lower anxiety"], "subtopics": ["PH: Breath / Lungs", "MH: Stress", "MH: Happiness", "PH: Biomarkers", "MH: Anxiety"], "citation": "Gupta et al., 2022", "journal": "Journal of Neurosciences in Rural Practice", "affiliation": "SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/36743761/", "rating": ""}, {"id": "HAMILTON-WEST_2019_01", "year": "2019", "highlight": "Reduces anxiety and depression symptoms in UK public healthcare patients", "population": "Patients", "participant_type": "NHS Patients", "n": "169", "duration": "4 weeks", "followup": "", "design": "Observational Study", "benefits": ["↓ 46% reduced anxiety symptoms", "↓ 45% reduced depression symptoms"], "subtopics": ["MH: Anxiety", "MH: Depression"], "citation": "Hamilton-West et al., 2019", "journal": "Primary Health Care Research & Development", "affiliation": "University of Kent", "country": "UK", "link": "https://pubmed.ncbi.nlm.nih.gov/32799993/", "rating": ""}, {"id": "JADHAV_2016_01", "year": "2016", "highlight": "Improves reaction speed and responsiveness in medical students", "population": "Youth & Students", "participant_type": "Medical Students", "n": "60", "duration": "3 months", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↑ 17% improvement in visual reaction time (VRT)", "↑ 19% improvement in auditory reaction time (ART)"], "subtopics": ["SH: Youth & Students", "MH: Cognition"], "citation": "Jadhav et al., 2016", "journal": "National Journal of Medical Research", "affiliation": "GMC Latur Maharashtra", "country": "India", "link": "https://njmr.in/index.php/file/article/view/240", "rating": ""}, {"id": "JANAKIRAMAIAH_1998_01", "year": "1998", "highlight": "Reduces depression and anxiety symptoms in patients with chronic depression", "population": "Patients", "participant_type": "Patients with Chronic Depression", "n": "37", "duration": "3 month", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 68% remission rate", "↓ 69% reduced depression symptoms", "↓ 64% reduced anxiety"], "subtopics": ["MH: Depression"], "citation": "Janakiramaiah et al., 1998", "journal": "NIMHANS Journal", "affiliation": "NIMHANS, Bengaluru", "country": "India", "link": "https://psycnet.apa.org/record/2001-00489-003", "rating": ""}, {"id": "JANAKIRAMAIAH_2000_01", "year": "2000", "highlight": "Reduces melancholic depression in inpatients as a non-drug approach", "population": "Patients", "participant_type": "Inpatients with Melancholic Depression", "n": "45", "duration": "4 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["SKY offers a holistic, non-pharmacological alternative to traditional antidepressants in reducing melancholic depression"], "subtopics": ["MH: Depression"], "citation": "Janakiramaiah et al., 2000", "journal": "Journal of Affective Disorders", "affiliation": "NIMHANS, Bengaluru", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/10708840/", "rating": ""}, {"id": "JAYASHREE_2025_01", "year": "2025", "highlight": "Reduces stress and improves quality of life in transgender adults", "population": "At-risk Communities", "participant_type": "Transgender Adults", "n": "60", "duration": "6 weeks", "followup": "", "design": "Two-Arm Pre-Post Study", "benefits": ["↓ 30% lower perceived stress after SKY", "Improved quality of life across physical, social, and environmental domains"], "subtopics": ["SH: At-risk Communities", "MH: Stress"], "citation": "Jayashree and Kalavathy, 2025", "journal": "Tamilmanam International Journal of Tamil Studies", "affiliation": "Bharathiyar University, Tamil Nadu, India", "country": "India", "link": "https://tamilmanam.in/journal/index.php/issue/article/view/116/101", "rating": ""}, {"id": "JYOTSNA_2012_01", "year": "2012", "highlight": "Improves quality of life in patients with type 2 diabetes", "population": "Patients", "participant_type": "T2D Patients", "n": "49", "duration": "3 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↑ 9% improved quality of life"], "subtopics": ["PH: Diabetes", "MH: Happiness"], "citation": "Jyotsna et al., 2012", "journal": "Indian Journal of Endocrinology and Metabolism", "affiliation": "AIIMS, New Delhi", "country": "India", "link": "https://journals.lww.com/indjem/fulltext/2012/16030/comprehensive_yogic_breathing_program_improves.20.aspx", "rating": ""}, {"id": "JYOTSNA_2013_01", "year": "2013", "highlight": "Improves heart function and autonomic balance in diabetic patients", "population": "Patients", "participant_type": "Diabetic Patients", "n": "64", "duration": "6 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Improved cardiac autonomic function", "Decreased incidences of autonomic abnormalities"], "subtopics": ["PH: Heart", "PH: Diabetes"], "citation": "Jyotsna et al., 2013", "journal": "Indian Journal of Endocrinology and Metabolism", "affiliation": "AIIMS, New Delhi", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/23869306/", "rating": ""}, {"id": "JYOTSNA_2014_01", "year": "2014", "highlight": "Improves blood sugar control and quality of life in type 2 diabetes patients", "population": "Patients", "participant_type": "T2D Patients", "n": "120", "duration": "6 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Improved quality of life scores", "Decreased postprandial glucose", "Enhanced sympathetic cardiac autonomic regulation"], "subtopics": ["PH: Diabetes", "PH: Heart"], "citation": "Jyotsna et al., 2014", "journal": "Indian Journal of Endocrinology and Metabolism", "affiliation": "AIIMS, New Delhi", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/25143922/", "rating": ""}, {"id": "KALE_2016_01", "year": "2016", "highlight": "Improves lung capacity and breathing efficiency in long-term male practitioners", "population": "Practitioners / Meditators", "participant_type": "Healthy Males", "n": "43", "duration": "1+ years", "followup": "", "design": "Cross-Sectional Study", "benefits": ["↑ 18-19% increased Forced Vital Capacity (FVC)", "↑ 20-22% increased Forced Expiratory Volume (FEV1)", "↑ 21-22% increased Peak Expiratory Flow Rate (PEFR) and Breath-holding time (BHT)"], "subtopics": ["PH: Breath / Lungs", "PH: Heart", "MH: Stress"], "citation": "Kale et al., 2016", "journal": "International Journal of Medical Science and Public Health", "affiliation": "Lokmanya Tilak Municipal Medical College, Mumbai", "country": "India", "link": "https://www.bibliomed.org/?mno=219622", "rating": ""}, {"id": "KANCHIBHOTLA_2020_01", "year": "2020", "highlight": "Reduces aggression and anger while improving life satisfaction in former militants", "population": "At-risk Communities", "participant_type": "Former Militants", "n": "219", "duration": "40 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["Reduced physical and verbal aggression", "Reduced anger and hostility", "Improved life satisfaction"], "subtopics": ["SH: At-risk Communities"], "citation": "Kanchibhotla et al., 2020", "journal": "International Journal of Yoga", "affiliation": "SSIAR", "country": "India", "link": "https://journals.lww.com/ijoy/fulltext/2020/13010/effectiveness_of_a_comprehensive_yoga_program_on.8.aspx#", "rating": ""}, {"id": "KANCHIBHOTLA_2021a_01", "year": "2021", "highlight": "Reduces stress and improves emotional stability in teenagers", "population": "Youth & Students", "participant_type": "Teenagers", "n": "455", "duration": "1+ years", "followup": "", "design": "Cross-Sectional Study", "benefits": ["↓ 10% lowered perceived stress", "↑ Improved peer relationships and emotional stability"], "subtopics": ["MH: Stress", "SH: Youth & Students"], "citation": "Kanchibhotla et al., 2021", "journal": "Clinical Child Psychology and Psychiatry", "affiliation": "SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/33588582/", "rating": ""}, {"id": "KANCHIBHOTLA_2021b_01", "year": "2021", "highlight": "Reduces stress, anxiety, and depression while improving resilience in healthcare professionals", "population": "Professionals", "participant_type": "Healthcare Professionals", "n": "92", "duration": "4 days", "followup": "40 days", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 37% reduced stress", "↓ 27% reduced anxiety", "↓ 47% reduced depression", "↑ 27% improved resilience (day 40)", "↑ Improved sleep quality"], "subtopics": ["MH: Stress", "MH: Anxiety", "MH: Depression", "MH: Sleep", "MH: Happiness"], "citation": "Kanchibhotla et al., 2021", "journal": "Glob Adv Health Med", "affiliation": "SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/33623726/", "rating": ""}, {"id": "KANCHIBHOTLA_2021c_01", "year": "2021", "highlight": "Restores healthy salivary pH balance in healthy adults", "population": "Professionals", "participant_type": "Healthy Adults", "n": "321", "duration": "Single SKY Session", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["Significant shift of salivary pH towards neutral in participants with acidic or alkaline baseline", "pH remained stable in those with neutral levels"], "subtopics": ["PH: Biomarkers", "MH: Stress"], "citation": "Kanchibhotla et al., 2021", "journal": "Complement Med Res", "affiliation": "SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/33735857/", "rating": ""}, {"id": "KANCHIBHOTLA_2021d_01", "year": "2021", "highlight": "Improves sleep quality in adults, especially younger individuals", "population": "General Population", "participant_type": "Indian Adults", "n": "473", "duration": "3 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↑ 25% reported improved sleep quality, with younger adults benefiting the most"], "subtopics": ["MH: Sleep"], "citation": "Kanchibhotla et al., 2021", "journal": "Sleep and Vigilance", "affiliation": "SSIAR", "country": "India", "link": "https://link.springer.com/article/10.1007/s41782-021-00146-4", "rating": ""}, {"id": "KANCHIBHOTLA_2021e_01", "year": "2021", "highlight": "Reduces stress and improves focus and wellbeing in children", "population": "Youth & Students", "participant_type": "Children (8-13 years)", "n": "420", "duration": "4 days", "followup": "", "design": "Pilot Study", "benefits": ["↓ 56% reduced incidence of stress", "↑ 27% higher cognitive abilities (focus and clarity)", "↑ 15% increased mental well-being"], "subtopics": ["SH: Youth & Students", "MH: Stress"], "citation": "Kanchibhotla and Subramanian, 2021", "journal": "Indian Journal of Youth and Adolescent Health", "affiliation": "SSIAR", "country": "India", "link": "https://www.researchgate.net/publication/358779996_Improvement_in_Children%27s_Mental_Health_and_Cognitive_Abilities_with_Yogic_Breathing_A_Pilot_Study", "rating": ""}, {"id": "KANCHIBHOTLA_2022_01", "year": "2022", "highlight": "Reduces burnout and improves emotional wellbeing in healthcare professionals", "population": "Professionals", "participant_type": "Healthcare Professionals", "n": "56", "duration": "4 days", "followup": "30 days", "design": "Observational Study", "benefits": ["↓ 34% reduced work exhaustion", "↑ 10% increased professional fulfilment", "↓ 23% decreased negative emotions", "↑ 13% increased positive emotions"], "subtopics": ["MH: Stress", "MH: Happiness"], "citation": "Kanchibhotla et al., 2022", "journal": "Frontiers in Psychology", "affiliation": "SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/35910997/", "rating": ""}, {"id": "KATZMAN_2012_01", "year": "2012", "highlight": "Greatly reduces anxiety symptoms in patients with generalized anxiety disorder", "population": "Patients", "participant_type": "Patients with Generalized Anxiety Disorder (GAD)", "n": "31", "duration": "4 weeks", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["73% of participants experienced ≥ 50% reduction in anxiety", "41% remission rate for Generalised Anxiety Disorder (GAD)"], "subtopics": ["MH: Anxiety"], "citation": "Katzman et al., 2012", "journal": "International Journal of Yoga", "affiliation": "START Clinic for Mood and Anxiety", "country": "Canada", "link": "https://pubmed.ncbi.nlm.nih.gov/35910997/", "rating": ""}, {"id": "KHADKA_2024_01", "year": "2024", "highlight": "Reduces stress and improves self-esteem in medical doctors", "population": "Professionals", "participant_type": "Medical Doctors", "n": "58", "duration": "40 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 14% reduced stress", "↑ Improved self-esteem"], "subtopics": ["MH: Stress", "MH: Happiness"], "citation": "Khadka et al., 2024", "journal": "Ann Med Surg (Lond)", "affiliation": "Nepalese Army Institute of Health Sciences, Kathmandu", "country": "Nepal", "link": "https://pubmed.ncbi.nlm.nih.gov/39118691/", "rating": ""}, {"id": "KHARYA_2014_01", "year": "2014", "highlight": "Improves heart rate regulation, especially in those with poorer baseline control", "population": "General Population", "participant_type": "Healthy Adults", "n": "50", "duration": "150 days", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Improved heart rate regulation", "Better sympathovagal balance", "Benefits were most pronounced in those with initially weaker heart rate control"], "subtopics": ["PH: Vagus Nerve", "PH: Heart"], "citation": "Kharya et al., 2014", "journal": "Indian Journal of Physiology and Pharmacology", "affiliation": "AIIMS, New Delhi", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/25906603/", "rating": ""}, {"id": "KJELLGREN_2007_01", "year": "2007", "highlight": "Reduces stress, anxiety, and depression in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "103", "duration": "6 weeks", "followup": "", "design": "Non-Randomised Controlled Trial", "benefits": ["↓ 18% reduced stress", "↓ 34% reduced depression", "↓ 23% reduced anxiety"], "subtopics": ["MH: Stress", "MH: Depression", "MH: Anxiety"], "citation": "Kjellgren et al., 2007", "journal": "BMC Complement Altern Med", "affiliation": "Karlstad University", "country": "Sweden", "link": "https://pubmed.ncbi.nlm.nih.gov/18093307/", "rating": ""}, {"id": "KOCHUPILLAI_2005_01", "year": "2005", "highlight": "Boosts immunity in cancer patients and supports tobacco cessation", "population": "Patients", "participant_type": "Cancer Patients and Tobacco Users", "n": "27", "duration": "6 months", "followup": "", "design": "Non-Randomised Controlled Trial", "benefits": ["Increased natural killer (NK) cell counts in cancer patients", "↓ 21% of tobacco users reported complete cessation"], "subtopics": ["PH: Cancer", "SH: At-risk Communities"], "citation": "Kochupillai et al., 2005", "journal": "Annals of the New York Academy of Sciences", "affiliation": "All India Institute of Medical Sciences, New Delhi, India", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/16387692/", "rating": ""}, {"id": "KOPANSKA_2022_01", "year": "2022", "highlight": "Improves relaxation and supports brain recovery in post-COVID individuals", "population": "General Population", "participant_type": "Individuals Post-COVID Recovery", "n": "15", "duration": "3 sessions", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["Increased Alpha wave amplitudes", "Improved relaxation and mental calmness", "Suggests support for neural recovery and cognitive restoration"], "subtopics": ["PH: Brain"], "citation": "Kopanska et al., 2022", "journal": "Frontiers in Human Neuroscience", "affiliation": "University of Rzeszow", "country": "Poland", "link": "https://pubmed.ncbi.nlm.nih.gov/36277052/", "rating": ""}, {"id": "KORKMAZ_2024_01", "year": "2024", "highlight": "Reduces stress, anxiety, depression, and insomnia in physicians while improving fulfilment", "population": "Professionals", "participant_type": "Physicians", "n": "129", "duration": "8 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 41% reduced stress scores", "↓ 52% reduced depression scores", "↓ 53% reduced anxiety scores", "↓ 20% reduced insomnia scores", "↑ 25% increased professional fulfilment"], "subtopics": ["MH: Stress", "MH: Depression", "MH: Anxiety", "MH: Sleep", "MH: Happiness"], "citation": "Korkmaz et al., 2024", "journal": "JAMA Network Open", "affiliation": "Dokuz Eylül University", "country": "Norway", "link": "https://pubmed.ncbi.nlm.nih.gov/38294813/", "rating": ""}, {"id": "KUMAR_2013_01", "year": "2013", "highlight": "Reduces stress and pain in breast cancer patients", "population": "Patients", "participant_type": "Breast Cancer Patients", "n": "147", "duration": "3 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 19% reduced cortisol", "↓ 2-3 point reduction in pain perception"], "subtopics": ["PH: Biomarkers", "PH: Cancer", "MH: Stress", "SH: Women"], "citation": "Kumar et al., 2013", "journal": "Indian J Palliat Care", "affiliation": "ICMR, New Delhi", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/24347909/", "rating": ""}, {"id": "LIN_2023_01", "year": "2023", "highlight": "Reduces breathlessness and anxiety while improving quality of life in COPD patients", "population": "Patients", "participant_type": "Patients with COPD", "n": "9", "duration": "10 weeks", "followup": "", "design": "Single-Case Study", "benefits": ["↓ Reduced dyspnea, anxiety, and distress related to COPD", "Improved overall quality of life"], "subtopics": ["PH: Breath / Lungs", "MH: Anxiety"], "citation": "Lin et al., 2023", "journal": "OBM Integrative and Complementary Medicine", "affiliation": "California State University, Fresno, CA, USA", "country": "USA", "link": "https://www.lidsen.com/journals/icm/icm-08-04-059", "rating": ""}, {"id": "LIU_2025_01", "year": "2025", "highlight": "Improves stress coping and overall wellbeing in trainee counsellors", "population": "Youth & Students", "participant_type": "Trainee Counsellors", "n": "42", "duration": "1 month", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↑ 9% boost in overall wellness in 3 days", "Improved problem-solving abilities", "Enhanced stress coping skills", "Boosted self-esteem and meaning"], "subtopics": ["MH: Stress", "MH: Happiness", "MH: Cognition"], "citation": "Liu et al., 2025", "journal": "Counselor Education and Supervision", "affiliation": "California State University, Fresno", "country": "USA", "link": "https://onlinelibrary.wiley.com/doi/10.1002/ceas.70007", "rating": ""}, {"id": "MATHERSUL_2022_01", "year": "2022", "highlight": "Improves stress regulation and nervous system balance in veterans with PTSD", "population": "At-risk Communities", "participant_type": "Veterans with PTSD", "n": "59", "duration": "6 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Improved autonomic regulation", "Increased vagal tone"], "subtopics": ["PH: Vagus Nerve", "SH: At-risk Communities"], "citation": "Mathersul et al., 2022", "journal": "BMC Psychiatry", "affiliation": "Stanford University", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/35428258/", "rating": ""}, {"id": "MATHERSUL_2023_01", "year": "2023", "highlight": "Improves sleep and reduces nightmares in veterans with PTSD", "population": "At-risk Communities", "participant_type": "Veterans with PTSD", "n": "59", "duration": "6 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Decreased insomnia", "Fewer nightmares", "Improved ability to fall and stay asleep"], "subtopics": ["MH: Sleep", "SH: At-risk Communities"], "citation": "Mathersul et al., 2023", "journal": "Depression and Anxiety", "affiliation": "Murdoch University, Murdoch, WA 6150, Australia", "country": "Australia", "link": "https://onlinelibrary.wiley.com/doi/10.1155/2023/7001667", "rating": ""}, {"id": "MONY_2024_01", "year": "2024", "highlight": "Supports healthy ageing at the cellular level in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "16", "duration": "4 days", "followup": "", "design": "Pilot Study", "benefits": ["↑ 23% increased relative telomere length", "Enhanced resistance to cellular ageing through gene activity changes"], "subtopics": ["PH: Genes"], "citation": "Mony et al., 2024", "journal": "Alternative therapies in health and medicine", "affiliation": "SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/39715566/", "rating": ""}, {"id": "MONY_2025_01", "year": "2025", "highlight": "Triggers rapid and evolving gene expression changes linked to brain and immune health in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "16", "duration": "30 days", "followup": "", "design": "Pilot Study", "benefits": ["175 genes differently expressed immediately after SKY (linked to neuronal regeneration and reduced inflammation)", "44 genes differently expressed after 30 days (linked to cytoskeletal reorganisation)"], "subtopics": ["PH: Genes"], "citation": "Mony et al., 2025", "journal": "Brain, Behavior and Immunity Integrative", "affiliation": "SSIAR", "country": "India", "link": "https://www.cureus.com/articles/379674-a-comprehensive-yogic-breathing-program-evidence-for-use-in-medicine?medium=email&src=email_share&utm_campaign=share&utm_medium=email&utm_source=email_share_mailer#!/", "rating": "⭐⭐⭐⭐⭐"}, {"id": "MULLA_2014_01", "year": "2014", "highlight": "Reduces stress and stress hormone levels in executives", "population": "Professionals", "participant_type": "Executives", "n": "72", "duration": "3 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 23% decreased cortisol", "↓ 44% lowered stress"], "subtopics": ["PH: Biomarkers", "MH: Stress"], "citation": "Mulla and Vedamuthachar, 2014", "journal": "Management and Labour Studies", "affiliation": "Tata Institute of Social Sciences", "country": "India", "link": "https://journals.sagepub.com/doi/abs/10.1177/0258042X15578024?journalCode=mlsa", "rating": ""}, {"id": "MURTHY_1997_01", "year": "1997", "highlight": "Greatly reduces depression severity and improves brain function in dysthymic patients", "population": "Patients", "participant_type": "Dysthymic Patients", "n": "30", "duration": "3 month", "followup": "", "design": "Quasi-Experimental Study", "benefits": ["↓ 70% reduced depression severity scores", "Normalisation of P300 amplitude reflecting improved brain function"], "subtopics": ["MH: Depression", "PH: Brain"], "citation": "Murthy et al., 1997", "journal": "Biological Psychiatry", "affiliation": "NIMHANS, Bengaluru", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/9325569/", "rating": ""}, {"id": "MURTHY_1998_01", "year": "1998", "highlight": "Greatly reduces depression and improves wellbeing in patients with dysthymia and melancholia", "population": "Patients", "participant_type": "Patients with Dysthymia and Melancholia", "n": "30", "duration": "1 month", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 78% reduced depression severity scores in 73% of patients", "Significant improvements in both dysthymia and melancholia", "Improved mood and overall wellbeing"], "subtopics": ["MH: Depression", "PH: Brain"], "citation": "Murthy et al., 1998", "journal": "Journal of Affective Disorders", "affiliation": "NIMHANS, Bengaluru", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/9716279/", "rating": ""}, {"id": "NEWMAN_2020_01", "year": "2020", "highlight": "Improves focus, self-esteem, and emotional control in school students", "population": "Youth & Students", "participant_type": "Public School Students", "n": "59", "duration": "5 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 19% reduction in distractibility", "↑ 8% increase in self-esteem", "Improved ability to cope with anger"], "subtopics": ["SH: Youth & Students", "MH: Stress"], "citation": "Newman et al., 2020", "journal": "International Journal of Yoga", "affiliation": "IAHV", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/38605512/", "rating": ""}, {"id": "NEWMAN_2024_01", "year": "2024", "highlight": "Improves focus, self-identity, and reduces aggression in eighth-grade students", "population": "Youth & Students", "participant_type": "Eighth Graders", "n": "79", "duration": "3 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↑ 11% increased planning and concentration", "↑ 9% increased sense of identity", "↓ 8% reduced belief in aggression"], "subtopics": ["SH: Youth & Students", "MH: Cognition"], "citation": "Newman et al., 2024", "journal": "Journal of Adolescence", "affiliation": "Stanford University", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/38605512/", "rating": "⭐⭐⭐⭐⭐"}, {"id": "PARIMALA_2021_01", "year": "2021", "highlight": "Reduces anxiety and improves resilience in adults during stressful periods (pandemic context)", "population": "General Population", "participant_type": "Adults during COVID-19", "n": "956", "duration": "", "followup": "", "design": "Cross-Sectional Study", "benefits": ["82% of practitioners showed no symptoms of anxiety", "Practitioners showed overall better mental resilience and emotional well-being"], "subtopics": ["MH: Anxiety", "MH: Happiness"], "citation": "Parimala and Kanchibhotla, 2021", "journal": "Asia Pacific Journal of Public Health", "affiliation": "SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/33251825/", "rating": ""}, {"id": "PARMAR_2014_01", "year": "2014", "highlight": "Improves breathing capacity in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "100", "duration": "3 months", "followup": "", "design": "Non-Randomised Controlled Trial", "benefits": ["↑ 16% increased Peak Expiratory Flow Rate (PEFR)"], "subtopics": ["PH: Breath / Lungs", "PH: Heart"], "citation": "Parmar et al., 2014", "journal": "National Journal of Integrated Research in Medicine", "affiliation": "M.P. Shah Government Medical College, Jamnagar", "country": "India", "link": "https://nicpd.ac.in/ojs-/index.php/njirm/article/view/824/710", "rating": ""}, {"id": "PATHANIA_2022_01", "year": "2022", "highlight": "Improves sleep quality and stress recovery in medical professionals (pandemic context)", "population": "Professionals", "participant_type": "Medical Professionals during COVID-19 Pandemic", "n": "41", "duration": "4 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↑ 35% increase in deep sleep", "↑ 29% increase in REM sleep", "↑ 16% increase in total sleep duration", "↑ 8% increase in light sleep", "↓ 5% decrease in resting heart rate", "↑ 14% increase in overall heart rate flexibility", "↑ 16% boost in relaxation response"], "subtopics": ["MH: Sleep", "MH: Stress", "PH: Heart"], "citation": "Pathania et al., 2022", "journal": "Journal of the Association of Physicians of India", "affiliation": "AIIMS, Rishikesh", "country": "India", "link": "https://europepmc.org/article/med/36082887", "rating": ""}, {"id": "PATIL_2017_01", "year": "2017", "highlight": "Reduces menopausal symptoms and improves emotional wellbeing in postmenopausal women", "population": "Women", "participant_type": "Postmenopausal Women", "n": "156", "duration": "1+ years", "followup": "", "design": "Cross-Sectional Study", "benefits": ["↓ 86% fewer women reported severe hot flushes", "↓ 97% fewer reported severe night sweats", "↓ 94% fewer reported severe mood swings and fatigue", "↓ 100% of practitioners reported zero severe anxiety or depression"], "subtopics": ["SH: Women"], "citation": "Patil et al., 2017", "journal": "Asian Journal of Medical Sciences", "affiliation": "Government Medical College, Gondia, Maharashtra,", "country": "India", "link": "https://www.nepjol.info/index.php/AJMS/article/view/17723", "rating": ""}, {"id": "QU_2013_01", "year": "2013", "highlight": "Triggers rapid immune-related gene expression changes in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "10", "duration": "Single SKY Session", "followup": "", "design": "Controlled Crossover Study", "benefits": ["↑ 3x more altered gene expression vs. other relaxation activities (111 vs. 38 genes)", "Rapid distinct changes in the expression of genes linked to immune function, cell signalling, and cytoskeletal regulation"], "subtopics": ["PH: Genes", "PH: Immunity"], "citation": "Qu et al., 2013", "journal": "PLoS One", "affiliation": "University of Oslo", "country": "Norway", "link": "https://pubmed.ncbi.nlm.nih.gov/28692417/", "rating": "⭐⭐⭐⭐⭐"}, {"id": "ROVNAGHI_2025_01", "year": "2025", "highlight": "Reduces stress and improves emotional wellbeing in seventh-grade students", "population": "Youth & Students", "participant_type": "Seventh-Graders", "n": "21", "duration": "10 months", "followup": "10 months", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 23% lowered cortisol at follow-up", "↑ 18% higher oxytocin", "Fewer poor mental health days"], "subtopics": ["PH: Biomarkers", "MH: Stress", "SH: Youth & Students"], "citation": "Rovnaghi et al., 2025", "journal": "Comprehensive Psychoneuroendocrinology", "affiliation": "Stanford University", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/40125529/", "rating": ""}, {"id": "SAATCIOGLU_2022_01", "year": "2022", "highlight": "Reduces stress and improves communication and performance in frontline health professionals", "population": "Professionals", "participant_type": "Frontline Health Professionals", "n": "803", "duration": "3 days", "followup": "", "design": "Observational Study", "benefits": ["↓ 94% reported reduced stress", "↑ 92% felt communication improved", "↑ 81% felt job performance improved", "100% said they would recommend the programme to fellow health professionals"], "subtopics": ["MH: Stress", "MH: Cognition"], "citation": "Saatcioglu et al., 2022", "journal": "JCO Oncology Practice", "affiliation": "University of Oslo", "country": "Norway", "link": "https://pubmed.ncbi.nlm.nih.gov/36162039/", "rating": ""}, {"id": "SEPPALA_2014_01", "year": "2014", "highlight": "Reduces PTSD and anxiety symptoms in veterans with lasting effects", "population": "At-risk Communities", "participant_type": "War Veterans with PTSD", "n": "21", "duration": "1 week", "followup": "1 year", "design": "Randomised Controlled Trial", "benefits": ["↓ 29% reduction in PTSD symptoms (1 week)", "↓ 22% reduction (1 month)", "↓ 30% reduction (1 year)", "↓ 18% reduction in anxiety (1 year)"], "subtopics": ["MH: Stress", "MH: Anxiety", "SH: At-risk Communities"], "citation": "Seppälä et al., 2014", "journal": "Journal of Traumatic Stress", "affiliation": "Stanford University", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/25158633/", "rating": ""}, {"id": "SEPPALA_2020_01", "year": "2020", "highlight": "Reduces stress and improves wellbeing in university students", "population": "Youth & Students", "participant_type": "University Students", "n": "131", "duration": "8 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Reduced depression and stress", "Improved mindfulness, positive feelings, and social connections", "SKY could help reduce the need for counselling services, potentially easing the financial burden on universities"], "subtopics": ["SH: Youth & Students", "MH: Happiness"], "citation": "Seppälä et al., 2020", "journal": "Frontiers in Psychiatry", "affiliation": "Yale University", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/32760296/", "rating": "⭐⭐⭐⭐⭐"}, {"id": "SHARMA_2003_01", "year": "2003", "highlight": "Improves antioxidant levels and reduces physical stress in police trainees", "population": "Professionals", "participant_type": "Police Trainees", "n": "24", "duration": "5 months", "followup": "", "design": "Quasi-Experimental Study", "benefits": ["↑ 4x higher glutathione", "↑ 52% higher catalase", "↓ 71% lower blood lactate", "↑ 2.6x higher superoxide dismutase (SOD)"], "subtopics": ["PH: Biomarkers", "MH: Stress"], "citation": "Sharma et al., 2003", "journal": "Biological Psychology", "affiliation": "AIIMS, New Delhi", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/12853172/", "rating": ""}, {"id": "SHARMA_2008_01", "year": "2008", "highlight": "Enhances cell survival and resistance to oxidative stress in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "84", "duration": "", "followup": "", "design": "Cross-Sectional Study", "benefits": ["↑ Increased activity of genes that support cell survival", "↑ Increased lymphocyte longevity", "↑ Increased protection against oxidative stress"], "subtopics": ["PH: Cancer", "PH: Genes"], "citation": "Sharma et al., 2008", "journal": "Journal of Psychosomatic Research", "affiliation": "AIIMS, New Delhi", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/18222135/", "rating": ""}, {"id": "SHARMA_2017_01", "year": "2017", "highlight": "Reduces depression symptoms in treatment-resistant patients", "population": "Patients", "participant_type": "Patients with Major Depressive Disorder (MDD)", "n": "25", "duration": "8 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 53% reduced depression symptoms/scores in patients who did not respond to antidepressants"], "subtopics": ["MH: Depression"], "citation": "Sharma et al., 2017", "journal": "Journal of Clinical Psychiatry", "affiliation": "Perelman School of Medicine, UPenn", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/27898207/", "rating": ""}, {"id": "SHARMA_2019_01", "year": "2019", "highlight": "Improves brain function and cognitive processing in healthy adults", "population": "General Population", "participant_type": "Healthy Adults", "n": "50", "duration": "3 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["Improved brain function", "Improved cognitive processing"], "subtopics": ["PH: Brain", "MH: Cognition"], "citation": "Sharma et al., 2019", "journal": "Neuroscience Letters", "affiliation": "UIET, Panjab University, Chandigarh, India", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/31181300/", "rating": ""}, {"id": "SHIJU_2019_01", "year": "2019", "highlight": "Reduces anxiety and depression while improving quality of life in type 2 diabetes patients", "population": "Patients", "participant_type": "Type 2 Diabetes (T2D) Patients", "n": "26", "duration": "5 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 43% reduced anxiety", "↓ 33% reduced depression", "↑ 12% improved quality of life"], "subtopics": ["MH: Anxiety", "MH: Depression", "PH: Diabetes"], "citation": "Shiju et al., 2019", "journal": "Diabetes & Metabolic Syndrome: Clinical Research and Reviews", "affiliation": "Dasman Diabetes Institute, Al-Soor Street, Kuwait, P.O. Box 1180, Dasman, 15462, Kuwait.", "country": "Kuwait", "link": "https://www.sciencedirect.com/science/article/abs/pii/S1871402119302449?via%3Dihub", "rating": ""}, {"id": "SLOAN_2020_01", "year": "2020", "highlight": "Improves sleep quality with regular practice", "population": "Practitioners / Meditators", "participant_type": "Regular Practitioners", "n": "385", "duration": "", "followup": "", "design": "Cross-Sectional Study", "benefits": ["77% of daily practitioners reported good sleep quality", "Lower frequency of practice associated with higher odds of poor sleep quality"], "subtopics": ["MH: Sleep"], "citation": "Sloan and Kanchibhotla, 2020", "journal": "Sleep and Breathing", "affiliation": "Kagoshima University", "country": "Japan", "link": "https://link.springer.com/article/10.1007/s11325-020-02240-9", "rating": ""}, {"id": "SLOAN_2021_01", "year": "2021", "highlight": "Supports healthier lifestyle habits in working adults", "population": "Professionals", "participant_type": "Working Adults", "n": "531", "duration": "5 months", "followup": "", "design": "Cross-Sectional Study", "benefits": ["76% of daily practitioners had ≥4 healthy lifestyle habits vs. 41% in non-practitioners", "42% of daily practitioners had ≥5 healthy habits vs. 17% in non-practitioners", "Daily SKY practitioners were nearly twice as likely to lead a healthy lifestyle"], "subtopics": ["MH: Stress", "MH: Happiness"], "citation": "Sloan and Kanchibhotla, 2021", "journal": "The Journal of Alternative and Complementary Medicine", "affiliation": "Kagoshima University", "country": "Japan", "link": "https://journals.sagepub.com/doi/abs/10.1089/acm.2021.0035?cf-mal-redirected=true&download=true&journalCode=acm", "rating": ""}, {"id": "SLOAN_2023_01", "year": "2023", "highlight": "Increases happiness in adults with regular practice", "population": "General Population", "participant_type": "Adults in Singapore", "n": "733", "duration": "", "followup": "", "design": "Observational Study", "benefits": ["2-fold higher likelihood of being happier for daily SKY practitioners"], "subtopics": ["MH: Happiness"], "citation": "Sloan and Kanchibhotla, 2023", "journal": "Alternative Therapies in Health and Medicine", "affiliation": "Kagoshima University", "country": "Japan", "link": "https://pubmed.ncbi.nlm.nih.gov/34097652/", "rating": ""}, {"id": "SUBRAMANIAN_2012_01", "year": "2012", "highlight": "Reduces cholesterol and stress in engineering students", "population": "Youth & Students", "participant_type": "Engineering Students", "n": "43", "duration": "6 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 13% decreased cholesterol", "↓ 37% reduced VLDL", "Lowered stress (protected against exam-related changes)"], "subtopics": ["PH: Biomarkers", "MH: Stress", "SH: Youth & Students"], "citation": "Subramanian et al., 2012", "journal": "International Journal of Yoga", "affiliation": "Department of Medical Research, SRM Medical College Hospital and Research Centre,", "country": "India", "link": "https://journals.lww.com/ijoy/fulltext/2012/05010/role_of_sudarshan_kriya_and_pranayam_on_lipid.5.aspx", "rating": ""}, {"id": "SUBRAMANIAN_2025_01", "year": "2025", "highlight": "Improves wellbeing and cognitive performance in adolescents", "population": "Youth & Students", "participant_type": "Adolescents", "n": "275", "duration": "4 days", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↑ 86% showed increased mental well-being", "↑ 71% showed improved cognitive performance", "↑ 95% demonstrated enhanced emotional well-being at day 40"], "subtopics": ["SH: Youth & Students", "MH: Happiness"], "citation": "Subramanian et al., 2025", "journal": "Clinical Child Psychology and Psychiatry", "affiliation": "SSIAR", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/39829376/", "rating": ""}, {"id": "SULEKHA_2006_01", "year": "2006", "highlight": "Increases deep sleep duration in long-term male practitioners", "population": "Practitioners / Meditators", "participant_type": "Healthy Males", "n": "67", "duration": "5+ years", "followup": "", "design": "Cross-Sectional Study", "benefits": ["↑ 3x increased deep sleep duration in middle-aged adult practitioners"], "subtopics": ["MH: Sleep"], "citation": "Sulekha et al., 2006", "journal": "Sleep and Biological Rhythms", "affiliation": "NIMHANS, Bengaluru", "country": "India", "link": "https://onlinelibrary.wiley.com/doi/abs/10.1111/j.1479-8425.2006.00233.x", "rating": ""}, {"id": "SUREKA_2014_01", "year": "2014", "highlight": "Reduces anxiety and improves wellbeing in male prisoners", "population": "At-risk Communities", "participant_type": "Male Prisoners", "n": "230", "duration": "6 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 50% reduction in anxiety symptoms", "↑ 22% improvement in depression symptoms", "↑ 36% improvement in total psychological well-being"], "subtopics": ["MH: Anxiety", "MH: Depression", "SH: At-risk Communities"], "citation": "Sureka et al., 2014", "journal": "Asian Journal of Psychiatry", "affiliation": "Central Jail Hospital, Tihar, New Delhi", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/25440560/", "rating": ""}, {"id": "SWAIN_2021_01", "year": "2021", "highlight": "Reduces menopausal symptoms and improves antioxidant levels in women", "population": "Women", "participant_type": "Menopausal Women (aged 40 - 50)", "n": "65", "duration": "1 year", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 15% decreased hot flushes and night sweats", "↓ 13% decreased psychosocial symptoms (anxiety, depression, memory)", "↑ 72% increased antioxidant SOD", "↑ 21% increased GPx"], "subtopics": ["SH: Women"], "citation": "Swain et al., 2021", "journal": "Journal of Obstetrics and Gynaecology Research", "affiliation": "AIIMS, Bhubaneswar", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/34254406/", "rating": ""}, {"id": "TOSCHI-DIAS_2017_01", "year": "2017", "highlight": "Reduces anxiety, depression, and distress in affected patients", "population": "Patients", "participant_type": "Anxiety-Depression Patients", "n": "46", "duration": "15 days", "followup": "", "design": "Non-Randomised Controlled Trial", "benefits": ["↓ 33% reduced anxiety symptoms", "↓ 31% reduced depression symptoms", "↓ 57% lowered psychological distress", "Improved sympathovagal balance"], "subtopics": ["MH: Anxiety", "MH: Depression", "PH: Vagus Nerve"], "citation": "Toschi-Dias et al., 2017", "journal": "Journal of Affective Disorders", "affiliation": "Ospedale Maggiore Policlinico, Via Francesco Sforza, 28, Milan, Italy.", "country": "Italy", "link": "https://pubmed.ncbi.nlm.nih.gov/28285240/", "rating": ""}, {"id": "TRIPATHI_2025_01", "year": "2025", "highlight": "Induces a deeply restful, wakeful brain state in practitioners", "population": "General Population", "participant_type": "Long-Term Practitioners", "n": "43", "duration": "Single SKY Session", "followup": "", "design": "Two-Arm Non-Randomised Pre-Post Study", "benefits": ["Rhythmic breathing accentuates theta rhythms", "Facilitates transition to \"restful awareness\" state (Turiya) unlike sleep"], "subtopics": ["PH: Brain", "MH: Anxiety", "MH: Depression"], "citation": "Tripathi et al., 2025", "journal": "Nature Partner Journals — Mental Health Research", "affiliation": "Center for Brain Science & Department of Psychology, Harvard University, Cambridge, MA, USA", "country": "USA", "link": "https://www.nature.com/articles/s44184-025-00156-4", "rating": "⭐⭐⭐⭐⭐"}, {"id": "UNUDURTHI_2023_01", "year": "2023", "highlight": "Reduces cravings and improves wellbeing in opioid users", "population": "At-risk Communities", "participant_type": "Opioid Users", "n": "8", "duration": "1 month", "followup": "", "design": "Quasi-Experimental Study", "benefits": ["Reduced substance use cravings", "Reduced depression symptoms", "Improved physical functioning and emotional well-being"], "subtopics": ["SH: At-risk Communities", "MH: Depression"], "citation": "Unudurthi et al., 2023", "journal": "Journal of psychosocial nursing and mental health services", "affiliation": "Masonic Medical Research Institute, Utica, New York (S.D.U.);", "country": "USA", "link": "https://pubmed.ncbi.nlm.nih.gov/36989479/", "rating": ""}, {"id": "VANGALA_2000_01", "year": "2000", "highlight": "Greatly reduces depression and anxiety in patients with major depressive disorder", "population": "Patients", "participant_type": "Patients with Major Depressive Disorder (MDD)", "n": "30", "duration": "4 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 66% reduced depression", "↓ 74% reduced anxiety"], "subtopics": ["MH: Happiness", "MH: Depression"], "citation": "Vangala et al., 2000", "journal": "NIMHANS Journal", "affiliation": "NIMHANS, Bengaluru", "country": "India", "link": "https://psycnet.apa.org/record/2002-12746-004", "rating": ""}, {"id": "VASUDEV_2020_01", "year": "2020", "highlight": "Reduces PTSD, anxiety, and depression symptoms in affected patients", "population": "At-risk Communities", "participant_type": "Patients with PTSD", "n": "19", "duration": "24 weeks", "followup": "", "design": "Single-Arm Pre-Post Study", "benefits": ["↓ 29% reduced depression", "↓ 27% reduced anxiety", "↓ 36% reduced PTSD symptoms"], "subtopics": ["MH: Anxiety", "SH: At-risk Communities", "MH: Stress"], "citation": "Vasudev et al., 2020", "journal": "International Journal of Yoga", "affiliation": "Victoria Hospital, London, ON, N6A5W9, Canada.", "country": "Canada", "link": "https://journals.lww.com/ijoy/fulltext/2020/13030/sudarshan_kriya_yoga_program_in_posttraumatic.11.aspx", "rating": ""}, {"id": "VEDAMURTHACHAR_2006_01", "year": "2006", "highlight": "Reduces stress and depression in alcohol-dependent individuals", "population": "Patients", "participant_type": "Alcohol-Dependent Individuals", "n": "60", "duration": "2 weeks", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 57% drop in cortisol", "↓ 33% reduced ACTH", "↓ 76% reduction in depression scores"], "subtopics": ["MH: Stress", "MH: Depression", "PH: Biomarkers"], "citation": "Vedamurthachar et al., 2006", "journal": "Journal of Affective Disorders", "affiliation": "NIMHANS", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/16740317/", "rating": ""}, {"id": "VERMA_2022_01", "year": "2022", "highlight": "Lowers blood sugar in type 2 diabetes patients", "population": "Patients", "participant_type": "T2D Patients", "n": "84", "duration": "7 days", "followup": "", "design": "Single Arm Observational Study", "benefits": ["↓ 24% reduced blood sugar"], "subtopics": ["PH: Diabetes", "PH: Biomarkers"], "citation": "Verma et al., 2022", "journal": "Cureus", "affiliation": "Bharati Vidyapeeth Dental College and Hospital, Navi Mumbai, IND", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/36120271/", "rating": ""}, {"id": "WARNER_2012_01", "year": "2012", "highlight": "Improves emotional wellbeing and self-esteem in breast cancer patients", "population": "Patients", "participant_type": "Breast Cancer Patients", "n": "12", "duration": "5 weeks", "followup": "", "design": "Qualitative Study", "benefits": ["↑ Increased emotional well-being and body image", "↑ Increased self-esteem and empowerment", "↑ Increased life appreciation and spiritual connection"], "subtopics": ["PH: Cancer", "SH: Women"], "citation": "Warner and Wall, 2012", "journal": "Psychology of Cancer", "affiliation": "Stanford Unversity", "country": "USA", "link": "https://www.novapublishers.com/wp-content/uploads/2019/12/978-1-62257-364-6_ch2.pdf", "rating": ""}, {"id": "YADAV_2021_01", "year": "2021", "highlight": "Reduces harmful drinking and supports recovery in alcohol-dependent men", "population": "At-risk Communities", "participant_type": "Male Alcohol Dependent Patients", "n": "80", "duration": "6 months", "followup": "", "design": "Randomised Controlled Trial", "benefits": ["↓ 39% drop in harmful drinking behaviour", "↑ 14% improvement in well-being symptoms (in 6 days)", "23% of patients reported zero alcohol use at 6-month follow-up"], "subtopics": ["SH: At-risk Communities", "MH: Stress"], "citation": "Yadav et al., 2021", "journal": "Industrial psychiatry journal", "affiliation": "Department of Psychiatry, Armed Forces Medical College, Pune, Maharashtra, India.", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/35017822/", "rating": ""}, {"id": "ARCHANA_2026_01", "year": "2026", "highlight": "Integrative Breathwork (SKY + Meditation) Resets IBS symptoms with persistent practice", "population": "Patients", "participant_type": "21-year-old with Irritable Bowel Syndrome", "n": "1", "duration": "9 months", "followup": "", "design": "Single Case Study", "benefits": ["↑ ~80% formed stools (marked improvement in consistency)", "↓ Reduced clinical anxiety and IBS-related symptoms"], "subtopics": ["PH: Gut Health", "MH: Anxiety"], "citation": "Archana et al., 2026", "journal": "Advances in Mind-Body Medicine", "affiliation": "Sri Ramachandra Institute of Higher Education and Research, Chennai", "country": "India", "link": "https://pubmed.ncbi.nlm.nih.gov/41805561/", "rating": ""}, {"id": "TOLSTOVA_2026_01", "year": "2026", "highlight": "Reduces PTSD, anxiety, and depression symptoms while improving sleep and resilience in military trainees", "population": "At-risk Communities", "participant_type": "Military personnel (assault troops) undergoing basic training", "n": "50", "duration": "8 weeks", "followup": "", "design": "Two-Arm Pre-Post Study", "benefits": ["↓ 43 reduction in anxiety", "↓ 41% reduction in depression", "↓ 42% reduction in PTSD symptoms", "↑ 78% increase in subjective calmness and inner balance", "↑ 82% reported improved sleep quality"], "subtopics": ["MH: Stress", "MH: Anxiety", "MH: Depression", "MH: Sleep", "SH: At-risk Communities"], "citation": "Tolstova and Afanasieva, 2026", "journal": "Scientific Journal of the National Academy of Internal Affairs", "affiliation": "Simon Kuznets Kharkiv National University of Economics, Kharkiv", "country": "Ukraine", "link": "https://lawscience.com.ua/web/uploads/pdf/Scientific%20Journal%20of%20the%20National%20Academy%20of%20Internal%20Affairs_31_1_2026_94-103.pdf", "rating": ""}];
-const DOMAINS = [{"id": "stress", "label": "Stress Reduction", "icon": "🌊", "tags": ["MH: Stress"], "color": "#7eb8d4", "angle": 0, "summary": "SKY significantly lowers cortisol, perceived stress, and stress-related biomarkers across diverse populations.", "count": 34, "studies": ["AHMAD_2016_01", "BAYLEY_2022_01", "CHANDRA_2017_01", "CHHAJER_2024_01", "DANIEL_2022_01", "DEUCHAR_2019_01", "GERBARG_2005_01", "GOLDSTEIN_2020_01", "GUPTA_2022_01", "JAYASHREE_2025_01", "KALE_2016_01", "KANCHIBHOTLA_2021a_01", "KANCHIBHOTLA_2021b_01", "KANCHIBHOTLA_2021c_01", "KANCHIBHOTLA_2021e_01", "KANCHIBHOTLA_2022_01", "KHADKA_2024_01", "KJELLGREN_2007_01", "KORKMAZ_2024_01", "KUMAR_2013_01", "LIU_2025_01", "MULLA_2014_01", "NEWMAN_2020_01", "PATHANIA_2022_01", "ROVNAGHI_2025_01", "SAATCIOGLU_2022_01", "SEPPALA_2014_01", "SHARMA_2003_01", "SLOAN_2021_01", "SUBRAMANIAN_2012_01", "VASUDEV_2020_01", "VEDAMURTHACHAR_2006_01", "YADAV_2021_01", "TOLSTOVA_2026_01"], "highlights": ["Reduces PTSD and depression symptoms in war veterans", "Improves breathing and lung capacity in medical students", "Improves reaction speed and focus in healthy adults"]}, {"id": "anxiety", "label": "Anxiety & PTSD", "icon": "🧘", "tags": ["MH: Anxiety"], "color": "#a78bda", "angle": 40, "summary": "Multiple RCTs show meaningful reductions in anxiety symptoms; sustained PTSD relief in veterans at 1-year follow-up.", "count": 19, "studies": ["AGTE_2008_01", "CHHAJER_2024_01", "DORIA_2015_01", "GUPTA_2022_01", "HAMILTON-WEST_2019_01", "KANCHIBHOTLA_2021b_01", "KATZMAN_2012_01", "KJELLGREN_2007_01", "KORKMAZ_2024_01", "LIN_2023_01", "PARIMALA_2021_01", "SEPPALA_2014_01", "SHIJU_2019_01", "SUREKA_2014_01", "TOSCHI-DIAS_2017_01", "TRIPATHI_2025_01", "VASUDEV_2020_01", "ARCHANA_2026_01", "TOLSTOVA_2026_01"], "highlights": ["Induces a deeply restful, wakeful brain state in practitioners", "Reduces anxiety and improves physical balance in healthy adults", "Reduces stress and anxiety in managers within one week"]}, {"id": "depression", "label": "Depression", "icon": "🌧", "tags": ["MH: Depression"], "color": "#88afc8", "angle": 80, "summary": "Consistent antidepressant-comparable effects across melancholia, dysthymia, and treatment-resistant depression.", "count": 18, "studies": ["DESCILO_2010_01", "HAMILTON-WEST_2019_01", "JANAKIRAMAIAH_1998_01", "JANAKIRAMAIAH_2000_01", "KANCHIBHOTLA_2021b_01", "KJELLGREN_2007_01", "KORKMAZ_2024_01", "MURTHY_1997_01", "MURTHY_1998_01", "SHARMA_2017_01", "SHIJU_2019_01", "SUREKA_2014_01", "TOSCHI-DIAS_2017_01", "TRIPATHI_2025_01", "UNUDURTHI_2023_01", "VANGALA_2000_01", "VEDAMURTHACHAR_2006_01", "TOLSTOVA_2026_01"], "highlights": ["Induces a deeply restful, wakeful brain state in practitioners", "Reduces depression and PTSD in tsunami survivors with lasting effects", "Reduces anxiety and depression symptoms in UK public healthcare patients"]}, {"id": "sleep", "label": "Sleep Quality", "icon": "🌙", "tags": ["MH: Sleep"], "color": "#7ab8a8", "angle": 120, "summary": "Regular practice triples deep sleep duration; improves REM sleep and reduces insomnia in clinical and general populations.", "count": 10, "studies": ["CHAUDHARI_2020_01", "GOLDSTEIN_2020_01", "KANCHIBHOTLA_2021b_01", "KANCHIBHOTLA_2021d_01", "KORKMAZ_2024_01", "MATHERSUL_2023_01", "PATHANIA_2022_01", "SLOAN_2020_01", "SULEKHA_2006_01", "TOLSTOVA_2026_01"], "highlights": ["Reduces daytime drowsiness in young adults, especially in those with obesity", "Reduces stress and improves wellbeing in college students", "Reduces stress, anxiety, and depression while improving resilience in healthcare professionals"]}, {"id": "cognition", "label": "Cognitive Function", "icon": "💡", "tags": ["MH: Cognition"], "color": "#d4a76a", "angle": 160, "summary": "Faster reaction times, improved working memory, enhanced focus and brain wave coherence in practitioners.", "count": 14, "studies": ["BHASKAR_2020_01", "BHATIA_2002_01", "BHATIA_2003_01", "CHANDRA_2016_01", "CHANDRA_2016_02", "CHANDRA_2017_01", "DANIEL_2022_01", "GHAHREMANI_2013_01", "GHOLAM_2021_01", "JADHAV_2016_01", "LIU_2025_01", "NEWMAN_2024_01", "SAATCIOGLU_2022_01", "SHARMA_2019_01"], "highlights": ["Improves self-control and planning in high school students", "Improves focus, self-identity, and reduces aggression in eighth-grade students", "Boosts alertness and relaxation while improving brain coordination in practitioners"]}, {"id": "happiness", "label": "Wellbeing", "icon": "☀️", "tags": ["MH: Happiness"], "color": "#e8c07a", "angle": 200, "summary": "Daily SKY practitioners are twice as likely to report happiness; significant gains in life satisfaction and resilience.", "count": 14, "studies": ["GOLDSTEIN_2020_01", "GUPTA_2022_01", "JYOTSNA_2012_01", "KANCHIBHOTLA_2021b_01", "KANCHIBHOTLA_2022_01", "KHADKA_2024_01", "KORKMAZ_2024_01", "LIU_2025_01", "PARIMALA_2021_01", "SEPPALA_2020_01", "SLOAN_2021_01", "SLOAN_2023_01", "SUBRAMANIAN_2025_01", "VANGALA_2000_01"], "highlights": ["Reduces stress and improves wellbeing in university students", "Reduces stress and improves wellbeing in college students", "Reduces altitude sickness symptoms and improves wellbeing in healthy participants"]}, {"id": "heart", "label": "Cardiovascular", "icon": "❤️", "tags": ["PH: Heart", "PH: Vagus Nerve"], "color": "#c47a7a", "angle": 240, "summary": "Improved HRV, normalised blood pressure, enhanced sympathovagal balance and cardiac autonomic function.", "count": 13, "studies": ["BHASKAR_2017_01", "BROWN_2005_01", "CHANDRA_2016_02", "CHHABRA_2024_01", "GOLDSTEIN_2016_01", "JYOTSNA_2013_01", "JYOTSNA_2014_01", "KALE_2016_01", "KHARYA_2014_01", "MATHERSUL_2022_01", "PARMAR_2014_01", "PATHANIA_2022_01", "TOSCHI-DIAS_2017_01"], "highlights": ["Improves heart recovery and stress regulation in young adults", "Improves heart recovery and stress response in healthy adults", "Enhances stress resilience and social connection through vagal activation"]}, {"id": "brain", "label": "Brain & Neuro", "icon": "🧠", "tags": ["PH: Brain"], "color": "#c4a8d4", "angle": 280, "summary": "Increased coherent brainwave activity; neuroprotective effects; EEG evidence of unique wakeful-restful states.", "count": 12, "studies": ["BHASKAR_2020_01", "BHATIA_2002_01", "BHATIA_2003_01", "CHANDRA_2016_01", "CHANDRA_2016_02", "CHANDRA_2017_01", "GHOLAM_2021_01", "KOPANSKA_2022_01", "MURTHY_1997_01", "MURTHY_1998_01", "SHARMA_2019_01", "TRIPATHI_2025_01"], "highlights": ["Induces a deeply restful, wakeful brain state in practitioners", "Boosts alertness and relaxation while improving brain coordination in practitioners", "Enhances deep relaxation and alertness in long-term practitioners"]}, {"id": "immunity", "label": "Immunity & Genes", "icon": "🛡️", "tags": ["PH: Immunity", "PH: Cancer", "PH: Genes"], "color": "#7ec49c", "angle": 320, "summary": "Elevated NK cell counts, altered gene expression in immune pathways, increased telomere length.", "count": 11, "studies": ["AYYILDIZ_2017_01", "BALASUBRAMANIAN_2025_01", "DAS_2002_01", "DHAWAN_2015_01", "KOCHUPILLAI_2005_01", "KUMAR_2013_01", "MONY_2024_01", "MONY_2025_01", "QU_2013_01", "SHARMA_2008_01", "WARNER_2012_01"], "highlights": ["Supports immune function at the cellular level in healthy adults", "Achieves zero relapse and improves quality of life in opioid-dependent users", "Triggers rapid and evolving gene expression changes linked to brain and immune health in healthy adults"]}];
 
-// ── Computed stats ──
-const rctCount = STUDIES.filter(s=>s.design&&/randomis|rct/i.test(s.design)).length;
-const countrySet = new Set();
-STUDIES.forEach(s=>s.country.split(',').forEach(c=>{const t=c.trim();if(t)countrySet.add(t)}));
-document.getElementById('stat-rcts').textContent = rctCount;
-document.getElementById('stat-countries').textContent = countrySet.size;
-document.getElementById('stat-studies').textContent = STUDIES.length;
 
-// ── STATE ──
-let activeDomain = null;
-let activeStudy  = null;
-
-// ── ATLAS SVG ──
-const SVG_NS = 'http://www.w3.org/2000/svg';
-const atlas  = document.getElementById('atlas');
-const R_ORBIT = 290;   // orbit radius
-const R_NODE  = 42;    // domain node circle
-const R_CORE  = 68;    // centre core radius
-
-function el(tag, attrs={}) {
-  const e = document.createElementNS(SVG_NS, tag);
-  for (const [k,v] of Object.entries(attrs)) e.setAttribute(k,v);
-  return e;
-}
-function txt(content, attrs={}) {
-  const e = el('text', attrs);
-  e.textContent = content;
-  return e;
-}
-
-function buildAtlas() {
-  atlas.innerHTML = '';
-
-  // ── Defs ──
-  const defs = el('defs');
-
-  // Radial gradient for core glow
-  const rg = el('radialGradient',{id:'coreGrad',cx:'50%',cy:'50%',r:'50%'});
-  const stops = [['0%','#4ecdc4','0.28'],['40%','#2aada4','0.16'],['100%','#0d1117','0']];
-  stops.forEach(([o,c,op])=>{const s=el('stop',{offset:o,'stop-color':c,'stop-opacity':op});rg.appendChild(s);});
-  defs.appendChild(rg);
-
-  // Glow filters for each domain color
-  DOMAINS.forEach(d=>{
-    const f = el('filter',{id:`glow-${d.id}`,x:'-50%',y:'-50%',width:'200%',height:'200%'});
-    const fe = el('feGaussianBlur',{stdDeviation:'4',result:'blur'});
-    const fm = el('feMerge');
-    const fn1 = el('feMergeNode',{in:'blur'});
-    const fn2 = el('feMergeNode',{in:'SourceGraphic'});
-    fm.appendChild(fn1); fm.appendChild(fn2);
-    f.appendChild(fe); f.appendChild(fm);
-    defs.appendChild(f);
-  });
-
-  // Core glow filter
-  const cf = el('filter',{id:'coreGlow',x:'-60%',y:'-60%',width:'220%',height:'220%'});
-  const cfb = el('feGaussianBlur',{stdDeviation:'18',result:'blur'});
-  const cfm = el('feMerge');
-  [el('feMergeNode',{in:'blur'}), el('feMergeNode',{in:'SourceGraphic'})].forEach(n=>cfm.appendChild(n));
-  cf.appendChild(cfb); cf.appendChild(cfm);
-  defs.appendChild(cf);
-
-  atlas.appendChild(defs);
-
-  // ── Background atmosphere ──
-  const bgGlow = el('circle',{cx:0,cy:0,r:340,fill:'url(#coreGrad)'});
-  atlas.appendChild(bgGlow);
-
-  // ── Orbit ring ──
-  const orbit = el('circle',{cx:0,cy:0,r:R_ORBIT,fill:'none',stroke:'rgba(255,255,255,.04)',
-    'stroke-width':'1','stroke-dasharray':'4 8'});
-  atlas.appendChild(orbit);
-
-  // ── Connector lines (domain → core) ──
-  const linesGroup = el('g',{id:'lines'});
-  DOMAINS.forEach(d=>{
-    const rad = d.angle * Math.PI / 180;
-    const nx = Math.cos(rad) * R_ORBIT;
-    const ny = Math.sin(rad) * R_ORBIT;
-    const cx2 = Math.cos(rad) * R_CORE;
-    const cy2 = Math.sin(rad) * R_CORE;
-    const line = el('line',{
-      x1:cx2, y1:cy2, x2:nx, y2:ny,
-      stroke:d.color, 'stroke-width':'1',
-      'stroke-opacity':'0.18',
-      'stroke-dasharray':'3 6',
-      id:`line-${d.id}`
-    });
-    linesGroup.appendChild(line);
-  });
-  atlas.appendChild(linesGroup);
-
-  // ── Centre core ──
-  const coreGroup = el('g',{id:'core'});
-  // Outer ambient ring
-  const coreRing2 = el('circle',{cx:0,cy:0,r:R_CORE+22,fill:'none',
-    stroke:'rgba(78,205,196,.08)','stroke-width':'1'});
-  const coreRing1 = el('circle',{cx:0,cy:0,r:R_CORE+10,fill:'none',
-    stroke:'rgba(78,205,196,.12)','stroke-width':'1'});
-  // Core circle
-  const coreCircle = el('circle',{cx:0,cy:0,r:R_CORE,
-    fill:'rgba(16,28,40,.9)','stroke':'''+'var(--teal)'','stroke-width':'1.2',
-    filter:'url(#coreGlow)',stroke:'rgba(78,205,196,.55)'});
-  // Core text
-  const coreN = txt('101',{x:0,y:-12,'text-anchor':'middle','dominant-baseline':'middle',
-    fill:'#4ecdc4','font-family':'"EB Garamond",serif','font-size':'32','font-weight':'600'});
-  const coreL1 = txt('Research',{x:0,y:10,'text-anchor':'middle',
-    fill:'rgba(168,180,192,.7)','font-family':'"DM Sans",sans-serif','font-size':'10.5','font-weight':'300'});
-  const coreL2 = txt('Findings',{x:0,y:24,'text-anchor':'middle',
-    fill:'rgba(168,180,192,.7)','font-family':'"DM Sans",sans-serif','font-size':'10.5','font-weight':'300'});
-  [coreRing2,coreRing1,coreCircle,coreN,coreL1,coreL2].forEach(n=>coreGroup.appendChild(n));
-  atlas.appendChild(coreGroup);
-
-  // ── Domain nodes ──
-  const nodesGroup = el('g',{id:'nodes'});
-  DOMAINS.forEach(d=>{
-    const rad = d.angle * Math.PI / 180;
-    const nx = Math.cos(rad) * R_ORBIT;
-    const ny = Math.sin(rad) * R_ORBIT;
-    const g  = el('g',{id:`node-${d.id}`,transform:`translate(${nx},${ny})`,cursor:'pointer',class:'domain-node'});
-
-    // Outer glow ring
-    const ring = el('circle',{cx:0,cy:0,r:R_NODE+8,
-      fill:'transparent',stroke:d.color,'stroke-width':'.6','stroke-opacity':'.22',
-      id:`ring-${d.id}`});
-    // Main circle
-    const circle = el('circle',{cx:0,cy:0,r:R_NODE,
-      fill:`rgba(13,17,23,.85)`,'stroke':d.color,'stroke-width':'1.4','stroke-opacity':'.55',
-      id:`circle-${d.id}`});
-
-    // Icon (emoji via foreignObject doesn't work in SVG cleanly; use text instead)
-    const icon = txt(d.icon,{x:0,y:-8,'text-anchor':'middle','dominant-baseline':'middle',
-      'font-size':'20',id:`icon-${d.id}`});
-    // Label
-    const labelWords = d.label.split(' ');
-    const labelY = labelWords.length > 1 ? 10 : 14;
-    if (labelWords.length > 1) {
-      const l1 = txt(labelWords.slice(0,Math.ceil(labelWords.length/2)).join(' '),{
-        x:0,y:8,'text-anchor':'middle',fill:d.color,
-        'font-family':'"DM Sans",sans-serif','font-size':'9.5','font-weight':'500'
-      });
-      const l2 = txt(labelWords.slice(Math.ceil(labelWords.length/2)).join(' '),{
-        x:0,y:19,'text-anchor':'middle',fill:d.color,
-        'font-family':'"DM Sans",sans-serif','font-size':'9.5','font-weight':'500'
-      });
-      [ring,circle,icon,l1,l2].forEach(n=>g.appendChild(n));
-    } else {
-      const label = txt(d.label,{x:0,y:14,'text-anchor':'middle',fill:d.color,
-        'font-family':'"DM Sans",sans-serif','font-size':'9.5','font-weight':'500'});
-      [ring,circle,icon,label].forEach(n=>g.appendChild(n));
-    }
-    // Count badge
-    const badgeCircle = el('circle',{cx:R_NODE-4,cy:-(R_NODE-4),r:11,
-      fill:'rgba(13,17,23,.95)',stroke:d.color,'stroke-width':'1','stroke-opacity':'.6'});
-    const badgeN = txt(d.count,{x:R_NODE-4,y:-(R_NODE-4),
-      'text-anchor':'middle','dominant-baseline':'middle',
-      fill:d.color,'font-family':'"DM Sans",sans-serif','font-size':'9','font-weight':'500'});
-    g.appendChild(badgeCircle); g.appendChild(badgeN);
-
-    // Hover / click
-    g.addEventListener('mouseenter',()=>highlightNode(d.id,true));
-    g.addEventListener('mouseleave',()=>{if(activeDomain!==d.id)highlightNode(d.id,false)});
-    g.addEventListener('click',()=>openDomain(d));
-    nodesGroup.appendChild(g);
-  });
-  atlas.appendChild(nodesGroup);
-}
-
-function highlightNode(id, on) {
-  const circle = document.getElementById(`circle-${id}`);
-  const ring   = document.getElementById(`ring-${id}`);
-  const line   = document.getElementById(`line-${id}`);
-  const d = DOMAINS.find(x=>x.id===id);
-  if (!circle||!d) return;
-  if (on) {
-    circle.setAttribute('stroke-opacity','1');
-    circle.setAttribute('fill',`rgba(28,40,58,.95)`);
-    ring.setAttribute('stroke-opacity','.55');
-    if(line){line.setAttribute('stroke-opacity','.55');line.setAttribute('stroke-dasharray','none');}
-  } else {
-    circle.setAttribute('stroke-opacity','.55');
-    circle.setAttribute('fill','rgba(13,17,23,.85)');
-    ring.setAttribute('stroke-opacity','.22');
-    if(line){line.setAttribute('stroke-opacity','.18');line.setAttribute('stroke-dasharray','3 6');}
-  }
-}
-
-// ── OPEN DOMAIN PANEL ──
-function openDomain(d) {
-  if (activeDomain) highlightNode(activeDomain, false);
-  activeDomain = d.id;
-  highlightNode(d.id, true);
-
-  const lbl = document.getElementById('panel-domain-label');
-  lbl.textContent = d.label;
-  lbl.style.background = d.color+'22';
-  lbl.style.color = d.color;
-
-  document.getElementById('panel-title').textContent = d.label;
-  document.getElementById('panel-summary').textContent = d.summary;
-
-  const domainStudies = STUDIES.filter(s=>d.tags.some(t=>s.subtopics.includes(t)));
-  const sorted = [...domainStudies].sort((a,b)=>(b.rating?1:0)-(a.rating?1:0));
-
-  const container = document.getElementById('panel-studies');
-  container.innerHTML = sorted.map((s,i)=>{
-    const sel = activeStudy?.id===s.id?' sel':'';
-    return `<div class="study-item${sel}" data-id="${s.id}">
-      <div class="study-item-hl">${s.highlight}</div>
-      <div class="study-item-meta">
-        <span class="smeta">👤 ${s.participant_type||s.population}</span>
-        <span class="smeta">⏱ ${s.duration||'—'}</span>
-        ${s.rating?`<span class="study-star">${s.rating}</span>`:''}
-      </div>
-    </div>`;
-  }).join('');
-  container.querySelectorAll('.study-item').forEach(el=>{
-    el.addEventListener('click',()=>openStudy(STUDIES.find(s=>s.id===el.dataset.id)));
-  });
-
-  document.getElementById('domain-panel').classList.add('open');
-  document.getElementById('nav-reset').classList.add('show');
-}
-
-// ── OPEN STUDY DRAWER ──
-function openStudy(s) {
-  if (!s) return;
-  activeStudy = s;
-  // refresh panel selection
-  document.querySelectorAll('.study-item').forEach(el=>el.classList.toggle('sel',el.dataset.id===s.id));
-
-  const tags = s.subtopics.map(t=>{
-    const cl=t.startsWith('PH')?'sdtag-ph':t.startsWith('MH')?'sdtag-mh':'sdtag-sh';
-    return `<span class="sdtag ${cl}">${t}</span>`;
-  }).join('');
-  const benefits = s.benefits.map(b=>{
-    const up=b.startsWith('↑'),dn=b.startsWith('↓');
-    return `<div class="sd-ben"><span class="sd-arr ${up?'a-up':dn?'a-dn':'a-nu'}">${up?'↑':dn?'↓':'·'}</span><span class="sd-bt">${b.replace(/^[↑↓·]\s*/,'')}</span></div>`;
-  }).join('');
-  const cite2 = [s.affiliation,s.country].filter(Boolean).join(' · ');
-
-  document.getElementById('sd-body').innerHTML = `
-    <div class="sd-title">${s.highlight}</div>
-    ${s.rating?`<div class="sd-star">${s.rating} Featured Study</div>`:''}
-    <div class="sd-tags">${tags}</div>
-    <div class="sd-grid">
-      <div class="sd-cell"><div class="sd-lbl2">Participants</div><div class="sd-val">${s.n&&s.n!=='-'?'n = '+s.n:'—'}</div></div>
-      <div class="sd-cell"><div class="sd-lbl2">Duration</div><div class="sd-val">${s.duration||'—'}</div></div>
-      <div class="sd-cell"><div class="sd-lbl2">Study Design</div><div class="sd-val">${s.design||'—'}</div></div>
-      <div class="sd-cell"><div class="sd-lbl2">Follow-up</div><div class="sd-val">${s.followup||'Not reported'}</div></div>
-      <div class="sd-cell"><div class="sd-lbl2">Participant Type</div><div class="sd-val">${s.participant_type||s.population}</div></div>
-      <div class="sd-cell"><div class="sd-lbl2">Year</div><div class="sd-val">${s.year||'—'}</div></div>
-    </div>
-    <div class="sd-blbl">Proven Benefits</div>
-    <div style="margin-bottom:16px">${benefits}</div>
-    <div class="sd-cite">
-      <div class="sd-c1">${s.citation}</div>
-      <div class="sd-c2">${s.journal}</div>
-      ${cite2?`<div class="sd-c2" style="margin-top:2px">${cite2}</div>`:''}
-    </div>
-    ${s.link?`<a href="${s.link}" target="_blank" rel="noopener" class="sd-link">
-      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5H11M7 2.5L11 6.5L7 10.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      View Published Study
-    </a>`:''}`;
-
-  document.getElementById('study-drawer').classList.add('open');
-}
-
-function closeStudy() {
-  document.getElementById('study-drawer').classList.remove('open');
-  document.querySelectorAll('.study-item').forEach(el=>el.classList.remove('sel'));
-  activeStudy = null;
-}
-document.getElementById('sd-close').onclick = closeStudy;
-
-function closeDomainPanel() {
-  document.getElementById('domain-panel').classList.remove('open');
-  closeStudy();
-  if (activeDomain) { highlightNode(activeDomain,false); activeDomain=null; }
-  document.getElementById('nav-reset').classList.remove('show');
-}
-document.getElementById('panel-close').onclick = closeDomainPanel;
-
-// ── SEARCH ──
-let _st;
-document.getElementById('search-input').addEventListener('input', e=>{
-  clearTimeout(_st);
-  const v = e.target.value.trim();
-  document.getElementById('srch-clr').classList.toggle('show', v.length>0);
-  _st = setTimeout(()=>doSearch(v), 200);
-});
-document.getElementById('srch-clr').addEventListener('click',()=>{
-  document.getElementById('search-input').value='';
-  document.getElementById('srch-clr').classList.remove('show');
-  closeSearch();
-});
-
-function doSearch(q) {
-  if (!q) { closeSearch(); return; }
-  const ql = q.toLowerCase();
-  const results = STUDIES.filter(s=>{
-    const hay = [s.highlight,s.population,s.participant_type,s.journal,
-                 s.affiliation,s.country,s.citation,...s.subtopics,...s.benefits].join(' ').toLowerCase();
-    return hay.includes(ql);
-  });
-  const sr = document.getElementById('search-results');
-  document.getElementById('sr-count').textContent = `${results.length} finding${results.length!==1?'s':''} matching "${q}"`;
-  document.getElementById('sr-list').innerHTML = results.length
-    ? results.map((s,i)=>`<div class="sr-item fade-in" data-id="${s.id}" style="animation-delay:${i*18}ms">
-        <div class="sr-num">${STUDIES.indexOf(s)+1} ${s.rating||''}</div>
-        <div class="sr-hl">${s.highlight}</div>
-        <div class="sr-meta">${s.participant_type||s.population} &nbsp;·&nbsp; ${s.duration||'—'} &nbsp;·&nbsp; ${s.country}</div>
-      </div>`).join('')
-    : `<div style="padding:40px 0;text-align:center;color:var(--ink3)">No findings matched your search.</div>`;
-  document.querySelectorAll('.sr-item').forEach(el=>{
-    el.addEventListener('click',()=>{
-      closeSearch();
-      const s = STUDIES.find(x=>x.id===el.dataset.id);
-      const dom = DOMAINS.find(d=>d.tags.some(t=>s.subtopics.includes(t)));
-      if(dom) openDomain(dom);
-      setTimeout(()=>openStudy(s),150);
-    });
-  });
-  sr.classList.add('open');
-}
-
-function closeSearch() {
-  document.getElementById('search-results').classList.remove('open');
-}
-
-function resetAll() {
-  closeDomainPanel();
-  closeSearch();
-  document.getElementById('search-input').value='';
-  document.getElementById('srch-clr').classList.remove('show');
-  document.getElementById('nav-reset').classList.remove('show');
-}
-window.resetAll = resetAll;
-
-// ── INIT ──
-buildAtlas();
-
-// Subtle ambient animation — pulse core
-let t=0;
-function ambientTick() {
-  t += 0.015;
-  const coreCircle = atlas.querySelector('#core circle:nth-child(3)');
-  if(coreCircle) {
-    const op = 0.45 + Math.sin(t)*0.2;
-    coreCircle.setAttribute('stroke-opacity', op.toFixed(3));
-  }
-  // Slowly rotate orbit ring dash
-  const orbit = atlas.querySelector('circle[stroke-dasharray]');
-  if(orbit) {
-    const offset = (t*6)%20;
-    orbit.setAttribute('stroke-dashoffset', offset.toFixed(1));
-  }
-  requestAnimationFrame(ambientTick);
-}
-ambientTick();
-</script>
-  // ─────────────────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // CONFIG — update CSV_FILE to match your filename if you rename it
 // ─────────────────────────────────────────────────────────────────────────────
 const CSV_FILE = 'sky_data.csv';
+const FILTER_REPUTATION = 'Acceptable'; // only rows matching this are shown
+const PER_PAGE = 10;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAXONOMY CONFIG — derived from dataset, update if schema changes
+// ─────────────────────────────────────────────────────────────────────────────
+const PH_LEFT  = ['PH: Brain','PH: Breath / Lungs','PH: Vagus Nerve','PH: Gut Health','PH: Genes'];
+const PH_RIGHT = ['PH: Heart','PH: Biomarkers','PH: Immunity','PH: Diabetes','PH: Cancer'];
+const MH_ORDER = ['MH: Stress','MH: Anxiety','MH: Depression','MH: Sleep','MH: Cognition','MH: Happiness'];
+const POP_ORDER= ['General Population','Patients','Youth & Students','At-risk Communities','Professionals','Practitioners / Meditators','Women'];
+const POP_ICONS= {
+  'General Population':'🧑','Patients':'🏥','Youth & Students':'🎓',
+  'At-risk Communities':'🛡️','Professionals':'💼','Practitioners / Meditators':'🧘','Women':'♀️'
+};
+const PH_ICONS = {
+  'PH: Brain':'🧠','PH: Heart':'❤️','PH: Breath / Lungs':'🫁',
+  'PH: Vagus Nerve':'⚡','PH: Biomarkers':'🔬','PH: Immunity':'🛡️',
+  'PH: Genes':'🧬','PH: Diabetes':'💉','PH: Cancer':'🎗️','PH: Gut Health':'🫄'
+};
+const MH_ICONS = {
+  'MH: Stress':'🌊','MH: Anxiety':'💭','MH: Depression':'🌧️',
+  'MH: Sleep':'🌙','MH: Cognition':'💡','MH: Happiness':'☀️'
+};
+// Positions for mental health nodes (% left, % top) around the head centre
+const MH_POS = {
+  'MH: Stress':    [3,  6],
+  'MH: Anxiety':   [54, 3],
+  'MH: Depression':[70, 34],
+  'MH: Sleep':     [62, 68],
+  'MH: Cognition': [32, 76],
+  'MH: Happiness': [2,  56],
+};
+const DUR_BUCKETS = [
+  {
+    label:'Short-Term', icon:'⚡', range:'Single session – 4 weeks',
+    sublabel:'≤ 4 Weeks',
+    match: s => {
+      const d = s.duration;
+      if (!d || d==='-') return false;
+      if (/single/i.test(d)) return true;
+      const dm = d.match(/^(\d+)\s*day/i);   if (dm && +dm[1] <= 30) return true;
+      const wm = d.match(/^(\d+)\s*week/i);  if (wm && +wm[1] <= 4) return true;
+      const mm = d.match(/^(\d+)\s*month/i); if (mm && +mm[1] <= 1) return true;
+      return false;
+    }
+  },
+  {
+    label:'Medium-Term', icon:'📅', range:'5 weeks – 6 months',
+    sublabel:'5 Wks – 6 Months',
+    match: s => {
+      const d = s.duration;
+      if (!d || d==='-') return false;
+      const wm = d.match(/^(\d+)\s*week/i);  if (wm && +wm[1] >= 5) return true;
+      const mm = d.match(/^(\d+)\s*month/i); if (mm && +mm[1] >= 2 && +mm[1] <= 6) return true;
+      if (/90\s*day/i.test(d)) return true;
+      return false;
+    }
+  },
+  {
+    label:'Long-Term', icon:'🌿', range:'> 6 months / ongoing',
+    sublabel:'> 6 Months',
+    match: s => {
+      const d = s.duration;
+      if (!d || d==='-') return false;
+      if (/long.term|year|\d\+\s*year/i.test(d)) return true;
+      const mm = d.match(/^(\d+)\s*month/i); if (mm && +mm[1] > 6) return true;
+      return false;
+    }
+  },
+];
 const FILTER_REPUTATION = 'Acceptable'; // only rows matching this are shown
 const PER_PAGE = 10;
 
@@ -629,5 +592,762 @@ const COUNTRY_COORDS = {
   Kuwait:[47.5,29.3],'South Africa':[25.1,-29]
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────────────────────────────────────
+let STUDIES = [];
+let state = {
+  search:'', phFilter:[], mhFilter:[], popFilter:'', durFilter:'', countryFilter:'',
+  sort:{col:'rating_sort', dir:'desc'},
+  page:1, view:'line', selected:null
+};
+let geoBuilt = false;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV PARSER
+// ─────────────────────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.split(/\r?\n/);
+  const headers = splitCSVLine(lines[0]);
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    const vals = splitCSVLine(lines[i]);
+    const row = {};
+    headers.forEach((h, j) => row[h.trim()] = (vals[j] || '').trim());
+    rows.push(row);
+  }
+  return rows;
+}
+function splitCSVLine(line) {
+  const result = []; let cur = ''; let inQ = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') {
+      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+      else inQ = !inQ;
+    } else if (ch === ',' && !inQ) { result.push(cur); cur = ''; }
+    else cur += ch;
+  }
+  result.push(cur);
+  return result;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOAD DATA
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const resp = await fetch(CSV_FILE);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+    const raw = parseCSV(text);
+    // Filter by reputation, map fields, add sort key
+    STUDIES = raw
+      .filter(r => r['Journal Reputation'] === FILTER_REPUTATION)
+      .map((r, idx) => {
+        const subtopics = r['Subtopic'].split(',').map(s=>s.trim()).filter(Boolean);
+        const benefits  = r['Proven Benefits Statement'].split('|').map(s=>s.trim()).filter(Boolean);
+        const aff = (r['Corresponding Author Affiliation']||'').replace(/\s+/g,' ').trim();
+        const rating = (r['Rating']||'').trim();
+        return {
+          idx,
+          id:       r['Flashcard ID'],
+          serial:   r['Serial No'],
+          year:     r['Year'],
+          highlight:r['Highlight'] || benefits[0] || '',
+          population:    r['Study Population'],
+          participant_type: r['Participant Type'],
+          n:        r['Participants (n)'],
+          duration: r['Intervention Duration'],
+          followup: r['Follow-up Timepoints'],
+          design:   r['Study Design'],
+          benefits,
+          subtopics,
+          citation: r['Citation Short'],
+          journal:  r['Journal'],
+          affiliation: aff,
+          country:  r['Country'],
+          link:     r['Link to Published Study'],
+          rating,
+          rating_sort: rating ? 1 : 0,  // starred = 1, unstarred = 0
+        };
+      });
+    document.getElementById('loading-state').style.display='none';
+    document.getElementById('app-content').style.display='block';
+    initApp();
+  } catch(e) {
+    console.error(e);
+    document.getElementById('loading-state').style.display='none';
+    document.getElementById('error-state').style.display='block';
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAXONOMY (computed from loaded data)
+// ─────────────────────────────────────────────────────────────────────────────
+function tagCount(tag) { return STUDIES.filter(s=>s.subtopics.includes(tag)).length; }
+function popCount(p)   { return STUDIES.filter(s=>s.population===p).length; }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FILTER ENGINE
+// ─────────────────────────────────────────────────────────────────────────────
+function applyFilters() {
+  return STUDIES.filter(s => {
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      const hay = [s.highlight, s.population, s.participant_type, s.journal,
+                   s.affiliation, s.country, s.citation, s.year,
+                   ...s.subtopics, ...s.benefits].join(' ').toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (state.phFilter.length && !state.phFilter.some(t=>s.subtopics.includes(t))) return false;
+    if (state.mhFilter.length && !state.mhFilter.some(t=>s.subtopics.includes(t))) return false;
+    if (state.popFilter && s.population !== state.popFilter) return false;
+    if (state.durFilter) {
+      const b = DUR_BUCKETS.find(b=>b.label===state.durFilter);
+      if (b && !b.match(s)) return false;
+    }
+    if (state.countryFilter) {
+      const cs = s.country.split(',').map(c=>c.trim());
+      if (!cs.includes(state.countryFilter)) return false;
+    }
+    return true;
+  });
+}
+
+function sortedFiltered() {
+  const filtered = applyFilters();
+  return [...filtered].sort((a,b) => {
+    let va = a[state.sort.col]; let vb = b[state.sort.col];
+    if (va == null) va = ''; if (vb == null) vb = '';
+    if (typeof va === 'string') { va = va.toLowerCase(); vb = vb.toLowerCase(); }
+    if (va === vb) return 0;
+    const dir = state.sort.dir === 'asc' ? 1 : -1;
+    return va > vb ? dir : -dir;
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: PHYSICAL BODY EXPLORER
+// ─────────────────────────────────────────────────────────────────────────────
+function buildBodyExplorer() {
+  const wrap = document.getElementById('body-explorer');
+  const leftTags  = PH_LEFT.filter(t => tagCount(t) > 0);
+  const rightTags = PH_RIGHT.filter(t => tagCount(t) > 0);
+
+  // Icon + colour mapping per tag
+  const tagStyle = {
+    'PH: Brain':         {ico:'🧠', cls:'rbn-teal'},
+    'PH: Breath / Lungs':{ico:'🫁', cls:'rbn-teal'},
+    'PH: Vagus Nerve':   {ico:'⚡', cls:'rbn-teal'},
+    'PH: Gut Health':    {ico:'🍃', cls:'rbn-teal'},
+    'PH: Genes':         {ico:'🧬', cls:'rbn-teal'},
+    'PH: Heart':         {ico:'❤️', cls:'rbn-teal'},
+    'PH: Biomarkers':    {ico:'🔬', cls:'rbn-teal'},
+    'PH: Immunity':      {ico:'🛡️', cls:'rbn-teal'},
+    'PH: Diabetes':      {ico:'💉', cls:'rbn-teal'},
+    'PH: Cancer':        {ico:'🎗️', cls:'rbn-teal'},
+  };
+
+  function nodeHTML(tag, side) {
+    const s = tagStyle[tag] || {ico:'●', cls:'rbn-teal'};
+    const on = state.phFilter.includes(tag) ? ' on' : '';
+    const label = tag.replace('PH: ','');
+    const count = tagCount(tag);
+    const isLeft = side === 'l';
+    return `<span class="rich-bnode ${s.cls}${on}${isLeft?' rich-bnode-l':''}" data-tag="${tag}">
+      <span class="rbn-ico">${s.ico}</span>
+      <span class="rbn-text">
+        <span class="rbn-label">${label}</span>
+        <span class="rbn-count">${count} studies</span>
+      </span>
+    </span>`;
+  }
+
+  // Body figure SVG — detailed anatomical silhouette
+  const bodySVG = `<svg class="body-figure-svg" viewBox="0 0 140 310" width="130" height="290" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <linearGradient id="bfg1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#b8ddd6"/><stop offset="100%" stop-color="#d8eeea"/>
+  </linearGradient>
+  <linearGradient id="bfg2" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#e8f6f3"/><stop offset="100%" stop-color="#c6e8e2"/>
+  </linearGradient>
+  <radialGradient id="bfglow" cx="50%" cy="30%" r="60%">
+    <stop offset="0%" stop-color="#e0f5f0" stop-opacity=".9"/>
+    <stop offset="100%" stop-color="#d0ede8" stop-opacity=".4"/>
+  </radialGradient>
+</defs>
+<!-- head -->
+<ellipse cx="70" cy="30" rx="26" ry="28" fill="url(#bfglow)" stroke="#12a68c" stroke-width="1.4" opacity=".82"/>
+<!-- neck -->
+<path d="M58 56 Q60 66 70 68 Q80 66 82 56 L80 58 Q75 64 70 65 Q65 64 60 58Z" fill="url(#bfg1)" stroke="#12a68c" stroke-width="1" opacity=".72"/>
+<!-- shoulders/torso outline -->
+<path d="M30 75 Q18 82 16 120 Q15 148 18 168 Q22 180 70 182 Q118 180 122 168 Q125 148 124 120 Q122 82 110 75 Q95 70 70 70 Q45 70 30 75Z"
+  fill="url(#bfg1)" stroke="#12a68c" stroke-width="1.3" opacity=".75"/>
+<!-- left arm -->
+<path d="M30 78 Q14 100 12 150 Q12 162 19 164 Q26 165 27 152 Q26 108 36 88Z"
+  fill="url(#bfg2)" stroke="#12a68c" stroke-width="1" opacity=".62"/>
+<!-- right arm -->
+<path d="M110 78 Q126 100 128 150 Q128 162 121 164 Q114 165 113 152 Q114 108 104 88Z"
+  fill="url(#bfg2)" stroke="#12a68c" stroke-width="1" opacity=".62"/>
+<!-- left leg -->
+<path d="M42 180 Q36 230 36 278 Q36 288 44 288 Q52 288 52 278 Q52 234 54 182Z"
+  fill="url(#bfg2)" stroke="#12a68c" stroke-width="1" opacity=".62"/>
+<!-- right leg -->
+<path d="M98 180 Q104 230 104 278 Q104 288 96 288 Q88 288 88 278 Q88 234 86 182Z"
+  fill="url(#bfg2)" stroke="#12a68c" stroke-width="1" opacity=".62"/>
+<!-- brain highlight -->
+<ellipse cx="70" cy="24" rx="16" ry="14" fill="rgba(10,120,101,.13)" stroke="none"/>
+<!-- heart -->
+<path d="M60 105 Q58 98 65 98 Q68 98 70 102 Q72 98 75 98 Q82 98 80 105 Q78 112 70 118 Q62 112 60 105Z"
+  fill="rgba(196,122,122,.55)" stroke="rgba(196,80,80,.5)" stroke-width=".8"/>
+<!-- left lung -->
+<path d="M38 104 Q32 110 32 132 Q32 142 40 144 Q48 144 50 134 Q52 118 48 104Z"
+  fill="rgba(120,160,196,.38)" stroke="rgba(60,120,180,.35)" stroke-width=".8"/>
+<!-- right lung -->
+<path d="M102 104 Q108 110 108 132 Q108 142 100 144 Q92 144 90 134 Q88 118 92 104Z"
+  fill="rgba(120,160,196,.38)" stroke="rgba(60,120,180,.35)" stroke-width=".8"/>
+<!-- gut/digestive -->
+<path d="M52 148 Q44 154 46 168 Q48 180 58 180 Q60 170 64 162 Q60 156 52 148Z"
+  fill="rgba(210,160,80,.35)" stroke="rgba(180,130,40,.35)" stroke-width=".8"/>
+<path d="M88 148 Q96 154 94 168 Q92 180 82 180 Q80 170 76 162 Q80 156 88 148Z"
+  fill="rgba(210,160,80,.35)" stroke="rgba(180,130,40,.35)" stroke-width=".8"/>
+<ellipse cx="70" cy="160" rx="16" ry="12" fill="rgba(200,150,70,.3)" stroke="rgba(180,130,40,.3)" stroke-width=".8"/>
+<!-- spine hint -->
+<line x1="70" y1="70" x2="70" y2="182" stroke="rgba(10,120,101,.2)" stroke-width="1.5" stroke-dasharray="2 4"/>
+</svg>`;
+
+  wrap.innerHTML = `
+    <div class="body-explorer-wrap">
+      <div class="body-side-nodes body-side-nodes-l" id="body-nodes-l">
+        ${leftTags.map(t => nodeHTML(t,'l')).join('')}
+      </div>
+      <div class="body-svg-col">
+        <svg class="body-connector-svg" id="body-conn-svg"></svg>
+        ${bodySVG}
+      </div>
+      <div class="body-side-nodes body-side-nodes-r" id="body-nodes-r">
+        ${rightTags.map(t => nodeHTML(t,'r')).join('')}
+      </div>
+    </div>`;
+
+  wrap.querySelectorAll('.rich-bnode[data-tag]').forEach(el => {
+    el.addEventListener('click', () => {
+      const t = el.dataset.tag;
+      const i = state.phFilter.indexOf(t);
+      i > -1 ? state.phFilter.splice(i,1) : state.phFilter.push(t);
+      state.page = 1; refresh();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: MENTAL HEALTH EXPLORER
+// ─────────────────────────────────────────────────────────────────────────────
+function buildMindExplorer() {
+  const wrap = document.getElementById('mind-explorer');
+
+  const mhStyle = {
+    'MH: Stress':     {ico:'🌊', x:'5%',  y:'28%'},
+    'MH: Anxiety':    {ico:'🧘', x:'35%', y:'2%'},
+    'MH: Depression': {ico:'🌧', x:'72%', y:'14%'},
+    'MH: Sleep':      {ico:'🌙', x:'74%', y:'58%'},
+    'MH: Cognition':  {ico:'💡', x:'38%', y:'76%'},
+    'MH: Happiness':  {ico:'☀️', x:'4%',  y:'62%'},
+  };
+
+  // Brain SVG — detailed stylised brain
+  const brainSVG = `<svg viewBox="0 0 110 100" width="110" height="100" xmlns="http://www.w3.org/2000/svg" style="display:block">
+<defs>
+  <radialGradient id="brg1" cx="40%" cy="35%" r="60%">
+    <stop offset="0%" stop-color="#d4b8e8" stop-opacity="1"/>
+    <stop offset="60%" stop-color="#b89cd4" stop-opacity="1"/>
+    <stop offset="100%" stop-color="#9880c0" stop-opacity="1"/>
+  </radialGradient>
+  <radialGradient id="brg2" cx="60%" cy="30%" r="50%">
+    <stop offset="0%" stop-color="#e2d0f4"/>
+    <stop offset="100%" stop-color="#c4a8e0"/>
+  </radialGradient>
+  <filter id="brainGlow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="3" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <radialGradient id="bgHalo" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="rgba(167,139,218,.18)"/>
+    <stop offset="100%" stop-color="rgba(167,139,218,0)"/>
+  </radialGradient>
+</defs>
+<!-- halo -->
+<ellipse cx="55" cy="52" rx="52" ry="48" fill="url(#bgHalo)"/>
+<!-- left hemisphere -->
+<path d="M16 54 Q10 40 16 26 Q22 12 38 10 Q50 8 56 18 Q62 10 72 10 Q88 10 96 26 Q102 40 98 56 Q94 68 82 74 Q70 80 56 78 Q42 76 30 70 Q20 64 16 54Z"
+  fill="url(#brg1)" stroke="rgba(140,100,200,.5)" stroke-width="1.2" filter="url(#brainGlow)" opacity=".92"/>
+<!-- brain fold lines - left -->
+<path d="M30 30 Q36 22 44 26 Q50 30 46 38" fill="none" stroke="rgba(100,60,160,.35)" stroke-width="1.2" stroke-linecap="round"/>
+<path d="M20 46 Q26 36 36 40 Q42 44 40 52" fill="none" stroke="rgba(100,60,160,.3)" stroke-width="1.1" stroke-linecap="round"/>
+<path d="M22 58 Q30 50 40 56 Q46 60 44 68" fill="none" stroke="rgba(100,60,160,.3)" stroke-width="1" stroke-linecap="round"/>
+<!-- brain fold lines - right -->
+<path d="M80 30 Q74 22 66 26 Q60 30 64 38" fill="none" stroke="rgba(100,60,160,.35)" stroke-width="1.2" stroke-linecap="round"/>
+<path d="M90 46 Q84 36 74 40 Q68 44 70 52" fill="none" stroke="rgba(100,60,160,.3)" stroke-width="1.1" stroke-linecap="round"/>
+<path d="M88 58 Q80 50 70 56 Q64 60 66 68" fill="none" stroke="rgba(100,60,160,.3)" stroke-width="1" stroke-linecap="round"/>
+<!-- centre divide -->
+<line x1="56" y1="10" x2="56" y2="78" stroke="rgba(120,80,180,.25)" stroke-width="1" stroke-dasharray="2 3"/>
+<!-- subtle glow spots -->
+<circle cx="36" cy="34" r="6" fill="rgba(200,170,240,.22)"/>
+<circle cx="76" cy="34" r="6" fill="rgba(200,170,240,.22)"/>
+<circle cx="56" cy="52" r="8" fill="rgba(200,170,240,.15)"/>
+</svg>`;
+
+  // Build node HTML
+  function mnodeHTML(tag) {
+    const st = mhStyle[tag];
+    if (!st) return '';
+    const on = state.mhFilter.includes(tag) ? ' on' : '';
+    const label = tag.replace('MH: ','');
+    const count = tagCount(tag);
+    return `<div class="rich-mnode rmn-rose${on}" data-tag="${tag}" style="left:${st.x};top:${st.y}">
+      <div class="rmn-ico">${st.ico}</div>
+      <div class="rmn-label">${label}</div>
+      <div class="rmn-count">${count}</div>
+    </div>`;
+  }
+
+  wrap.innerHTML = `
+    <div class="mind-explorer-wrap">
+      <div class="mind-bg-circle"></div>
+      <svg class="mind-orbit-svg" id="mind-orbit-svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <ellipse cx="50" cy="50" rx="46" ry="44" fill="none" stroke="rgba(167,139,218,.14)" stroke-width=".4" stroke-dasharray="2 5"/>
+        <ellipse cx="50" cy="50" rx="36" ry="34" fill="none" stroke="rgba(167,139,218,.09)" stroke-width=".4" stroke-dasharray="1 8"/>
+      </svg>
+      <div class="mind-center-img">${brainSVG}</div>
+      ${MH_ORDER.filter(t => tagCount(t) > 0).map(t => mnodeHTML(t)).join('')}
+    </div>`;
+
+  wrap.querySelectorAll('.rich-mnode[data-tag]').forEach(el => {
+    el.addEventListener('click', () => {
+      const t = el.dataset.tag;
+      const i = state.mhFilter.indexOf(t);
+      i > -1 ? state.mhFilter.splice(i,1) : state.mhFilter.push(t);
+      state.page = 1; refresh();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: POPULATION BARS
+// ─────────────────────────────────────────────────────────────────────────────
+function buildPopList() {
+  const wrap = document.getElementById('pop-list');
+  const counts = POP_ORDER.map(p => ({ pop:p, count:popCount(p) })).filter(d=>d.count>0);
+  const total = STUDIES.length;
+  const max = Math.max(...counts.map(d=>d.count));
+  wrap.innerHTML = counts.map(d => {
+    const on = state.popFilter === d.pop ? ' on' : '';
+    const pct = Math.round(d.count/total*100);
+    const barW = Math.round(d.count/max*100);
+    const ico = POP_ICONS[d.pop] || '👤';
+    return `<div class="pop-row${on}" data-pop="${d.pop}">
+      <span class="pop-ico">${ico}</span>
+      <span class="pop-lbl">${d.pop}</span>
+      <div class="pop-track"><div class="pop-fill" style="width:${barW}%"></div></div>
+      <span class="pop-pct">${pct}%</span>
+    </div>`;
+  }).join('');
+  wrap.querySelectorAll('.pop-row').forEach(el => {
+    el.addEventListener('click', () => {
+      state.popFilter = state.popFilter === el.dataset.pop ? '' : el.dataset.pop;
+      state.page = 1; refresh();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: DURATION TIMELINE
+// ─────────────────────────────────────────────────────────────────────────────
+function buildDurExplorer() {
+  const wrap = document.getElementById('dur-explorer');
+  const total = STUDIES.length;
+  const counts = DUR_BUCKETS.map(b => STUDIES.filter(b.match).length);
+  const maxCount = Math.max(...counts, 1);
+
+  let h = `<div class="dur-rich-wrap">
+    <div class="dur-segments">`;
+
+  DUR_BUCKETS.forEach((b, i) => {
+    const on = state.durFilter === b.label ? ' on' : '';
+    const barW = Math.round(counts[i] / maxCount * 100);
+    h += `<div class="dur-seg${on}" data-lbl="${b.label}">
+      <span class="dur-seg-ico">${b.icon}</span>
+      <div class="dur-seg-title">${b.label}</div>
+      <div class="dur-seg-range">${b.sublabel}</div>
+      <div class="dur-seg-bar"><div class="dur-seg-fill" style="width:${barW}%"></div></div>
+      <div class="dur-seg-count">${counts[i]} studies</div>
+    </div>`;
+  });
+
+  h += `</div></div>`;
+  wrap.innerHTML = h;
+
+  wrap.querySelectorAll('.dur-seg').forEach(el => {
+    el.addEventListener('click', () => {
+      state.durFilter = state.durFilter === el.dataset.lbl ? '' : el.dataset.lbl;
+      state.page = 1; refresh();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD: GEO MAP
+// ─────────────────────────────────────────────────────────────────────────────
+function buildGeoMap() {
+  if (geoBuilt) return; geoBuilt = true;
+  const W=500, H=155;
+  const svg = d3.select('#geo-svg').attr('viewBox',`0 0 ${W} ${H}`);
+  const proj = d3.geoNaturalEarth1().scale(80).translate([W/2, H/2+6]);
+  const pathGen = d3.geoPath(proj);
+  const tt = document.getElementById('geo-tt');
+
+  // Build country data from loaded studies
+  const cdata = {};
+  STUDIES.forEach(s => {
+    s.country.split(',').forEach(raw => {
+      const c = raw.trim();
+      if (!c) return;
+      if (!cdata[c]) cdata[c] = { count:0, affs:new Set() };
+      cdata[c].count++;
+      if (s.affiliation) cdata[c].affs.add(s.affiliation.split(',')[0].trim().slice(0,44));
+    });
+  });
+  const maxC = Math.max(...Object.values(cdata).map(d=>d.count), 1);
+  const rScale = d3.scaleSqrt([1, maxC], [5, 16]);
+
+  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
+    svg.append('g').selectAll('path')
+      .data(topojson.feature(world, world.objects.countries).features)
+      .join('path').attr('d', pathGen)
+      .attr('fill','#d4ccbe').attr('stroke','#f1ede5').attr('stroke-width',.32);
+
+    Object.entries(COUNTRY_COORDS).forEach(([country,[lon,lat]]) => {
+      const cd = cdata[country];
+      if (!cd || !cd.count) return;
+      const pt = proj([lon, lat]);
+      if (!pt) return;
+      const [x,y] = pt;
+      const affsText = [...cd.affs].slice(0,2).join(', ');
+      svg.append('circle')
+        .attr('cx',x).attr('cy',y).attr('r', rScale(cd.count))
+        .attr('class','geo-bubble').attr('data-country', country)
+        .attr('fill','rgba(18,166,140,.62)').attr('stroke','rgba(10,120,101,.42)')
+        .attr('stroke-width',1.4).attr('cursor','pointer')
+        .on('mouseenter', function(e) {
+          if (state.countryFilter !== country) d3.select(this).attr('fill','rgba(10,120,101,.88)');
+          tt.style.display='block';
+          tt.innerHTML=`<strong>${country}</strong>${cd.count} ${cd.count===1?'study':'studies'}${affsText?`<br><span style="opacity:.62;font-size:10.5px">${affsText}</span>`:''}`;
+        })
+        .on('mousemove', e => { tt.style.left=(e.clientX+14)+'px'; tt.style.top=(e.clientY-10)+'px'; })
+        .on('mouseleave', function() {
+          d3.select(this).attr('fill', state.countryFilter===country?'#0a7865':'rgba(18,166,140,.62)');
+          tt.style.display='none';
+        })
+        .on('click', function() {
+          state.countryFilter = state.countryFilter === country ? '' : country;
+          state.page = 1; refresh();
+        });
+    });
+  }).catch(() => {
+    svg.append('text').attr('x',W/2).attr('y',H/2).attr('text-anchor','middle')
+      .attr('font-size',12).attr('fill','#999').text('Map unavailable — search by country name');
+  });
+}
+
+function refreshGeoBubbles() {
+  d3.selectAll('.geo-bubble').each(function() {
+    const c = this.getAttribute('data-country');
+    const on = state.countryFilter === c;
+    d3.select(this)
+      .attr('fill', on ? '#0a7865' : 'rgba(18,166,140,.62)')
+      .attr('stroke', on ? '#075c4d' : 'rgba(10,120,101,.42)');
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATABASE — LINE VIEW
+// ─────────────────────────────────────────────────────────────────────────────
+function renderLineView(pageStudies) {
+  const tbody = document.getElementById('ev-body');
+  const empty = document.getElementById('ev-empty');
+  if (!pageStudies.length && state.page === 1) {
+    tbody.innerHTML = ''; empty.style.display = 'block'; return;
+  }
+  empty.style.display = 'none';
+  tbody.innerHTML = pageStudies.map(s => {
+    const num = s.idx + 1;
+    const tags = s.subtopics.slice(0,3).map(t => {
+      const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
+      return `<span class="stag ${cl}">${t}</span>`;
+    }).join('');
+    const star = s.rating ? `<span class="sno-star">${s.rating}</span>` : '';
+    const sel = state.selected?.id === s.id ? ' sel' : '';
+    return `<tr class="study-row${sel}" data-id="${s.id}">
+      <td class="sno">${num}${star}</td>
+      <td><div class="s-hl">${s.highlight}</div><div class="s-tags">${tags}</div></td>
+      <td style="font-size:12px;color:var(--ink3)">${s.participant_type||s.population}</td>
+      <td style="font-size:12px;color:var(--ink3)">${s.duration||'—'}</td>
+      <td class="row-chevron">›</td>
+    </tr>`;
+  }).join('');
+  tbody.querySelectorAll('.study-row').forEach(row => {
+    row.addEventListener('click', () => openDrawer(STUDIES.find(s=>s.id===row.dataset.id)));
+  });
+}
+
+// DATABASE — CARD VIEW
+function renderCardView(pageStudies) {
+  const grid = document.getElementById('card-grid');
+  const empty = document.getElementById('card-empty');
+  if (!pageStudies.length && state.page === 1) {
+    grid.innerHTML = ''; empty.style.display = 'block'; return;
+  }
+  empty.style.display = 'none';
+  grid.innerHTML = pageStudies.map(s => {
+    const num = s.idx + 1;
+    const tags = s.subtopics.slice(0,3).map(t => {
+      const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
+      return `<span class="stag ${cl}">${t}</span>`;
+    }).join('');
+    const sel = state.selected?.id === s.id ? ' sel' : '';
+    return `<div class="ev-card${sel}" data-id="${s.id}">
+      <div class="ev-card-top">
+        <span class="ev-card-num">${num}</span>
+        ${s.rating ? `<span class="ev-card-star">${s.rating}</span>` : ''}
+      </div>
+      <div class="ev-card-hl">${s.highlight}</div>
+      <div class="ev-card-meta">
+        <span>${s.participant_type||s.population}</span>
+        <span>${s.duration||'—'}</span>
+      </div>
+      <div class="ev-card-tags">${tags}</div>
+    </div>`;
+  }).join('');
+  grid.querySelectorAll('.ev-card').forEach(card => {
+    card.addEventListener('click', () => openDrawer(STUDIES.find(s=>s.id===card.dataset.id)));
+  });
+}
+
+// MAIN TABLE RENDER
+function renderTable() {
+  const sorted = sortedFiltered();
+  const total = sorted.length;
+  document.getElementById('vis-count').textContent = total;
+
+  const totalPages = Math.ceil(total / PER_PAGE);
+  if (state.page > totalPages) state.page = Math.max(1, totalPages);
+  const start = (state.page - 1) * PER_PAGE;
+  const page = sorted.slice(start, start + PER_PAGE);
+
+  if (state.view === 'line') {
+    document.getElementById('line-view').style.display = '';
+    document.getElementById('card-view').style.display = 'none';
+    renderLineView(page);
+  } else {
+    document.getElementById('line-view').style.display = 'none';
+    document.getElementById('card-view').style.display = '';
+    renderCardView(page);
+  }
+  renderPagination(total, start, page.length);
+}
+
+function renderPagination(total, start, pageLen) {
+  const pg = document.getElementById('pagination');
+  const pages = Math.ceil(total / PER_PAGE);
+  const info = document.getElementById('pg-info');
+  info.textContent = total ? `Showing ${start+1}–${start+pageLen} of ${total} studies` : '';
+  pg.style.display = total ? 'flex' : 'none';
+  if (pages <= 1) { document.getElementById('pg-pages').innerHTML=''; return; }
+  let h = `<button class="pgbtn" ${state.page===1?'disabled':''} onclick="gp(${state.page-1})">‹</button>`;
+  for (let i=1; i<=pages; i++) {
+    if (pages > 9 && i > 2 && i < pages-1 && Math.abs(i-state.page) > 1) {
+      if (i===3||i===pages-2) h += `<span class="pg-ell">…</span>`;
+      continue;
+    }
+    h += `<button class="pgbtn${state.page===i?' cur':''}" onclick="gp(${i})">${i}</button>`;
+  }
+  h += `<button class="pgbtn" ${state.page===pages?'disabled':''} onclick="gp(${state.page+1})">›</button>`;
+  document.getElementById('pg-pages').innerHTML = h;
+}
+window.gp = n => { state.page = n; renderTable(); };
+
+// VIEW TOGGLE
+window.setView = v => {
+  state.view = v; state.page = 1;
+  document.getElementById('btn-line').classList.toggle('on', v==='line');
+  document.getElementById('btn-card').classList.toggle('on', v==='card');
+  renderTable();
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FILTER STRIP
+// ─────────────────────────────────────────────────────────────────────────────
+function renderFilterStrip() {
+  const chips = [];
+  state.phFilter.forEach(t => chips.push({ label:'Body: '+t.replace('PH: ',''), clear:()=>{ state.phFilter=state.phFilter.filter(x=>x!==t); } }));
+  state.mhFilter.forEach(t => chips.push({ label:'Mind: '+t.replace('MH: ',''), clear:()=>{ state.mhFilter=state.mhFilter.filter(x=>x!==t); } }));
+  if (state.popFilter) chips.push({ label:state.popFilter, clear:()=>{ state.popFilter=''; } });
+  if (state.durFilter) chips.push({ label:state.durFilter.replace(/\n/g,' '), clear:()=>{ state.durFilter=''; } });
+  if (state.countryFilter) chips.push({ label:state.countryFilter, clear:()=>{ state.countryFilter=''; } });
+  if (state.search) chips.push({ label:`"${state.search.length>18?state.search.slice(0,18)+'…':state.search}"`, clear:()=>{ state.search=''; document.getElementById('search-input').value=''; document.getElementById('srch-clr').classList.remove('show'); } });
+
+  const chipsDiv = document.getElementById('active-chips');
+  chipsDiv.innerHTML = chips.map((c,i) => `<button class="fchip" data-i="${i}">${c.label}<span class="fchip-x">×</span></button>`).join('');
+  chipsDiv.querySelectorAll('.fchip').forEach((el,i) => {
+    el.addEventListener('click', () => { chips[i].clear(); state.page=1; refresh(); });
+  });
+
+  const hasFilters = chips.length > 0;
+  const filtersRow = document.getElementById('filters-row');
+  const clearAll = document.getElementById('clear-all');
+  filtersRow.classList.toggle('show', hasFilters);
+  clearAll.classList.toggle('show', hasFilters);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SORT
+// ─────────────────────────────────────────────────────────────────────────────
+function initSortHeaders() {
+  document.querySelectorAll('th[data-col]').forEach(th => {
+    th.addEventListener('click', () => {
+      const col = th.dataset.col;
+      if (state.sort.col === col) state.sort.dir = state.sort.dir==='asc'?'desc':'asc';
+      else { state.sort.col = col; state.sort.dir = col==='rating_sort'?'desc':'asc'; }
+      document.querySelectorAll('th').forEach(t=>t.classList.remove('sorted'));
+      th.classList.add('sorted');
+      document.querySelectorAll('.sarr').forEach(a=>{a.classList.remove('on');a.textContent='↕';});
+      const sa = document.getElementById('sa-'+col);
+      if (sa) { sa.classList.add('on'); sa.textContent = state.sort.dir==='asc'?'↑':'↓'; }
+      state.page = 1; renderTable();
+    });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RESET
+// ─────────────────────────────────────────────────────────────────────────────
+function resetAll() {
+  state.search=''; state.phFilter=[]; state.mhFilter=[];
+  state.popFilter=''; state.durFilter=''; state.countryFilter='';
+  state.sort={col:'rating_sort',dir:'desc'};
+  state.page=1;
+  document.getElementById('search-input').value='';
+  document.getElementById('srch-clr').classList.remove('show');
+  // Reset sort UI
+  document.querySelectorAll('th').forEach(t=>t.classList.remove('sorted'));
+  document.querySelectorAll('.sarr').forEach(a=>{a.classList.remove('on');a.textContent='↕';});
+  const sa=document.getElementById('sa-rating_sort');
+  if(sa){sa.classList.add('on');sa.textContent='↓';}
+  refresh();
+}
+window.resetAll = resetAll;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DRAWER
+// ─────────────────────────────────────────────────────────────────────────────
+function openDrawer(s) {
+  if (!s) return;
+  state.selected = s;
+  const tags = s.subtopics.map(t => {
+    const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
+    return `<span class="stag ${cl}" style="font-size:10.5px;padding:3px 9px">${t}</span>`;
+  }).join(' ');
+  const benefits = s.benefits.map(b => {
+    const up=b.startsWith('↑'), dn=b.startsWith('↓');
+    return `<div class="drw-ben"><span class="drw-arr ${up?'a-up':dn?'a-dn':'a-nu'}">${up?'↑':dn?'↓':'·'}</span><span class="drw-bt">${b.replace(/^[↑↓·]\s*/,'')}</span></div>`;
+  }).join('');
+  const cite2Parts = [s.affiliation, s.country].filter(Boolean).join(' · ');
+
+  document.getElementById('drw-body').innerHTML = `
+    <div class="drw-title">${s.highlight}</div>
+    ${s.rating ? `<div class="drw-star-row">${s.rating} Featured Study</div>` : ''}
+    <div class="drw-tags">${tags}</div>
+    <div class="drw-meta-grid">
+      <div class="drw-mc"><div class="drw-ml">Number of Participants</div><div class="drw-mv">${s.n&&s.n!=='-'?'n = '+s.n:'Not reported'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Duration</div><div class="drw-mv">${s.duration||'—'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Study Design</div><div class="drw-mv">${s.design||'—'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Follow-up</div><div class="drw-mv">${s.followup||'Not reported'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Participant Type</div><div class="drw-mv">${s.participant_type||s.population}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Year</div><div class="drw-mv">${s.year||'—'}</div></div>
+    </div>
+    <div class="drw-section-lbl">Proven Benefits</div>
+    <div class="drw-benefits">${benefits}</div>
+    <div class="drw-citation">
+      <div class="drw-cite1">${s.citation}</div>
+      <div class="drw-cite2">${s.journal}</div>
+      ${cite2Parts ? `<div class="drw-cite2" style="margin-top:2px">${cite2Parts}</div>` : ''}
+    </div>
+    ${s.link ? `<a href="${s.link}" target="_blank" rel="noopener" class="drw-view-btn">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7H12M8 3L12 7L8 11" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      View Published Study
+    </a>` : ''}`;
+
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  document.querySelectorAll('.study-row,.ev-card').forEach(r=>r.classList.toggle('sel', r.dataset.id===s.id));
+}
+function closeDrawer() {
+  state.selected = null;
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+  document.querySelectorAll('.study-row,.ev-card').forEach(r=>r.classList.remove('sel'));
+}
+document.getElementById('overlay').onclick = closeDrawer;
+document.getElementById('drw-close').onclick = closeDrawer;
+document.getElementById('clear-all').onclick = resetAll;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SEARCH
+// ─────────────────────────────────────────────────────────────────────────────
+let _st;
+document.getElementById('search-input').addEventListener('input', e => {
+  clearTimeout(_st);
+  const v = e.target.value;
+  document.getElementById('srch-clr').classList.toggle('show', v.length > 0);
+  _st = setTimeout(() => { state.search=v; state.page=1; refresh(); }, 180);
+});
+document.getElementById('srch-clr').addEventListener('click', () => {
+  state.search='';
+  document.getElementById('search-input').value='';
+  document.getElementById('srch-clr').classList.remove('show');
+  state.page=1; refresh();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MASTER REFRESH + INIT
+// ─────────────────────────────────────────────────────────────────────────────
+function refresh() {
+  buildBodyExplorer();
+  buildMindExplorer();
+  buildPopList();
+  buildDurExplorer();
+  refreshGeoBubbles();
+  renderTable();
+  renderFilterStrip();
+}
+
+function initApp() {
+  buildBodyExplorer();
+  buildMindExplorer();
+  buildPopList();
+  buildDurExplorer();
+  buildGeoMap();
+  initSortHeaders();
+  renderTable();
+}
+
+// Boot
+loadData();
+
+
+</script>
 </body>
 </html>
