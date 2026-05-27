@@ -65,17 +65,17 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 /* ── EXPLORER CARD ── */
 .exp-card-body--explorer .body-layout,.exp-card-body--explorer .mind-layout{margin-top:0}
 .exp-card{background:var(--paper2);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
-.exp-card-head{padding:13px 20px 11px;border-bottom:1px solid var(--border)}
+.exp-card-head{padding:14px 20px 12px;border-bottom:1px solid var(--border)}
 .exp-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);font-weight:500;margin-bottom:2px}
 .exp-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);font-weight:500}
 .exp-heading{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-d);font-weight:700;font-family:var(--sans)}
 .db-header .exp-heading{font-size:13px;letter-spacing:.2em}
 .exp-card-body{padding:18px 18px 14px}
-.exp-card-body--explorer{padding:6px 10px 8px}
+.exp-card-body--explorer{padding:4px 8px 6px}
 .exp-hint{font-size:10.5px;color:var(--ink4);margin-top:12px;font-style:italic;text-align:center}
 
 /* ── BODY EXPLORER ── */
-.body-layout{display:grid;grid-template-columns:1fr 112px 1fr;align-items:center;min-height:240px;gap:4px}
+.body-layout{display:grid;grid-template-columns:1fr 112px 1fr;align-items:center;min-height:232px;gap:4px}
 .body-col{display:flex;flex-direction:column;gap:7px}
 .body-col-l{align-items:flex-end}
 .body-col-r{align-items:flex-start}
@@ -86,11 +86,11 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .bnode-label{font-size:11.5px;line-height:1.2}
 .bnode-n{font-size:9.5px;opacity:.65;margin-left:1px}
 .bnode.on .bnode-n{opacity:.85}
-.body-svg-center{display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 2px 10px rgba(10,120,101,.1))}
+.body-svg-center{display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 2px 12px rgba(90,70,50,.1));padding:0 2px}
 
 /* ── MIND EXPLORER ── */
 .mind-layout{position:relative;width:100%;height:250px}
-.mind-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);pointer-events:none;filter:drop-shadow(0 3px 12px rgba(140,80,200,.15))}
+.mind-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);pointer-events:none;filter:drop-shadow(0 3px 14px rgba(110,70,180,.12))}
 .mnode{position:absolute;display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:all .15s;border:1px solid rgba(126,30,60,.14);user-select:none;white-space:nowrap;font-family:var(--sans);background:var(--rose-l);color:var(--rose);z-index:5}
 .mnode:hover{border-color:var(--rose-m);background:rgba(173,43,85,.13)}
 .mnode.on{background:var(--rose-m);color:#fff;border-color:var(--rose-m)}
@@ -354,9 +354,9 @@ footer p{font-size:11.5px;color:var(--ink4)}
           <div class="exp-card-head">
             <div class="exp-heading" style="color:#344e70">Global Research Spread</div>
           </div>
-          <div class="exp-card-body" style="padding-bottom:10px">
+          <div class="exp-card-body" style="padding-bottom:6px;padding-top:6px">
             <div class="geo-wrap">
-              <svg id="geo-svg" width="100%" height="155" viewBox="0 0 500 155" preserveAspectRatio="xMidYMid meet"></svg>
+              <svg id="geo-svg" width="100%" height="185" viewBox="0 0 500 185" preserveAspectRatio="xMidYMid meet"></svg>
             </div>
             <p style="font-size:9.5px;color:var(--ink4);margin-top:7px;font-style:italic;text-align:center;letter-spacing:.01em">Geodistribution by corresponding author affiliation</p>
           </div>
@@ -366,7 +366,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
       <div class="db-section">
         <div class="db-header">
           <div>
-            <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Research-Backed Evidence</div>
+            <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database</div>
           </div>
           <div class="db-right">
             <span class="db-meta"><strong id="vis-count">—</strong> studies shown</span>
@@ -674,106 +674,120 @@ function buildBodyExplorer() {
   });
   h += `</div>`;
 
-  // Body SVG — flat professional medical illustration
-  h += `<div class="body-svg-center"><svg viewBox="0 0 100 196" width="108" height="196" xmlns="http://www.w3.org/2000/svg">
+  // Body SVG — elegant anatomical sketch, museum-atlas style
+  h += `<div class="body-svg-center"><svg viewBox="0 0 100 224" width="104" height="224" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <linearGradient id="bodyFill" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#eaf6f3"/><stop offset="100%" stop-color="#d8ede9"/>
-  </linearGradient>
-  <linearGradient id="skinFill" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#f2e0cd"/><stop offset="100%" stop-color="#e8ceB6"/>
-  </linearGradient>
+  <radialGradient id="lungW" cx="45%" cy="40%" r="60%">
+    <stop offset="0%" stop-color="#90c8c0" stop-opacity=".52"/><stop offset="100%" stop-color="#60a098" stop-opacity=".08"/>
+  </radialGradient>
+  <radialGradient id="heartW" cx="40%" cy="35%" r="62%">
+    <stop offset="0%" stop-color="#d08888" stop-opacity=".58"/><stop offset="100%" stop-color="#a85858" stop-opacity=".08"/>
+  </radialGradient>
+  <radialGradient id="gutW" cx="50%" cy="45%" r="60%">
+    <stop offset="0%" stop-color="#d4a868" stop-opacity=".48"/><stop offset="100%" stop-color="#a87838" stop-opacity=".06"/>
+  </radialGradient>
+  <filter id="orgSoft" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="1.8" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
 </defs>
 
-<!-- ─── BODY SILHOUETTE ─── -->
-<!-- Legs -->
-<rect x="30" y="140" width="16" height="50" rx="7" fill="#d8ede9" stroke="#0e8c78" stroke-width="1.2"/>
-<rect x="54" y="140" width="16" height="50" rx="7" fill="#d8ede9" stroke="#0e8c78" stroke-width="1.2"/>
-<!-- Arms -->
-<rect x="8"  y="56"  width="13" height="58" rx="6" fill="#d8ede9" stroke="#0e8c78" stroke-width="1.2"/>
-<rect x="79" y="56"  width="13" height="58" rx="6" fill="#d8ede9" stroke="#0e8c78" stroke-width="1.2"/>
-<!-- Torso -->
-<path d="M21 52 Q16 96 18 140 L82 140 Q84 96 79 52 Q66 46 50 46 Q34 46 21 52Z"
-  fill="url(#bodyFill)" stroke="#0e8c78" stroke-width="1.4"/>
-<!-- Neck -->
-<rect x="43" y="36" width="14" height="12" rx="5" fill="#d8ede9" stroke="#0e8c78" stroke-width="1.2"/>
-<!-- Head -->
-<ellipse cx="50" cy="22" rx="18" ry="20" fill="url(#skinFill)" stroke="#0e8c78" stroke-width="1.4"/>
-<!-- Hair -->
-<path d="M32 18 Q33 5 50 4 Q67 5 68 18 Q65 8 50 7 Q35 8 32 18Z" fill="#6b4226" opacity=".9"/>
+<!-- === BODY SILHOUETTE — organic, human proportions === -->
+<!-- HEAD -->
+<ellipse cx="50" cy="17" rx="13.5" ry="15.5" fill="#f4ede4" stroke="#7a7060" stroke-width=".85"/>
 <!-- Ear left -->
-<ellipse cx="32" cy="23" rx="3" ry="4" fill="#e8ceB6" stroke="#0e8c78" stroke-width="1"/>
+<path d="M36.8 13.5 C 33.5 15.5,33 19.5,33.5 22.5 C 34 25,36 26,37 25 C 35.5 24,35 21.5,35 19.5 C 35 17.5,36 15,36.8 13.5Z"
+  fill="#ede6dc" stroke="#7a7060" stroke-width=".6"/>
 <!-- Ear right -->
-<ellipse cx="68" cy="23" rx="3" ry="4" fill="#e8ceB6" stroke="#0e8c78" stroke-width="1"/>
-<!-- Eyes -->
-<circle cx="44" cy="22" r="2.2" fill="#3a2010"/>
-<circle cx="56" cy="22" r="2.2" fill="#3a2010"/>
-<circle cx="44.7" cy="21.3" r=".7" fill="#fff"/>
-<circle cx="56.7" cy="21.3" r=".7" fill="#fff"/>
-<!-- Eyebrows -->
-<path d="M41 18 Q44 16.5 47 18" stroke="#3a2010" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-<path d="M53 18 Q56 16.5 59 18" stroke="#3a2010" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-<!-- Nose -->
-<path d="M48 27 L47 30 Q50 31.5 53 30 L52 27" stroke="#c4946a" stroke-width=".8" fill="none" stroke-linecap="round"/>
-<!-- Mouth -->
-<path d="M45 34 Q50 37 55 34" stroke="#a0624a" stroke-width="1" fill="none" stroke-linecap="round"/>
+<path d="M63.2 13.5 C 66.5 15.5,67 19.5,66.5 22.5 C 66 25,64 26,63 25 C 64.5 24,65 21.5,65 19.5 C 65 17.5,64 15,63.2 13.5Z"
+  fill="#ede6dc" stroke="#7a7060" stroke-width=".6"/>
+<!-- Hair — muted, minimal -->
+<path d="M37 11.5 C 38.5 5,44 2.5,50 2 C 56 2.5,61.5 5,63 11.5 C 61 7,56 5,50 4.5 C 44 5,39 7,37 11.5Z"
+  fill="#a89078" opacity=".72"/>
+<!-- Minimal facial marks -->
+<path d="M44.5 18.5 Q46.5 17 48.5 18.5" stroke="#5c5042" stroke-width=".7" fill="none" stroke-linecap="round"/>
+<path d="M51.5 18.5 Q53.5 17 55.5 18.5" stroke="#5c5042" stroke-width=".7" fill="none" stroke-linecap="round"/>
+<path d="M47 27.5 Q50 29 53 27.5" stroke="#8a7060" stroke-width=".55" fill="none" stroke-linecap="round"/>
+
+<!-- NECK -->
+<path d="M44.5 31.5 C 43.5 34,43 37,43 40 L57 40 C 57 37,56.5 34,55.5 31.5 C 53.5 32.5,51.5 33,50 33 C 48.5 33,46.5 32.5,44.5 31.5Z"
+  fill="#ede6dc" stroke="#7a7060" stroke-width=".75"/>
 <!-- Collarbone lines -->
-<path d="M36 48 Q50 51 64 48" stroke="#0e8c78" stroke-width=".7" fill="none" opacity=".35" stroke-linecap="round"/>
+<path d="M43 40.5 C 40 41.5,34 43,27 47" stroke="#7a7060" stroke-width=".6" fill="none" stroke-linecap="round" opacity=".5"/>
+<path d="M57 40.5 C 60 41.5,66 43,73 47" stroke="#7a7060" stroke-width=".6" fill="none" stroke-linecap="round" opacity=".5"/>
 
-<!-- ─── ORGANS (flat, clean) ─── -->
+<!-- TORSO — organic bezier, not geometric -->
+<path d="M27 47 C 22 52,20 60,21 70 C 22 80,25 88,26 98 C 27 108,26 118,28 128 C 30 136,33 140,36 144 L64 144 C 67 140,70 136,72 128 C 74 118,73 108,74 98 C 75 88,78 80,79 70 C 80 60,78 52,73 47 C 66 44,58 42,50 42 C 42 42,34 44,27 47Z"
+  fill="#f4ede4" stroke="#7a7060" stroke-width=".85"/>
 
-<!-- BRAIN (inside head) -->
-<ellipse cx="50" cy="15" rx="13.5" ry="10" fill="#ff7b8a"/>
-<!-- Brain hemispheres divider -->
-<line x1="50" y1="7" x2="50" y2="23" stroke="#fff" stroke-width="0.9" opacity=".6"/>
-<!-- Brain gyri left -->
-<path d="M39 11 Q42 7  47 11 Q44 15 40 14Z" fill="#fff" opacity=".18"/>
-<path d="M38 17 Q41 13 46 17 Q43 21 39 20Z" fill="#fff" opacity=".14"/>
-<!-- Brain gyri right -->
-<path d="M61 11 Q58 7  53 11 Q56 15 60 14Z" fill="#fff" opacity=".18"/>
-<path d="M62 17 Q59 13 54 17 Q57 21 61 20Z" fill="#fff" opacity=".14"/>
-<!-- Brain highlight -->
-<ellipse cx="43" cy="11" rx="5" ry="3.5" fill="#fff" opacity=".22"/>
-<!-- Brain outline -->
-<ellipse cx="50" cy="15" rx="13.5" ry="10" fill="none" stroke="#d03050" stroke-width="1.1"/>
+<!-- LEFT ARM -->
+<path d="M22 52 C 18 58,16 68,16 80 C 16 92,17 104,18 114 C 19 122,20 128,22 134 C 23 138,25 140,27 140 L28 138 C 27 134,26 128,25 120 C 24 110,23 98,23 86 C 23 74,25 64,27 56Z"
+  fill="#ede6dc" stroke="#7a7060" stroke-width=".75"/>
+<!-- RIGHT ARM -->
+<path d="M78 52 C 82 58,84 68,84 80 C 84 92,83 104,82 114 C 81 122,80 128,78 134 C 77 138,75 140,73 140 L72 138 C 73 134,74 128,75 120 C 76 110,77 98,77 86 C 77 74,75 64,73 56Z"
+  fill="#ede6dc" stroke="#7a7060" stroke-width=".75"/>
 
-<!-- LEFT LUNG -->
-<path d="M26 68 Q22 76 23 88 Q23 100 28 105 Q33 108 36 104 Q38 97 37 85 Q36 74 31 68 Q27 66 26 68Z"
-  fill="#4488e0" stroke="#2260b0" stroke-width=".9"/>
-<!-- Lung folds left -->
-<path d="M28 74 Q29 82 29 92" stroke="#7ab0f0" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-<path d="M32 71 Q33 80 33 92" stroke="#7ab0f0" stroke-width="1"   fill="none" stroke-linecap="round"/>
-<ellipse cx="28" cy="78" rx="2.5" ry="5" fill="#fff" opacity=".2"/>
+<!-- LEGS -->
+<path d="M36 144 C 33 152,32 164,32 176 C 32 190,33 202,34 210 C 35 215,37 217,40 218 C 42 219,43 218,44 216 C 44 208,44 196,44 184 L44 160 C 44 152,43 148,42 144Z"
+  fill="#ede6dc" stroke="#7a7060" stroke-width=".75"/>
+<path d="M64 144 C 67 152,68 164,68 176 C 68 190,67 202,66 210 C 65 215,63 217,60 218 C 58 219,57 218,56 216 C 56 208,56 196,56 184 L56 160 C 56 152,57 148,58 144Z"
+  fill="#ede6dc" stroke="#7a7060" stroke-width=".75"/>
 
-<!-- RIGHT LUNG -->
-<path d="M74 68 Q78 76 77 88 Q77 100 72 105 Q67 108 64 104 Q62 97 63 85 Q64 74 69 68 Q73 66 74 68Z"
-  fill="#4488e0" stroke="#2260b0" stroke-width=".9"/>
-<!-- Lung folds right -->
-<path d="M72 74 Q71 82 71 92" stroke="#7ab0f0" stroke-width="1.1" fill="none" stroke-linecap="round"/>
-<path d="M68 71 Q67 80 67 92" stroke="#7ab0f0" stroke-width="1"   fill="none" stroke-linecap="round"/>
-<ellipse cx="72" cy="78" rx="2.5" ry="5" fill="#fff" opacity=".18"/>
+<!-- === INTERNAL ANATOMY — integrated, not sticker-like === -->
 
-<!-- HEART -->
-<path d="M50 74 Q47 69 43 70 Q37 71 37 77 Q37 84 50 93 Q63 84 63 77 Q63 71 57 70 Q53 69 50 74Z"
-  fill="#e82040" stroke="#b01030" stroke-width=".9"/>
-<!-- Heart highlight -->
-<ellipse cx="45" cy="76" rx="4.5" ry="3.5" fill="#fff" opacity=".22"/>
-<!-- Aorta -->
-<path d="M50 70 Q50 65 53 62 Q57 59 57 63" stroke="#b01030" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<!-- SPINE (dashed, subtle violet) -->
+<path d="M50 42 L50 144" stroke="#9490b8" stroke-width=".5" stroke-dasharray="1.5 2.5" opacity=".28"/>
 
-<!-- INTESTINES / GUT  -->
-<!-- Stomach -->
-<path d="M42 112 Q37 115 37 122 Q37 128 43 130 Q50 131 54 128 Q58 124 56 118 Q53 112 46 112 Q44 112 42 112Z"
-  fill="#f09840" stroke="#c07020" stroke-width=".9" opacity=".9"/>
-<ellipse cx="46" cy="120" rx="4" ry="3.5" fill="#fff" opacity=".2"/>
-<!-- Large intestine coil -->
-<path d="M37 130 Q33 134 35 138 Q37 142 42 141 Q46 140 46 136 Q46 132 43 131"
-  stroke="#e07828" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
-<path d="M58 130 Q62 134 60 138 Q58 142 53 141 Q49 140 49 136 Q49 132 52 131"
-  stroke="#e07828" stroke-width="5" fill="none" stroke-linecap="round" opacity=".85"/>
+<!-- RIB CAGE — fine bilateral lines, fading downward -->
+<path d="M50 55 Q42 57 36 61 Q31 65 28 71" stroke="#7a7060" stroke-width=".42" fill="none" opacity=".3" stroke-linecap="round"/>
+<path d="M50 61 Q42 63 36 67 Q31 71 29 77" stroke="#7a7060" stroke-width=".38" fill="none" opacity=".26" stroke-linecap="round"/>
+<path d="M50 67 Q42 69 37 73 Q32 77 30 83" stroke="#7a7060" stroke-width=".35" fill="none" opacity=".22" stroke-linecap="round"/>
+<path d="M50 73 Q43 75 38 79 Q33 83 32 89" stroke="#7a7060" stroke-width=".32" fill="none" opacity=".18" stroke-linecap="round"/>
+<path d="M50 79 Q43 81 39 85 Q35 89 33 95" stroke="#7a7060" stroke-width=".3"  fill="none" opacity=".15" stroke-linecap="round"/>
+<path d="M50 55 Q58 57 64 61 Q69 65 72 71" stroke="#7a7060" stroke-width=".42" fill="none" opacity=".3" stroke-linecap="round"/>
+<path d="M50 61 Q58 63 64 67 Q69 71 71 77" stroke="#7a7060" stroke-width=".38" fill="none" opacity=".26" stroke-linecap="round"/>
+<path d="M50 67 Q58 69 63 73 Q68 77 70 83" stroke="#7a7060" stroke-width=".35" fill="none" opacity=".22" stroke-linecap="round"/>
+<path d="M50 73 Q57 75 62 79 Q67 83 68 89" stroke="#7a7060" stroke-width=".32" fill="none" opacity=".18" stroke-linecap="round"/>
+<path d="M50 79 Q57 81 61 85 Q65 89 67 95" stroke="#7a7060" stroke-width=".3"  fill="none" opacity=".15" stroke-linecap="round"/>
 
-<!-- Spine/centre line (subtle) -->
-<line x1="50" y1="48" x2="50" y2="140" stroke="#0e8c78" stroke-width=".6" stroke-dasharray="2 4" opacity=".18"/>
+<!-- LUNG WASHES — soft sage teal, bleeding naturally -->
+<path d="M30 57 C 25 63,23 73,23 83 C 23 95,26 106,32 112 C 36 116,41 118,44 116 C 46 114,47 110,47 104 C 47 94,46 82,43 72 C 41 65,37 58,33 56Z"
+  fill="url(#lungW)" filter="url(#orgSoft)"/>
+<path d="M70 57 C 75 63,77 73,77 83 C 77 95,74 106,68 112 C 64 116,59 118,56 116 C 54 114,53 110,53 104 C 53 94,54 82,57 72 C 59 65,63 58,67 56Z"
+  fill="url(#lungW)" filter="url(#orgSoft)"/>
+<!-- Lung delicate outlines -->
+<path d="M30 57 C 25 63,23 73,23 83 C 23 95,26 106,32 112 C 36 116,41 118,44 116 C 46 114,47 110,47 104 C 47 94,46 82,43 72 C 41 65,37 58,33 56Z"
+  fill="none" stroke="#5a9890" stroke-width=".58" opacity=".42"/>
+<path d="M70 57 C 75 63,77 73,77 83 C 77 95,74 106,68 112 C 64 116,59 118,56 116 C 54 114,53 110,53 104 C 53 94,54 82,57 72 C 59 65,63 58,67 56Z"
+  fill="none" stroke="#5a9890" stroke-width=".58" opacity=".42"/>
+<!-- Trachea + primary bronchi -->
+<line x1="50" y1="42" x2="50" y2="57" stroke="#5a9890" stroke-width=".6" opacity=".38"/>
+<path d="M50 57 Q42 59 33 61" stroke="#5a9890" stroke-width=".52" fill="none" stroke-linecap="round" opacity=".35"/>
+<path d="M50 57 Q58 59 67 61" stroke="#5a9890" stroke-width=".52" fill="none" stroke-linecap="round" opacity=".35"/>
+
+<!-- HEART WASH — muted coral, slightly left -->
+<path d="M46 75 C 44 71,40 70,37 73 C 34 76,34 82,40 89 C 44 93,48 96,50 97 C 52 96,56 93,60 89 C 66 82,66 76,63 73 C 60 70,56 71,54 75 C 52 72,48 72,46 75Z"
+  fill="url(#heartW)" filter="url(#orgSoft)"/>
+<!-- Heart outline — thin, warm -->
+<path d="M46 75 C 44 71,40 70,37 73 C 34 76,34 82,40 89 C 44 93,48 96,50 97 C 52 96,56 93,60 89 C 66 82,66 76,63 73 C 60 70,56 71,54 75 C 52 72,48 72,46 75Z"
+  fill="none" stroke="#b06060" stroke-width=".62" opacity=".52"/>
+<!-- Aortic arch — elegant single curve -->
+<path d="M50 73 C 50 68,52 63,56 61 C 59 59,62 60,62 64" stroke="#b06060" stroke-width=".72" fill="none" stroke-linecap="round" opacity=".42"/>
+
+<!-- DIAPHRAGM — architectural line -->
+<path d="M27 108 Q50 115 73 108" stroke="#7a7060" stroke-width=".5" fill="none" opacity=".22" stroke-linecap="round"/>
+
+<!-- GUT WASH — warm amber ellipse -->
+<ellipse cx="50" cy="133" rx="19" ry="13" fill="url(#gutW)" filter="url(#orgSoft)" opacity=".72"/>
+<!-- Intestinal coils — fine line work -->
+<path d="M33 122 Q30 128 32 134 Q34 140 40 142 Q44 143 44 138 Q44 132 41 128 Q40 124 44 121 Q50 119 56 121 Q60 124 59 128 Q56 132 56 138 Q56 143 60 142 Q66 140 68 134 Q70 128 67 122"
+  stroke="#b08840" stroke-width=".6" fill="none" stroke-linecap="round" opacity=".38"/>
+<path d="M38 121 Q42 127 48 125 Q54 123 56 129 Q54 135 48 137 Q42 135 40 141"
+  stroke="#b08840" stroke-width=".5" fill="none" stroke-linecap="round" opacity=".28"/>
+
+<!-- VAGUS NERVE — very faint violet dashed line -->
+<path d="M50 43 C 50 65,49.5 90,49 115 C 48.5 132,49 145,50 155"
+  stroke="#9490b8" stroke-width=".4" fill="none" opacity=".18" stroke-dasharray="1.5 3"/>
 </svg></div>`;
 
   h += `<div class="body-col body-col-r">`;
@@ -801,97 +815,128 @@ function buildBodyExplorer() {
 // ─────────────────────────────────────────────────────────────────────────────
 function buildMindExplorer() {
   const wrap = document.getElementById('mind-explorer');
-  // Brain SVG — flat professional medical illustration
+  // Brain SVG — refined lateral-view anatomical illustration, neuroscience quality
   let h = `<div class="mind-center"><svg viewBox="0 0 160 160" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <radialGradient id="circleAura" cx="50%" cy="50%" r="50%">
-    <stop offset="0%" stop-color="#e8d8f8" stop-opacity=".9"/>
-    <stop offset="80%" stop-color="#d8c4f4" stop-opacity=".5"/>
-    <stop offset="100%" stop-color="#d0b8f0" stop-opacity="0"/>
+  <radialGradient id="brainGr" cx="36%" cy="30%" r="70%">
+    <stop offset="0%" stop-color="#e8daf8"/>
+    <stop offset="38%" stop-color="#c8acf0"/>
+    <stop offset="72%" stop-color="#9c78d8"/>
+    <stop offset="100%" stop-color="#7252b8"/>
   </radialGradient>
-  <linearGradient id="brainFlat" x1="20%" y1="0%" x2="80%" y2="100%">
-    <stop offset="0%" stop-color="#c8a0f0"/>
-    <stop offset="50%" stop-color="#a870e0"/>
-    <stop offset="100%" stop-color="#8050c0"/>
+  <radialGradient id="cerebGr" cx="55%" cy="30%" r="65%">
+    <stop offset="0%" stop-color="#dccef4"/>
+    <stop offset="100%" stop-color="#8868c0"/>
+  </radialGradient>
+  <radialGradient id="glowHalo" cx="44%" cy="42%" r="54%">
+    <stop offset="0%" stop-color="#c8a8f0" stop-opacity=".35"/>
+    <stop offset="100%" stop-color="#a888d8" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="lavSky" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#f5f0ff"/><stop offset="100%" stop-color="#ece6fb"/>
   </linearGradient>
-  <linearGradient id="waterFlat" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#c8b4e8"/><stop offset="100%" stop-color="#b8a0d8"/>
-  </linearGradient>
-  <clipPath id="circClip"><circle cx="80" cy="80" r="68"/></clipPath>
+  <filter id="brainBloom" x="-35%" y="-35%" width="170%" height="170%">
+    <feGaussianBlur stdDeviation="3" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="haloF" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="5"/>
+  </filter>
+  <clipPath id="bClip"><circle cx="80" cy="80" r="70"/></clipPath>
 </defs>
 
-<!-- Outer glow ring -->
-<circle cx="80" cy="80" r="76" fill="url(#circleAura)"/>
-<circle cx="80" cy="80" r="69" fill="none" stroke="#b090dc" stroke-width=".8" stroke-dasharray="4 6" opacity=".35"/>
+<!-- Outer atmospheric ring -->
+<circle cx="80" cy="80" r="78" fill="url(#glowHalo)"/>
+<circle cx="80" cy="80" r="72" fill="none" stroke="#c0a0e8" stroke-width=".5" stroke-dasharray="3 7" opacity=".3"/>
 
-<!-- ─── Scene inside circle ─── -->
-<g clip-path="url(#circClip)">
-  <!-- Sky background -->
-  <rect x="12" y="12" width="136" height="136" fill="#ede6fb"/>
-
-  <!-- Far mountains (flat triangles) -->
-  <polygon points="12,118 36,82 54,102 70,78 80,90 90,76 108,100 126,80 148,118" fill="#c8b0e8" opacity=".5"/>
-  <!-- Near mountains (slightly darker) -->
-  <polygon points="12,128 30,100 50,116 68,96 80,106 92,94 114,114 134,98 148,128" fill="#b89cd8" opacity=".55"/>
-  <!-- Snow caps -->
-  <polygon points="36,82 40,88 32,88"  fill="#f5efff" opacity=".8"/>
-  <polygon points="70,78 74,85 66,85"  fill="#f5efff" opacity=".75"/>
-  <polygon points="126,80 130,87 122,87" fill="#f5efff" opacity=".7"/>
-  <!-- Water / lake -->
-  <rect x="12" y="128" width="136" height="20" fill="url(#waterFlat)" opacity=".7"/>
-  <!-- Water shimmer -->
-  <line x1="22" y1="133" x2="60" y2="133" stroke="#e4d8f8" stroke-width="1.2" opacity=".7" stroke-linecap="round"/>
-  <line x1="32" y1="137" x2="78" y2="137" stroke="#e4d8f8" stroke-width="1"   opacity=".55" stroke-linecap="round"/>
-  <line x1="90" y1="134" x2="138" y2="134" stroke="#e4d8f8" stroke-width="1.2" opacity=".65" stroke-linecap="round"/>
-  <line x1="100" y1="138" x2="145" y2="138" stroke="#e4d8f8" stroke-width=".9" opacity=".5" stroke-linecap="round"/>
+<!-- Scene clipped to circle -->
+<g clip-path="url(#bClip)">
+  <rect x="10" y="10" width="140" height="140" fill="url(#lavSky)"/>
+  <!-- Far atmospheric mountains -->
+  <path d="M10 122 L30 100 L46 112 L64 90 L76 102 L80 94 L84 102 L96 88 L116 106 L134 96 L150 114 L150 150 L10 150Z"
+    fill="#ddd0f0" opacity=".32"/>
+  <path d="M10 132 L34 110 L54 122 L72 106 L80 114 L88 104 L108 120 L130 108 L150 128 L150 150 L10 150Z"
+    fill="#cebee8" opacity=".38"/>
+  <!-- Snow caps (minimal) -->
+  <path d="M64 90 L68 97 L60 97Z"  fill="#f5f0ff" opacity=".75"/>
+  <path d="M80 94 L84 100 L76 100Z" fill="#f5f0ff" opacity=".7"/>
+  <path d="M96 88 L100 95 L92 95Z" fill="#f5f0ff" opacity=".65"/>
+  <!-- Water -->
+  <rect x="10" y="134" width="140" height="16" fill="#c8b4e8" opacity=".48"/>
+  <line x1="16" y1="138" x2="58" y2="138" stroke="#eedeff" stroke-width="1" opacity=".55" stroke-linecap="round"/>
+  <line x1="28" y1="142" x2="76" y2="142" stroke="#eedeff" stroke-width=".8" opacity=".42" stroke-linecap="round"/>
+  <line x1="86" y1="139" x2="140" y2="139" stroke="#eedeff" stroke-width="1" opacity=".5" stroke-linecap="round"/>
+  <line x1="100" y1="143" x2="148" y2="143" stroke="#eedeff" stroke-width=".7" opacity=".38" stroke-linecap="round"/>
 </g>
 
-<!-- ─── BRAIN — clean flat side-profile ─── -->
-<!-- Brain shadow/glow -->
-<ellipse cx="80" cy="78" rx="44" ry="36" fill="#8050c0" opacity=".15"/>
+<!-- Bloom glow behind brain -->
+<ellipse cx="78" cy="68" rx="50" ry="44" fill="#b090e0" opacity=".1" filter="url(#haloF)"/>
 
-<!-- Main brain mass (left hemisphere side view) -->
-<path d="M80 32
-  C 58 32, 36 44, 34 62
-  C 32 78, 40 96, 52 104
-  C 60 110, 72 112, 80 110
-  C 88 112, 100 110, 108 104
-  C 120 96, 128 78, 126 62
-  C 124 44, 102 32, 80 32 Z"
-  fill="url(#brainFlat)" stroke="#6030a0" stroke-width="1.4"/>
+<!-- ── BRAIN SIDE PROFILE (left lateral view) ── -->
+<!-- Main cortex -->
+<path d="M80 118 C 72 116,58 110,48 100 C 36 88,32 74,32 62 C 32 50,38 38,48 30 C 58 22,70 20,80 20 C 90 20,102 22,112 30 C 122 38,128 50,128 62 C 128 74,124 88,114 98 C 106 106,94 112,88 116 C 85 117,82 118,80 118Z"
+  fill="url(#brainGr)" filter="url(#brainBloom)" opacity=".93"/>
 
-<!-- Brain stem -->
-<path d="M72 110 Q76 120 80 124 Q84 120 88 110 Q84 116 80 117 Q76 116 72 110Z"
-  fill="#7040b0" opacity=".8"/>
-<rect x="73" y="118" width="14" height="10" rx="5" fill="#7040b0" opacity=".75"/>
+<!-- CEREBELLUM (posterior inferior lobe) -->
+<path d="M88 116 C 96 118,110 116,118 108 C 124 102,126 94,122 88 C 116 98,108 106,96 112 C 92 114,90 115,88 116Z"
+  fill="url(#cerebGr)" opacity=".88"/>
+<!-- Cerebellum folia lines (horizontal, fine) -->
+<path d="M95 112 Q104 110 112 104" stroke="#f2ecff" stroke-width=".85" fill="none" opacity=".52" stroke-linecap="round"/>
+<path d="M97 115 Q108 113 116 107" stroke="#f2ecff" stroke-width=".75" fill="none" opacity=".42" stroke-linecap="round"/>
+<path d="M100 117 Q110 116 118 110" stroke="#f2ecff" stroke-width=".65" fill="none" opacity=".32" stroke-linecap="round"/>
 
-<!-- Centre fissure -->
-<line x1="80" y1="33" x2="80" y2="110" stroke="#5020a0" stroke-width="1.1" opacity=".4"/>
+<!-- BRAIN STEM (pons/medulla) -->
+<path d="M76 118 C 76 122,77.5 130,80 133 C 82.5 130,84 122,84 118 Q82 120.5,80 120.5 Q78 120.5,76 118Z"
+  fill="#7050b8" opacity=".82"/>
 
-<!-- ─── Gyri — flat white curved lines, left hemisphere ─── -->
-<path d="M42 54 Q50 46 60 54 Q68 62 74 56 Q76 52 78 57" stroke="#f0e6ff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-<path d="M38 68 Q47 60 57 68 Q65 75 72 68 Q75 64 78 68" stroke="#f0e6ff" stroke-width="2"   fill="none" stroke-linecap="round"/>
-<path d="M36 82 Q46 74 56 82 Q64 89 72 83 Q75 80 78 83" stroke="#f0e6ff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-<path d="M38 96 Q48 89 58 95 Q66 101 73 97"              stroke="#f0e6ff" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<!-- ── MAJOR SULCI — fine elegant lines (neuroscientifically placed) ── -->
+<!-- Central sulcus — separates frontal from parietal, runs top-down -->
+<path d="M63 22 C 61 34,57 46,55 58 C 53 68,54 74,57 80"
+  stroke="#f0e8ff" stroke-width="1.5" fill="none" opacity=".58" stroke-linecap="round"/>
+<!-- Lateral sulcus (Sylvian fissure) — major horizontal -->
+<path d="M46 60 C 60 64,76 65,94 61 C 106 58,116 56,122 54"
+  stroke="#f0e8ff" stroke-width="1.4" fill="none" opacity=".52" stroke-linecap="round"/>
+<!-- Superior frontal sulcus -->
+<path d="M50 26 C 48 38,46 50,46 60"
+  stroke="#f0e8ff" stroke-width="1.1" fill="none" opacity=".4" stroke-linecap="round"/>
+<!-- Inferior frontal sulcus -->
+<path d="M58 24 C 56 36,54 48,53 58"
+  stroke="#f0e8ff" stroke-width=".95" fill="none" opacity=".35" stroke-linecap="round"/>
+<!-- Post-central sulcus -->
+<path d="M72 21 C 70 34,67 48,65 60"
+  stroke="#f0e8ff" stroke-width="1" fill="none" opacity=".38" stroke-linecap="round"/>
+<!-- Intraparietal sulcus (horizontal, parietal area) -->
+<path d="M68 38 C 80 42,96 42,108 38"
+  stroke="#f0e8ff" stroke-width=".9" fill="none" opacity=".32" stroke-linecap="round"/>
+<!-- Superior temporal sulcus -->
+<path d="M50 70 C 64 72,82 72,100 68 C 112 65,120 63,124 61"
+  stroke="#f0e8ff" stroke-width=".9" fill="none" opacity=".32" stroke-linecap="round"/>
+<!-- Parieto-occipital sulcus -->
+<path d="M100 22 C 102 34,105 48,108 60"
+  stroke="#f0e8ff" stroke-width=".9" fill="none" opacity=".34" stroke-linecap="round"/>
+<!-- Occipital region minor sulci -->
+<path d="M112 26 C 116 40,120 54,120 66"
+  stroke="#f0e8ff" stroke-width=".8" fill="none" opacity=".28" stroke-linecap="round"/>
+<path d="M120 32 C 123 44,126 56,126 66"
+  stroke="#f0e8ff" stroke-width=".7" fill="none" opacity=".24" stroke-linecap="round"/>
 
-<!-- ─── Gyri — right hemisphere ─── -->
-<path d="M118 54 Q110 46 100 54 Q92 62 86 56 Q84 52 82 57" stroke="#f0e6ff" stroke-width="2.2" fill="none" stroke-linecap="round"/>
-<path d="M122 68 Q113 60 103 68 Q95 75 88 68 Q85 64 82 68" stroke="#f0e6ff" stroke-width="2"   fill="none" stroke-linecap="round"/>
-<path d="M124 82 Q114 74 104 82 Q96 89 88 83 Q85 80 82 83" stroke="#f0e6ff" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-<path d="M122 96 Q112 89 102 95 Q94 101 87 97"             stroke="#f0e6ff" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+<!-- ── NEURAL PATHWAYS — subtle radiating from interior ── -->
+<path d="M80 70 L48 30"   stroke="#e8dcff" stroke-width=".5" opacity=".18"/>
+<path d="M80 70 L80 20"   stroke="#e8dcff" stroke-width=".5" opacity=".18"/>
+<path d="M80 70 L112 30"  stroke="#e8dcff" stroke-width=".5" opacity=".16"/>
+<path d="M80 70 L128 62"  stroke="#e8dcff" stroke-width=".5" opacity=".16"/>
+<path d="M80 70 L122 96"  stroke="#e8dcff" stroke-width=".5" opacity=".14"/>
+<path d="M80 70 L80 118"  stroke="#e8dcff" stroke-width=".5" opacity=".14"/>
+<path d="M80 70 L38 96"   stroke="#e8dcff" stroke-width=".5" opacity=".14"/>
+<path d="M80 70 L32 62"   stroke="#e8dcff" stroke-width=".5" opacity=".16"/>
 
-<!-- Highlight on top -->
-<ellipse cx="68" cy="44" rx="18" ry="9" fill="#fff" opacity=".18"/>
-<ellipse cx="62" cy="42" rx="8"  ry="4" fill="#fff" opacity=".2"/>
-<!-- Outline on top of everything -->
-<path d="M80 32
-  C 58 32, 36 44, 34 62
-  C 32 78, 40 96, 52 104
-  C 60 110, 72 112, 80 110
-  C 88 112, 100 110, 108 104
-  C 120 96, 128 78, 126 62
-  C 124 44, 102 32, 80 32 Z"
-  fill="none" stroke="#6030a0" stroke-width="1.4"/>
+<!-- Top highlight (anterior, superior) -->
+<ellipse cx="65" cy="38" rx="22" ry="11" fill="#fff" opacity=".13"/>
+<ellipse cx="58" cy="35" rx="10" ry="5"  fill="#fff" opacity=".15"/>
+
+<!-- Final crisp outline over bloom -->
+<path d="M80 118 C 72 116,58 110,48 100 C 36 88,32 74,32 62 C 32 50,38 38,48 30 C 58 22,70 20,80 20 C 90 20,102 22,112 30 C 122 38,128 50,128 62 C 128 74,124 88,114 98 C 106 106,94 112,88 116 C 85 117,82 118,80 118Z"
+  fill="none" stroke="#6840a8" stroke-width="1.2" opacity=".72"/>
 </svg></div>`;
 
   // Absolutely positioned nodes
@@ -978,9 +1023,9 @@ function buildDurExplorer() {
 // ─────────────────────────────────────────────────────────────────────────────
 function buildGeoMap() {
   if (geoBuilt) return; geoBuilt = true;
-  const W=500, H=155;
+  const W=500, H=185;
   const svg = d3.select('#geo-svg').attr('viewBox',`0 0 ${W} ${H}`);
-  const proj = d3.geoNaturalEarth1().scale(80).translate([W/2, H/2+6]);
+  const proj = d3.geoNaturalEarth1().scale(95).translate([W/2, H/2+4]);
   const pathGen = d3.geoPath(proj);
   const tt = document.getElementById('geo-tt');
 
@@ -996,13 +1041,13 @@ function buildGeoMap() {
     });
   });
   const maxC = Math.max(...Object.values(cdata).map(d=>d.count), 1);
-  const rScale = d3.scaleSqrt([1, maxC], [5, 16]);
+  const rScale = d3.scaleSqrt([1, maxC], [6, 20]);
 
   d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(world => {
     svg.append('g').selectAll('path')
       .data(topojson.feature(world, world.objects.countries).features)
       .join('path').attr('d', pathGen)
-      .attr('fill','#d4ccbe').attr('stroke','#f1ede5').attr('stroke-width',.32);
+      .attr('fill','#e8e0d0').attr('stroke','#f5f0e8').attr('stroke-width',.4);
 
     Object.entries(COUNTRY_COORDS).forEach(([country,[lon,lat]]) => {
       const cd = cdata[country];
@@ -1014,16 +1059,17 @@ function buildGeoMap() {
       svg.append('circle')
         .attr('cx',x).attr('cy',y).attr('r', rScale(cd.count))
         .attr('class','geo-bubble').attr('data-country', country)
-        .attr('fill','rgba(18,166,140,.62)').attr('stroke','rgba(10,120,101,.42)')
-        .attr('stroke-width',1.4).attr('cursor','pointer')
+        .attr('fill','rgba(18,166,140,.58)').attr('stroke','rgba(10,120,101,.38)')
+        .attr('stroke-width',1.6).attr('cursor','pointer')
+        .attr('filter','drop-shadow(0 1px 4px rgba(10,120,101,.22))')
         .on('mouseenter', function(e) {
-          if (state.countryFilter !== country) d3.select(this).attr('fill','rgba(10,120,101,.88)');
+          if (state.countryFilter !== country) d3.select(this).attr('fill','rgba(10,120,101,.9)').attr('r', rScale(cd.count)*1.12);
           tt.style.display='block';
           tt.innerHTML=`<strong>${country}</strong>${cd.count} ${cd.count===1?'study':'studies'}${affsText?`<br><span style="opacity:.62;font-size:10.5px">${affsText}</span>`:''}`;
         })
         .on('mousemove', e => { tt.style.left=(e.clientX+14)+'px'; tt.style.top=(e.clientY-10)+'px'; })
         .on('mouseleave', function() {
-          d3.select(this).attr('fill', state.countryFilter===country?'#0a7865':'rgba(18,166,140,.62)');
+          d3.select(this).attr('fill', state.countryFilter===country?'#0a7865':'rgba(18,166,140,.58)').attr('r', rScale(cd.count));
           tt.style.display='none';
         })
         .on('click', function() {
