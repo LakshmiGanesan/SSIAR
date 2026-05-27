@@ -65,16 +65,17 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 /* ── EXPLORER CARD ── */
 .exp-card-body--explorer .body-layout,.exp-card-body--explorer .mind-layout{margin-top:0}
 .exp-card{background:var(--paper2);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
-.exp-card-head{padding:11px 18px 9px;border-bottom:1px solid var(--border)}
+.exp-card-head{padding:13px 20px 11px;border-bottom:1px solid var(--border)}
 .exp-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);font-weight:500;margin-bottom:2px}
 .exp-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);font-weight:500}
-.exp-heading{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink2);font-weight:600;font-family:var(--sans)}
+.exp-heading{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-d);font-weight:700;font-family:var(--sans)}
+.db-header .exp-heading{font-size:13px;letter-spacing:.2em}
 .exp-card-body{padding:18px 18px 14px}
-.exp-card-body--explorer{padding:10px 14px 10px}
+.exp-card-body--explorer{padding:6px 10px 8px}
 .exp-hint{font-size:10.5px;color:var(--ink4);margin-top:12px;font-style:italic;text-align:center}
 
 /* ── BODY EXPLORER ── */
-.body-layout{display:grid;grid-template-columns:1fr 100px 1fr;align-items:center;min-height:232px;gap:4px}
+.body-layout{display:grid;grid-template-columns:1fr 120px 1fr;align-items:center;min-height:240px;gap:4px}
 .body-col{display:flex;flex-direction:column;gap:7px}
 .body-col-l{align-items:flex-end}
 .body-col-r{align-items:flex-start}
@@ -88,8 +89,8 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .body-svg-center{display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 2px 8px rgba(10,120,101,.12))}
 
 /* ── MIND EXPLORER ── */
-.mind-layout{position:relative;width:100%;height:252px}
-.mind-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-54%);pointer-events:none;filter:drop-shadow(0 3px 12px rgba(140,80,200,.15))}
+.mind-layout{position:relative;width:100%;height:280px}
+.mind-center{position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);pointer-events:none;filter:drop-shadow(0 3px 12px rgba(140,80,200,.15))}
 .mnode{position:absolute;display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:all .15s;border:1px solid rgba(126,30,60,.14);user-select:none;white-space:nowrap;font-family:var(--sans);background:var(--rose-l);color:var(--rose);z-index:5}
 .mnode:hover{border-color:var(--rose-m);background:rgba(173,43,85,.13)}
 .mnode.on{background:var(--rose-m);color:#fff;border-color:var(--rose-m)}
@@ -112,6 +113,18 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .pop-row.on .pop-pct{color:var(--teal);font-weight:500}
 
 /* ── DURATION TIMELINE ── */
+/* 3-card duration layout */
+.dur-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:4px 0}
+.dur-card{border-radius:10px;padding:14px 12px 12px;cursor:pointer;border:2px solid transparent;transition:all .2s;text-align:center;position:relative;overflow:hidden}
+.dur-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
+.dur-card.on{border-color:currentColor;box-shadow:0 2px 12px rgba(0,0,0,.12)}
+.dur-card-icon{font-size:22px;margin-bottom:6px;display:block}
+.dur-card-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.dur-card-sub{font-size:10px;opacity:.65;margin-bottom:10px;white-space:nowrap}
+.dur-card-count{font-family:var(--serif);font-size:1.5rem;font-weight:500;display:block;line-height:1}
+.dur-card-pct{font-size:10.5px;opacity:.6;margin-top:2px;display:block}
+.dur-card-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 10px 10px;transition:width .3s ease}
+/* /3-card */
 .dur-outer{position:relative;padding:28px 4px 0;margin-bottom:6px}
 .dur-line{position:absolute;left:4px;right:4px;top:34px;height:1.5px;background:var(--border2)}
 .dur-progress{position:absolute;left:4px;top:34px;height:1.5px;background:var(--teal-m);opacity:.55;transition:width .22s ease}
@@ -300,7 +313,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
         </div>
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading">Mental Health Explorer</div>
+            <div class="exp-heading" style="color:var(--rose)">Mental Health Explorer</div>
           </div>
           <div class="exp-card-body exp-card-body--explorer">
             <div class="mind-layout" id="mind-explorer"></div>
@@ -311,7 +324,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
       <div class="exp-row row-2">
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading">Study Population Explorer</div>
+            <div class="exp-heading" style="color:#2460b5">Study Population Explorer</div>
           </div>
           <div class="exp-card-body">
             <div class="pop-list" id="pop-list"></div>
@@ -319,7 +332,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
         </div>
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading">Intervention Duration</div>
+            <div class="exp-heading" style="color:#8b4c00">Intervention Duration</div>
           </div>
           <div class="exp-card-body">
             <div class="dur-outer" id="dur-explorer"></div>
@@ -327,7 +340,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
         </div>
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading">Global Research Spread</div>
+            <div class="exp-heading" style="color:#344e70">Global Research Spread</div>
           </div>
           <div class="exp-card-body" style="padding-bottom:10px">
             <div class="geo-wrap">
@@ -340,17 +353,16 @@ footer p{font-size:11.5px;color:var(--ink4)}
       <div class="db-section">
         <div class="db-header">
           <div>
-            <div class="exp-eyebrow" style="margin-bottom:2px">Evidence Database</div>
-            <div style="font-family:var(--serif);font-size:1.25rem;color:var(--ink)">Research-Backed Findings</div>
+            <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database</div>
           </div>
           <div class="db-right">
             <span class="db-meta"><strong id="vis-count">—</strong> studies shown</span>
             <div class="view-toggle">
-              <button class="vtbtn on" id="btn-line" onclick="setView('line')">
+              <button class="vtbtn" id="btn-line" onclick="setView('line')">
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="1" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="5.5" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="10" width="13" height="1.6" rx=".8" fill="currentColor"/></svg>
                 Line View
               </button>
-              <button class="vtbtn" id="btn-card" onclick="setView('card')">
+              <button class="vtbtn on" id="btn-card" onclick="setView('card')">
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="0" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/></svg>
                 Card View
               </button>
@@ -359,7 +371,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
         </div>
 
         <div class="db-shell">
-          <div id="line-view">
+          <div id="line-view" style="display:none">
             <table>
               <thead><tr>
                 <th class="col-sno" data-col="rating_sort">S.No <span class="sarr on" id="sa-rating_sort">↓</span></th>
@@ -376,7 +388,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
               <button class="empty-reset" onclick="resetAll()">Reset all filters</button>
             </div>
           </div>
-          <div id="card-view" style="display:none">
+          <div id="card-view">
             <div class="card-grid" id="card-grid"></div>
             <div id="card-empty" class="empty-state" style="display:none">
               <h3>No findings match your current filters</h3>
@@ -457,12 +469,37 @@ const MH_POS = {
   'MH: Happiness': [1,  54],
 };
 const DUR_BUCKETS = [
-  {label:'Single\nSession',  pct:'≤1 day',  match:s=>/single/i.test(s.duration)},
-  {label:'≤1 Week',          pct:'1–4 wks', match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);const d=s.duration.match(/^(\d+)\s*day/i);return !!(w&&+w[1]<=1)||(!!d&&+d[1]<=7&&!(/single/i.test(s.duration)))}},
-  {label:'1–4 Weeks',        pct:'',        match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);return !!(w&&+w[1]>=2&&+w[1]<=4)}},
-  {label:'1–3 Months',       pct:'',        match:s=>{const w=s.duration.match(/^(\d+)\s*week/i);const m=s.duration.match(/^(\d+)\s*month/i);const d=s.duration.match(/^(\d+)\s*day/i);return !!(w&&+w[1]>=5&&+w[1]<=12)||(!!m&&+m[1]<=3)||(!!d&&+d[1]>=30&&+d[1]<=90)}},
-  {label:'3–6 Months',       pct:'',        match:s=>{const m=s.duration.match(/^(\d+)\s*month/i);return !!(m&&+m[1]>=4&&+m[1]<=6)}},
-  {label:'> 6 Months',       pct:'',        match:s=>/long.term|year|\d\+\s*year|5\+|6\s*month/i.test(s.duration)&&!/^[1-6]\s*month/i.test(s.duration)},
+  {
+    label:'Short-term', sub:'\u2264 8 weeks', color:'#12a68c', colorL:'#ddf0ea',
+    match: s => {
+      const d = s.duration;
+      if (/single/i.test(d)) return true;
+      const wm = d.match(/^(\d+)\s*week/i); if (wm && +wm[1] <= 8) return true;
+      const dm = d.match(/^(\d+)\s*day/i);  if (dm && +dm[1] <= 56) return true;
+      const mm = d.match(/^(\d+)\s*month/i);if (mm && +mm[1] <= 2) return true;
+      return false;
+    }
+  },
+  {
+    label:'Medium-term', sub:'> 8 \u2013 24 weeks', color:'#2460b5', colorL:'#e2ecf8',
+    match: s => {
+      const d = s.duration;
+      const wm = d.match(/^(\d+)\s*week/i); if (wm && +wm[1] > 8 && +wm[1] <= 24) return true;
+      const mm = d.match(/^(\d+)\s*month/i);if (mm && +mm[1] >= 3 && +mm[1] <= 6) return true;
+      const dm = d.match(/^(\d+)\s*day/i);  if (dm && +dm[1] > 56 && +dm[1] <= 168) return true;
+      return false;
+    }
+  },
+  {
+    label:'Long-term', sub:'> 24 weeks', color:'#7e1e3c', colorL:'#fae2ea',
+    match: s => {
+      const d = s.duration;
+      if (/long.term|year|\d+\+\s*year/i.test(d)) return true;
+      const mm = d.match(/^(\d+)\s*month/i); if (mm && +mm[1] > 6) return true;
+      const wm = d.match(/^(\d+)\s*week/i);  if (wm && +wm[1] > 24) return true;
+      return false;
+    }
+  },
 ];
 const COUNTRY_COORDS = {
   India:[78.9,20.6],USA:[-95.7,37.1],Canada:[-96.8,56.1],UK:[-3.4,55.4],
@@ -478,7 +515,7 @@ let STUDIES = [];
 let state = {
   search:'', phFilter:[], mhFilter:[], popFilter:'', durFilter:'', countryFilter:'',
   sort:{col:'rating_sort', dir:'desc'},
-  page:1, view:'line', selected:null
+  page:1, view:'card', selected:null
 };
 let geoBuilt = false;
 
@@ -624,118 +661,180 @@ function buildBodyExplorer() {
   });
   h += `</div>`;
 
-  // Body SVG — rich anatomical illustration
-  h += `<div class="body-svg-center"><svg viewBox="0 0 90 220" width="86" height="220" xmlns="http://www.w3.org/2000/svg">
+  // Body SVG — rich anatomical medical illustration (upper body)
+  h += `<div class="body-svg-center"><svg viewBox="0 0 110 230" width="110" height="230" xmlns="http://www.w3.org/2000/svg">
 <defs>
-  <linearGradient id="bg1" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#c6e5dd"/><stop offset="100%" stop-color="#ddf0ea"/>
+  <radialGradient id="skinR" cx="45%" cy="35%" r="65%">
+    <stop offset="0%" stop-color="#e8d5c0"/><stop offset="100%" stop-color="#c8a882"/>
+  </radialGradient>
+  <radialGradient id="skinR2" cx="50%" cy="30%" r="70%">
+    <stop offset="0%" stop-color="#dfc8ac"/><stop offset="100%" stop-color="#b89070"/>
+  </radialGradient>
+  <linearGradient id="torsoG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#dac5ac"/><stop offset="100%" stop-color="#c4a882"/>
   </linearGradient>
-  <linearGradient id="skinGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#d4ede7"/><stop offset="100%" stop-color="#e8f6f2"/>
-  </linearGradient>
-  <radialGradient id="brainGlw" cx="50%" cy="50%" r="55%">
-    <stop offset="0%" stop-color="#12a68c" stop-opacity=".55"/>
-    <stop offset="100%" stop-color="#12a68c" stop-opacity="0"/>
+  <radialGradient id="brainFill" cx="42%" cy="38%" r="62%">
+    <stop offset="0%" stop-color="#f2b4b8"/><stop offset="55%" stop-color="#e07080"/><stop offset="100%" stop-color="#b84055"/>
   </radialGradient>
-  <radialGradient id="heartGlw" cx="50%" cy="50%" r="55%">
-    <stop offset="0%" stop-color="#e0204e" stop-opacity=".5"/>
-    <stop offset="100%" stop-color="#e0204e" stop-opacity="0"/>
+  <radialGradient id="lungFill" cx="35%" cy="30%" r="70%">
+    <stop offset="0%" stop-color="#90b8e8"/><stop offset="60%" stop-color="#4880c8"/><stop offset="100%" stop-color="#2450a0"/>
   </radialGradient>
-  <radialGradient id="lungGlw" cx="50%" cy="50%" r="55%">
-    <stop offset="0%" stop-color="#2460b5" stop-opacity=".42"/>
-    <stop offset="100%" stop-color="#2460b5" stop-opacity="0"/>
+  <radialGradient id="heartFill" cx="38%" cy="32%" r="65%">
+    <stop offset="0%" stop-color="#ff8090"/><stop offset="55%" stop-color="#e82040"/><stop offset="100%" stop-color="#a01020"/>
   </radialGradient>
-  <radialGradient id="gutGlw" cx="50%" cy="50%" r="55%">
-    <stop offset="0%" stop-color="#b0740f" stop-opacity=".4"/>
-    <stop offset="100%" stop-color="#b0740f" stop-opacity="0"/>
+  <radialGradient id="liverFill" cx="40%" cy="35%" r="65%">
+    <stop offset="0%" stop-color="#c08040"/><stop offset="100%" stop-color="#7a4c10"/>
   </radialGradient>
-  <radialGradient id="bodyAura" cx="50%" cy="48%" r="52%">
-    <stop offset="0%" stop-color="#ddf0ea" stop-opacity=".6"/>
-    <stop offset="100%" stop-color="#ddf0ea" stop-opacity="0"/>
+  <radialGradient id="gutFill" cx="38%" cy="32%" r="68%">
+    <stop offset="0%" stop-color="#f0a050"/><stop offset="60%" stop-color="#d07020"/><stop offset="100%" stop-color="#a04808"/>
   </radialGradient>
-  <filter id="glow2" x="-50%" y="-50%" width="200%" height="200%">
-    <feGaussianBlur stdDeviation="2.5" result="b"/>
+  <filter id="orgGlow" x="-35%" y="-35%" width="170%" height="170%">
+    <feGaussianBlur stdDeviation="2.2" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
-  <filter id="glow1" x="-40%" y="-40%" width="180%" height="180%">
-    <feGaussianBlur stdDeviation="1.6" result="b"/>
+  <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+    <feGaussianBlur stdDeviation="1.5" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
+  <radialGradient id="bodyAura2" cx="50%" cy="42%" r="55%">
+    <stop offset="0%" stop-color="#e0f4f0" stop-opacity=".5"/>
+    <stop offset="100%" stop-color="#e0f4f0" stop-opacity="0"/>
+  </radialGradient>
 </defs>
 
-<!-- Outer body aura -->
-<ellipse cx="45" cy="108" rx="43" ry="95" fill="url(#bodyAura)"/>
+<!-- Body aura glow -->
+<ellipse cx="55" cy="120" rx="52" ry="105" fill="url(#bodyAura2)"/>
 
-<!-- HEAD -->
-<ellipse cx="45" cy="21" rx="17.5" ry="19" fill="url(#skinGrad)" stroke="#12a68c" stroke-width="1.1" opacity=".78"/>
-<!-- Brain highlight inside head -->
-<ellipse cx="45" cy="15" rx="11" ry="8.5" fill="url(#brainGlw)"/>
-<ellipse cx="45" cy="14" rx="7.5" ry="5.5" fill="#0a7865" opacity=".2" filter="url(#glow1)"/>
-<!-- Brain surface folds -->
-<path d="M38 12 Q42 8 45 10 Q48 8 52 12" stroke="#0a7865" stroke-width="0.7" fill="none" opacity=".4" stroke-linecap="round"/>
-<path d="M37 16 Q41 13 45 15 Q49 13 53 16" stroke="#0a7865" stroke-width="0.6" fill="none" opacity=".32" stroke-linecap="round"/>
+<!-- ── HEAD ── -->
+<!-- Hair -->
+<ellipse cx="55" cy="16" rx="21" ry="20" fill="#5c3c1e" opacity=".85"/>
+<path d="M34 20 Q36 8 55 6 Q74 8 76 20 Q74 10 55 8 Q36 10 34 20Z" fill="#3c2410" opacity=".7"/>
+<!-- Head (skin) -->
+<ellipse cx="55" cy="26" rx="19.5" ry="21" fill="url(#skinR)"/>
+<!-- Skull shading -->
+<ellipse cx="49" cy="20" rx="8" ry="5" fill="#fff" opacity=".12"/>
+<!-- Ear left -->
+<ellipse cx="35.5" cy="28" rx="3" ry="4.5" fill="#c4a882"/>
+<ellipse cx="35.5" cy="28" rx="1.8" ry="3" fill="#b89070"/>
+<!-- Ear right -->
+<ellipse cx="74.5" cy="28" rx="3" ry="4.5" fill="#c4a882"/>
+<ellipse cx="74.5" cy="28" rx="1.8" ry="3" fill="#b89070"/>
 <!-- Eyes -->
-<ellipse cx="40" cy="22" rx="2.2" ry="1.6" fill="#0a7865" opacity=".3"/>
-<ellipse cx="50" cy="22" rx="2.2" ry="1.6" fill="#0a7865" opacity=".3"/>
-<!-- Smile -->
-<path d="M41.5 28 Q45 31 48.5 28" stroke="#0a7865" stroke-width="0.8" fill="none" opacity=".28" stroke-linecap="round"/>
+<ellipse cx="47" cy="26" rx="3.5" ry="2.5" fill="#fff"/>
+<ellipse cx="47" cy="26" rx="2.2" ry="2" fill="#4a3020"/>
+<ellipse cx="47" cy="26" rx="1" ry="1" fill="#1a1008"/>
+<ellipse cx="46.5" cy="25.4" rx=".5" ry=".4" fill="#fff" opacity=".7"/>
+<ellipse cx="63" cy="26" rx="3.5" ry="2.5" fill="#fff"/>
+<ellipse cx="63" cy="26" rx="2.2" ry="2" fill="#4a3020"/>
+<ellipse cx="63" cy="26" rx="1" ry="1" fill="#1a1008"/>
+<ellipse cx="62.5" cy="25.4" rx=".5" ry=".4" fill="#fff" opacity=".7"/>
+<!-- Eyebrows -->
+<path d="M44 22.5 Q47 21 50 22" stroke="#3c2818" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+<path d="M60 22 Q63 21 66 22.5" stroke="#3c2818" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+<!-- Nose -->
+<path d="M55 28 L53 33 Q55 34.5 57 33 L55 28Z" fill="#b89070" opacity=".5"/>
+<!-- Mouth -->
+<path d="M49 37 Q55 40.5 61 37" stroke="#8c5840" stroke-width="1.2" fill="none" stroke-linecap="round"/>
 
-<!-- NECK -->
-<rect x="40.5" y="39" width="9" height="10" rx="3.5" fill="url(#skinGrad)" stroke="#12a68c" stroke-width=".9" opacity=".62"/>
+<!-- ── BRAIN (visible inside skull, top of head) ── -->
+<ellipse cx="55" cy="17" rx="15" ry="11" fill="url(#brainFill)" opacity=".82" filter="url(#orgGlow)"/>
+<!-- Brain gyri -->
+<path d="M43 14 Q47 10 52 14 Q57 18 62 14 Q66 10 68 15" stroke="#f9d0d8" stroke-width="1.3" fill="none" opacity=".6" stroke-linecap="round"/>
+<path d="M41 19 Q46 15 51 19 Q56 23 61 19 Q65 16 69 19" stroke="#f9d0d8" stroke-width="1.1" fill="none" opacity=".5" stroke-linecap="round"/>
+<path d="M43 24 Q48 21 53 24 Q58 27 63 24" stroke="#f9d0d8" stroke-width="1" fill="none" opacity=".45" stroke-linecap="round"/>
+<!-- Brain highlight -->
+<ellipse cx="50" cy="13" rx="7" ry="4" fill="#fff" opacity=".2"/>
+<!-- Brain center fissure -->
+<line x1="55" y1="8" x2="55" y2="25" stroke="#c84060" stroke-width="0.7" opacity=".4"/>
 
-<!-- TORSO -->
-<path d="M20 52 Q12 74 14 115 Q16 129 45 131 Q74 129 76 115 Q78 74 70 52 Q59 47 45 47 Q31 47 20 52Z" fill="url(#skinGrad)" stroke="#12a68c" stroke-width="1.1" opacity=".7"/>
-<!-- Torso center line / sternum -->
-<line x1="45" y1="50" x2="45" y2="128" stroke="#12a68c" stroke-width="0.5" stroke-dasharray="1.5 3" opacity=".2"/>
-<!-- Rib cage hint -->
-<path d="M26 65 Q35 62 45 64 Q55 62 64 65" stroke="#12a68c" stroke-width="0.5" fill="none" opacity=".15"/>
-<path d="M24 72 Q34 69 45 71 Q56 69 66 72" stroke="#12a68c" stroke-width="0.5" fill="none" opacity=".13"/>
-<path d="M23 80 Q34 77 45 79 Q56 77 67 80" stroke="#12a68c" stroke-width="0.5" fill="none" opacity=".11"/>
+<!-- ── NECK ── -->
+<path d="M48 46 L48 57 Q55 60 62 57 L62 46 Q58 48 55 48 Q52 48 48 46Z" fill="url(#skinR2)"/>
+<!-- Neck shadow -->
+<ellipse cx="55" cy="46" rx="7" ry="2" fill="#0a7865" opacity=".08"/>
 
-<!-- ARMS -->
-<path d="M20 57 Q8 78 10 115 Q11 122 17 122 Q21 122 20 115 Q18 85 27 66Z" fill="url(#skinGrad)" stroke="#12a68c" stroke-width=".9" opacity=".62"/>
-<path d="M70 57 Q82 78 80 115 Q79 122 73 122 Q69 122 70 115 Q72 85 63 66Z" fill="url(#skinGrad)" stroke="#12a68c" stroke-width=".9" opacity=".62"/>
+<!-- ── SHOULDERS + ARMS outline ── -->
+<path d="M48 58 Q35 60 25 68 Q14 80 14 108 Q14 120 20 124 Q25 126 28 120 Q27 100 33 80 Q36 70 48 68Z" fill="url(#torsoG)" stroke="#a88060" stroke-width=".6" opacity=".8"/>
+<path d="M62 58 Q75 60 85 68 Q96 80 96 108 Q96 120 90 124 Q85 126 82 120 Q83 100 77 80 Q74 70 62 68Z" fill="url(#torsoG)" stroke="#a88060" stroke-width=".6" opacity=".8"/>
 
-<!-- LEGS -->
-<path d="M27 129 Q24 168 26 200 Q27 206 32 206 Q38 206 38 200 Q37 169 36 131Z" fill="url(#skinGrad)" stroke="#12a68c" stroke-width=".9" opacity=".62"/>
-<path d="M63 129 Q66 168 64 200 Q63 206 58 206 Q52 206 52 200 Q53 169 54 131Z" fill="url(#skinGrad)" stroke="#12a68c" stroke-width=".9" opacity=".62"/>
+<!-- ── TORSO ── -->
+<path d="M30 70 Q26 95 27 130 Q28 150 55 153 Q82 150 83 130 Q84 95 80 70 Q68 64 55 64 Q42 64 30 70Z" fill="url(#torsoG)" stroke="#a88060" stroke-width=".7" opacity=".85"/>
+<!-- Torso shading / collarbone area -->
+<path d="M40 65 Q55 70 70 65" stroke="#fff" stroke-width=".8" fill="none" opacity=".22"/>
+<!-- Sternum line -->
+<line x1="55" y1="65" x2="55" y2="148" stroke="#a88060" stroke-width=".5" stroke-dasharray="1.5 3" opacity=".25"/>
 
-<!-- ══ ORGANS ══ -->
+<!-- ── LEFT LOWER ARM + HAND ── -->
+<path d="M28 120 Q26 148 28 165 Q29 172 35 170 Q40 168 39 161 Q37 148 36 120Z" fill="url(#skinR2)" stroke="#a88060" stroke-width=".5" opacity=".8"/>
+<ellipse cx="33" cy="169" rx="6" ry="5" fill="url(#skinR)"/>
 
-<!-- LEFT LUNG glow + shape -->
-<ellipse cx="34" cy="76" rx="9" ry="14" fill="url(#lungGlw)"/>
-<path d="M30 67 Q27 72 28 80 Q28 88 32 90 Q35 91 36 88 Q37 82 35 74 Q36 68 33 65Z" fill="#2460b5" opacity=".28"/>
-<path d="M33 68 Q30 74 31 82 Q31 88 34 89" stroke="#a0bce0" stroke-width="0.7" fill="none" opacity=".5" stroke-linecap="round"/>
-<path d="M36 66 Q34 72 35 80 Q35 87 37 88" stroke="#a0bce0" stroke-width="0.7" fill="none" opacity=".4" stroke-linecap="round"/>
+<!-- ── RIGHT LOWER ARM + HAND ── -->
+<path d="M82 120 Q84 148 82 165 Q81 172 75 170 Q70 168 71 161 Q73 148 74 120Z" fill="url(#skinR2)" stroke="#a88060" stroke-width=".5" opacity=".8"/>
+<ellipse cx="77" cy="169" rx="6" ry="5" fill="url(#skinR)"/>
 
-<!-- RIGHT LUNG glow + shape -->
-<ellipse cx="56" cy="76" rx="9" ry="14" fill="url(#lungGlw)"/>
-<path d="M60 67 Q63 72 62 80 Q62 88 58 90 Q55 91 54 88 Q53 82 55 74 Q54 68 57 65Z" fill="#2460b5" opacity=".28"/>
-<path d="M57 68 Q60 74 59 82 Q59 88 56 89" stroke="#a0bce0" stroke-width="0.7" fill="none" opacity=".5" stroke-linecap="round"/>
-<path d="M54 66 Q56 72 55 80 Q55 87 53 88" stroke="#a0bce0" stroke-width="0.7" fill="none" opacity=".4" stroke-linecap="round"/>
+<!-- ── LEGS / LOWER BODY ── -->
+<path d="M36 150 Q33 185 35 215 Q36 222 43 222 Q50 222 50 215 Q49 185 48 150Z" fill="url(#torsoG)" stroke="#a88060" stroke-width=".5" opacity=".75"/>
+<path d="M74 150 Q77 185 75 215 Q74 222 67 222 Q60 222 60 215 Q61 185 62 150Z" fill="url(#torsoG)" stroke="#a88060" stroke-width=".5" opacity=".75"/>
 
-<!-- HEART glow + shape -->
-<ellipse cx="41" cy="76" rx="7" ry="7" fill="url(#heartGlw)" filter="url(#glow2)"/>
-<path d="M41 72 Q39 69 37 70 Q34 70 34 74 Q34 78 41 84 Q48 78 48 74 Q48 70 45 70 Q43 69 41 72Z" fill="#e0204e" opacity=".42"/>
-<path d="M41 72 Q39 69 37 70 Q34 70 34 74 Q34 78 41 84 Q48 78 48 74 Q48 70 45 70 Q43 69 41 72Z" fill="none" stroke="#b01535" stroke-width="0.7" opacity=".55"/>
-<!-- Heartbeat line -->
-<path d="M29 76 L33 76 L35 72 L37 80 L39 73 L41 76 L57 76" stroke="#e0204e" stroke-width="0.8" fill="none" opacity=".35" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- ════ ORGANS — layered over torso ════ -->
 
-<!-- GUT / INTESTINES glow + coils -->
-<ellipse cx="45" cy="108" rx="13" ry="12" fill="url(#gutGlw)"/>
-<path d="M36 101 Q33 106 36 109 Q39 113 43 112 Q45 115 43 117 Q39 118 37 115" stroke="#b0740f" stroke-width="1.3" fill="none" opacity=".38" stroke-linecap="round"/>
-<path d="M54 101 Q57 106 54 109 Q51 113 47 112 Q45 115 47 117 Q51 118 53 115" stroke="#b0740f" stroke-width="1.3" fill="none" opacity=".38" stroke-linecap="round"/>
-<ellipse cx="45" cy="107" rx="7.5" ry="8" fill="#b0740f" opacity=".14"/>
-<ellipse cx="43" cy="111" rx="4" ry="3" fill="#b0740f" opacity=".12"/>
+<!-- LUNGS glow halos -->
+<ellipse cx="40" cy="93" rx="13" ry="20" fill="#4880c8" opacity=".18" filter="url(#softShadow)"/>
+<ellipse cx="70" cy="93" rx="13" ry="20" fill="#4880c8" opacity=".18" filter="url(#softShadow)"/>
 
-<!-- VAGUS NERVE — dashed spine line -->
-<path d="M45 37 L45 131" stroke="#0a7865" stroke-width="0.9" stroke-dasharray="1.5 2.5" opacity=".18"/>
-<!-- DNA Helix hint (genes) near lower torso -->
-<path d="M41 117 Q43 120 45 117 Q47 114 49 117 Q51 120 53 117" stroke="#7b5006" stroke-width="0.7" fill="none" opacity=".28" stroke-linecap="round"/>
-<path d="M41 121 Q43 124 45 121 Q47 118 49 121 Q51 124 53 121" stroke="#7b5006" stroke-width="0.7" fill="none" opacity=".22" stroke-linecap="round"/>
+<!-- LEFT LUNG -->
+<path d="M30 76 Q26 82 27 93 Q27 108 33 114 Q38 118 43 115 Q46 112 46 106 Q45 93 42 82 Q40 75 35 73 Q30 73 30 76Z" fill="url(#lungFill)" opacity=".82" filter="url(#orgGlow)"/>
+<!-- Lung bronchi detail -->
+<path d="M38 78 Q37 85 37 95 Q37 106 39 112" stroke="#90b8e8" stroke-width="0.9" fill="none" opacity=".5" stroke-linecap="round"/>
+<path d="M34 82 Q33 90 34 100 Q35 108 38 112" stroke="#90b8e8" stroke-width="0.8" fill="none" opacity=".4" stroke-linecap="round"/>
+<!-- Lung highlight -->
+<ellipse cx="35" cy="82" rx="4" ry="7" fill="#fff" opacity=".18"/>
 
-<!-- Subtle outer glow ring -->
-<ellipse cx="45" cy="95" rx="38" ry="75" fill="none" stroke="#12a68c" stroke-width="0.5" stroke-dasharray="2 7" opacity=".12"/>
+<!-- RIGHT LUNG -->
+<path d="M80 76 Q84 82 83 93 Q83 108 77 114 Q72 118 67 115 Q64 112 64 106 Q65 93 68 82 Q70 75 75 73 Q80 73 80 76Z" fill="url(#lungFill)" opacity=".78" filter="url(#orgGlow)"/>
+<!-- Lung bronchi detail -->
+<path d="M72 78 Q73 85 73 95 Q73 106 71 112" stroke="#90b8e8" stroke-width="0.9" fill="none" opacity=".5" stroke-linecap="round"/>
+<path d="M76 82 Q77 90 76 100 Q75 108 72 112" stroke="#90b8e8" stroke-width="0.8" fill="none" opacity=".4" stroke-linecap="round"/>
+<!-- Lung highlight -->
+<ellipse cx="75" cy="82" rx="4" ry="7" fill="#fff" opacity=".15"/>
+
+<!-- HEART glow -->
+<ellipse cx="50" cy="90" rx="10" ry="10" fill="#e82040" opacity=".25" filter="url(#softShadow)"/>
+<!-- HEART anatomical shape -->
+<path d="M50 82 Q47 77 43 78 Q37 79 37 86 Q37 93 50 103 Q63 93 63 86 Q63 79 57 78 Q53 77 50 82Z" fill="url(#heartFill)" opacity=".9" filter="url(#orgGlow)"/>
+<!-- Heart highlight -->
+<ellipse cx="46" cy="84" rx="5" ry="4" fill="#fff" opacity=".2"/>
+<!-- Aorta stub -->
+<path d="M50 79 Q50 74 53 72 Q56 70 56 75" stroke="#c82040" stroke-width="1.5" fill="none" opacity=".5" stroke-linecap="round"/>
+<!-- Heartbeat shimmer -->
+<path d="M30 91 L36 91 L39 85 L42 97 L45 88 L50 91 L70 91" stroke="#ff6070" stroke-width="0.9" fill="none" opacity=".3" stroke-linecap="round" stroke-linejoin="round"/>
+
+<!-- LIVER (right lobe only, below right lung) -->
+<path d="M57 114 Q65 113 72 116 Q80 121 78 128 Q75 134 64 134 Q57 133 55 128 Q53 122 57 114Z" fill="url(#liverFill)" opacity=".7"/>
+<ellipse cx="65" cy="122" rx="7" ry="4" fill="#fff" opacity=".12"/>
+
+<!-- STOMACH -->
+<path d="M43 118 Q38 121 38 128 Q38 135 44 137 Q52 139 55 135 Q57 130 55 123 Q52 118 43 118Z" fill="#e09080" opacity=".65"/>
+<ellipse cx="46" cy="125" rx="4" ry="3" fill="#fff" opacity=".15"/>
+
+<!-- GUT / INTESTINES glow -->
+<ellipse cx="55" cy="148" rx="18" ry="14" fill="#d07020" opacity=".2" filter="url(#softShadow)"/>
+<!-- Intestinal coils -->
+<path d="M40 135 Q36 140 37 145 Q38 152 44 153 Q50 154 52 150 Q53 146 50 143 Q47 140 44 143 Q41 146 43 151 Q46 156 53 156 Q61 155 63 150 Q65 145 62 141 Q59 138 56 141 Q53 144 55 149 Q57 154 64 154 Q71 152 72 146 Q72 140 67 138" stroke="url(#gutFill)" stroke-width="4" fill="none" opacity=".82" stroke-linecap="round" stroke-linejoin="round"/>
+<!-- Intestine highlight -->
+<path d="M41 137 Q37 142 38 147" stroke="#f8b870" stroke-width="1.5" fill="none" opacity=".45" stroke-linecap="round"/>
+
+<!-- Spine / vagus nerve -->
+<path d="M55 58 L55 150" stroke="#12a68c" stroke-width="1" stroke-dasharray="2 3" opacity=".15"/>
+
+<!-- DNA double helix hint near lower torso -->
+<path d="M50 158 Q52 162 54 166 Q56 170 58 174" stroke="#7b5006" stroke-width="1" fill="none" opacity=".35" stroke-linecap="round"/>
+<path d="M60 158 Q58 162 56 166 Q54 170 52 174" stroke="#7b5006" stroke-width="1" fill="none" opacity=".35" stroke-linecap="round"/>
+<line x1="50" y1="162" x2="60" y2="162" stroke="#7b5006" stroke-width=".7" opacity=".3"/>
+<line x1="50" y1="166" x2="60" y2="166" stroke="#7b5006" stroke-width=".7" opacity=".3"/>
+<line x1="51" y1="170" x2="59" y2="170" stroke="#7b5006" stroke-width=".7" opacity=".3"/>
+
+<!-- Outer body glow ring -->
+<ellipse cx="55" cy="115" rx="48" ry="95" fill="none" stroke="#12a68c" stroke-width=".5" stroke-dasharray="2 8" opacity=".1"/>
 </svg></div>`;
 
   h += `<div class="body-col body-col-r">`;
@@ -763,108 +862,147 @@ function buildBodyExplorer() {
 // ─────────────────────────────────────────────────────────────────────────────
 function buildMindExplorer() {
   const wrap = document.getElementById('mind-explorer');
-  // Brain SVG — rich illustrated brain with serene atmosphere
-  let h = `<div class="mind-center"><svg viewBox="0 0 130 148" width="106" height="120" xmlns="http://www.w3.org/2000/svg">
+  // Brain SVG — rich illustrated brain with serene landscape
+  let h = `<div class="mind-center"><svg viewBox="0 0 160 175" width="138" height="150" xmlns="http://www.w3.org/2000/svg">
 <defs>
   <radialGradient id="aura1" cx="50%" cy="46%" r="62%">
-    <stop offset="0%" stop-color="#c9a8e8" stop-opacity=".45"/>
-    <stop offset="60%" stop-color="#e4d4f5" stop-opacity=".2"/>
+    <stop offset="0%" stop-color="#c9a8e8" stop-opacity=".5"/>
+    <stop offset="70%" stop-color="#e4d4f5" stop-opacity=".2"/>
     <stop offset="100%" stop-color="#f8f6f1" stop-opacity="0"/>
   </radialGradient>
-  <radialGradient id="brainL" cx="38%" cy="38%" r="68%">
-    <stop offset="0%" stop-color="#ddc4f5"/>
-    <stop offset="50%" stop-color="#b48ddc"/>
-    <stop offset="100%" stop-color="#8b5fc0"/>
+  <radialGradient id="brainLH" cx="36%" cy="34%" r="70%">
+    <stop offset="0%" stop-color="#ead0ff"/>
+    <stop offset="40%" stop-color="#c090ec"/>
+    <stop offset="80%" stop-color="#9058c8"/>
+    <stop offset="100%" stop-color="#6c3aa8"/>
   </radialGradient>
-  <radialGradient id="brainR" cx="62%" cy="38%" r="68%">
-    <stop offset="0%" stop-color="#d4b8f0"/>
-    <stop offset="50%" stop-color="#a87fd0"/>
-    <stop offset="100%" stop-color="#7e55b8"/>
+  <radialGradient id="brainRH" cx="64%" cy="34%" r="70%">
+    <stop offset="0%" stop-color="#dcc0f8"/>
+    <stop offset="40%" stop-color="#b07ee0"/>
+    <stop offset="80%" stop-color="#844fc0"/>
+    <stop offset="100%" stop-color="#6030a0"/>
   </radialGradient>
-  <radialGradient id="lakeGlow" cx="50%" cy="80%" r="50%">
-    <stop offset="0%" stop-color="#c0a8e8" stop-opacity=".35"/>
-    <stop offset="100%" stop-color="#c0a8e8" stop-opacity="0"/>
+  <radialGradient id="stemG" cx="50%" cy="30%" r="65%">
+    <stop offset="0%" stop-color="#b080d8"/><stop offset="100%" stop-color="#7040a8"/>
   </radialGradient>
-  <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-    <stop offset="0%" stop-color="#ede4f8"/>
-    <stop offset="100%" stop-color="#f8f4fc"/>
+  <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#f0e8fc"/>
+    <stop offset="100%" stop-color="#e8ddf8"/>
   </linearGradient>
-  <filter id="brainGlow" x="-40%" y="-40%" width="180%" height="180%">
-    <feGaussianBlur stdDeviation="3.5" result="b"/>
+  <linearGradient id="waterG" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#d0b8f0"/>
+    <stop offset="100%" stop-color="#c0a0e0"/>
+  </linearGradient>
+  <filter id="bGlow" x="-45%" y="-45%" width="190%" height="190%">
+    <feGaussianBlur stdDeviation="4" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
-  <filter id="softBlur" x="-30%" y="-30%" width="160%" height="160%">
-    <feGaussianBlur stdDeviation="2" result="b"/>
+  <filter id="sGlow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="2.2" result="b"/>
     <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
-  <clipPath id="circleClip">
-    <circle cx="65" cy="68" r="58"/>
+  <clipPath id="ovalClip">
+    <ellipse cx="80" cy="82" rx="72" ry="72"/>
   </clipPath>
 </defs>
 
 <!-- Outer aura rings -->
-<circle cx="65" cy="68" r="62" fill="url(#aura1)"/>
-<circle cx="65" cy="68" r="57" fill="none" stroke="#b48ddc" stroke-width="0.4" stroke-dasharray="2 5" opacity=".22"/>
-<circle cx="65" cy="68" r="50" fill="none" stroke="#b48ddc" stroke-width="0.3" stroke-dasharray="1.5 6" opacity=".15"/>
+<ellipse cx="80" cy="82" rx="78" ry="78" fill="url(#aura1)"/>
+<ellipse cx="80" cy="82" rx="73" ry="73" fill="none" stroke="#b090dc" stroke-width="0.5" stroke-dasharray="3 6" opacity=".25"/>
+<ellipse cx="80" cy="82" rx="65" ry="65" fill="none" stroke="#b090dc" stroke-width="0.3" stroke-dasharray="2 8" opacity=".15"/>
 
-<!-- Clipped scene background -->
-<g clip-path="url(#circleClip)">
-  <!-- Sky gradient bg -->
-  <rect x="7" y="10" width="116" height="116" fill="url(#skyGrad)" opacity=".6"/>
-
-  <!-- Background mountain range (far) -->
-  <path d="M7 108 L22 88 L34 96 L48 76 L62 86 L72 72 L85 84 L98 78 L115 92 L123 84 L123 125 L7 125Z" fill="#d4bfef" opacity=".3"/>
-  <!-- Foreground mountains -->
-  <path d="M7 112 L28 94 L42 102 L56 88 L65 94 L74 86 L88 98 L102 90 L123 105 L123 125 L7 125Z" fill="#c8aee8" opacity=".35"/>
-  <!-- Water / lake reflection -->
-  <ellipse cx="65" cy="122" rx="48" ry="10" fill="#d4c0f0" opacity=".4"/>
-  <ellipse cx="65" cy="124" rx="38" ry="6" fill="#c8b0e8" opacity=".3"/>
-  <!-- Reflection ripples -->
-  <ellipse cx="65" cy="126" rx="25" ry="2.5" fill="none" stroke="#b09cd8" stroke-width="0.5" opacity=".35"/>
-  <ellipse cx="65" cy="128" rx="18" ry="2" fill="none" stroke="#b09cd8" stroke-width="0.4" opacity=".28"/>
+<!-- Clipped landscape background -->
+<g clip-path="url(#ovalClip)">
+  <rect x="8" y="10" width="144" height="144" fill="url(#skyG)"/>
+  <!-- Far mountains -->
+  <path d="M8 118 L26 96 L40 105 L56 84 L70 96 L80 80 L90 94 L106 82 L122 97 L136 88 L152 102 L152 154 L8 154Z" fill="#d8c0f0" opacity=".38"/>
+  <!-- Near mountains -->
+  <path d="M8 128 L30 106 L50 118 L65 102 L80 112 L95 100 L114 116 L132 106 L152 120 L152 154 L8 154Z" fill="#c8a8e8" opacity=".42"/>
+  <!-- Snow caps -->
+  <path d="M56 84 L62 90 L50 90Z" fill="#f0e8fc" opacity=".6"/>
+  <path d="M80 80 L86 88 L74 88Z" fill="#f0e8fc" opacity=".55"/>
+  <path d="M106 82 L112 90 L100 90Z" fill="#f0e8fc" opacity=".5"/>
+  <!-- Lake / water -->
+  <rect x="8" y="136" width="144" height="18" fill="url(#waterG)" opacity=".5"/>
+  <!-- Water shimmer lines -->
+  <line x1="20" y1="140" x2="60" y2="140" stroke="#e8d8ff" stroke-width="0.7" opacity=".5"/>
+  <line x1="30" y1="144" x2="80" y2="144" stroke="#e8d8ff" stroke-width="0.6" opacity=".4"/>
+  <line x1="90" y1="141" x2="140" y2="141" stroke="#e8d8ff" stroke-width="0.7" opacity=".45"/>
+  <line x1="100" y1="145" x2="148" y2="145" stroke="#e8d8ff" stroke-width="0.5" opacity=".35"/>
+  <!-- Brain reflection in water (faint) -->
+  <ellipse cx="80" cy="149" rx="32" ry="6" fill="#b090d0" opacity=".18"/>
+  <ellipse cx="80" cy="151" rx="22" ry="3.5" fill="#b090d0" opacity=".12"/>
 </g>
 
-<!-- BRAIN — left hemisphere -->
-<path d="M65 30 Q47 24 37 33 Q24 44 24 60 Q24 76 34 86 Q43 95 55 94 Q61 94 65 90Z" fill="url(#brainL)" filter="url(#brainGlow)" opacity=".9"/>
-<!-- BRAIN — right hemisphere -->
-<path d="M65 30 Q83 24 93 33 Q106 44 106 60 Q106 76 96 86 Q87 95 75 94 Q69 94 65 90Z" fill="url(#brainR)" filter="url(#brainGlow)" opacity=".85"/>
-<!-- Brain stem -->
-<path d="M59 91 Q62 96 65 98 Q68 96 71 91" fill="#9b72c8" opacity=".7"/>
-<rect x="61" y="94" width="8" height="10" rx="3.5" fill="#9b72c8" opacity=".65"/>
-<!-- Interhemispheric fissure -->
-<line x1="65" y1="30" x2="65" y2="91" stroke="#7040a0" stroke-width="0.8" opacity=".35"/>
+<!-- ═══ BRAIN ═══ -->
+<!-- Brain glow halo -->
+<ellipse cx="80" cy="72" rx="48" ry="40" fill="#b080d8" opacity=".18" filter="url(#bGlow)"/>
 
-<!-- Brain folds — LEFT hemisphere gyri/sulci -->
-<path d="M32 50 Q37 45 42 50 Q47 55 52 51 Q55 48 57 53 Q58 60 55 65" stroke="#f0e6fc" stroke-width="1.3" fill="none" opacity=".6" stroke-linecap="round"/>
-<path d="M28 62 Q33 57 38 62 Q43 67 48 63 Q52 60 55 64" stroke="#f0e6fc" stroke-width="1.2" fill="none" opacity=".55" stroke-linecap="round"/>
-<path d="M27 74 Q32 69 38 73 Q43 77 49 74 Q52 71 55 75" stroke="#f0e6fc" stroke-width="1.1" fill="none" opacity=".5" stroke-linecap="round"/>
-<path d="M30 84 Q36 80 42 83 Q48 86 53 83" stroke="#f0e6fc" stroke-width="1" fill="none" opacity=".45" stroke-linecap="round"/>
+<!-- LEFT hemisphere -->
+<path d="M80 28
+  Q60 22 47 30
+  Q30 40 28 58
+  Q26 76 34 90
+  Q42 104 56 108
+  Q66 110 74 106
+  Q79 103 80 98Z"
+  fill="url(#brainLH)" opacity=".95" filter="url(#sGlow)"/>
 
-<!-- Brain folds — RIGHT hemisphere gyri/sulci -->
-<path d="M98 50 Q93 45 88 50 Q83 55 78 51 Q75 48 73 53 Q72 60 75 65" stroke="#f0e6fc" stroke-width="1.3" fill="none" opacity=".6" stroke-linecap="round"/>
-<path d="M102 62 Q97 57 92 62 Q87 67 82 63 Q78 60 75 64" stroke="#f0e6fc" stroke-width="1.2" fill="none" opacity=".55" stroke-linecap="round"/>
-<path d="M103 74 Q98 69 92 73 Q87 77 81 74 Q78 71 75 75" stroke="#f0e6fc" stroke-width="1.1" fill="none" opacity=".5" stroke-linecap="round"/>
-<path d="M100 84 Q94 80 88 83 Q82 86 77 83" stroke="#f0e6fc" stroke-width="1" fill="none" opacity=".45" stroke-linecap="round"/>
+<!-- RIGHT hemisphere -->
+<path d="M80 28
+  Q100 22 113 30
+  Q130 40 132 58
+  Q134 76 126 90
+  Q118 104 104 108
+  Q94 110 86 106
+  Q81 103 80 98Z"
+  fill="url(#brainRH)" opacity=".9" filter="url(#sGlow)"/>
 
-<!-- Neural glow nodes -->
-<circle cx="40" cy="53" r="2" fill="#fff" opacity=".7" filter="url(#softBlur)"/>
-<circle cx="50" cy="45" r="1.5" fill="#fff" opacity=".6"/>
-<circle cx="35" cy="67" r="1.5" fill="#fff" opacity=".55"/>
-<circle cx="46" cy="76" r="1.2" fill="#fff" opacity=".5"/>
-<circle cx="90" cy="53" r="2" fill="#fff" opacity=".7" filter="url(#softBlur)"/>
-<circle cx="80" cy="45" r="1.5" fill="#fff" opacity=".6"/>
-<circle cx="95" cy="67" r="1.5" fill="#fff" opacity=".55"/>
-<circle cx="84" cy="76" r="1.2" fill="#fff" opacity=".5"/>
-<circle cx="65" cy="44" r="1.8" fill="#fff" opacity=".55"/>
+<!-- Brain stem / cerebellum -->
+<path d="M68 106 Q72 118 80 122 Q88 118 92 106 Q87 112 80 114 Q73 112 68 106Z" fill="url(#stemG)" opacity=".85"/>
+<ellipse cx="80" cy="119" rx="10" ry="5" fill="#8050b8" opacity=".6"/>
 
-<!-- Neural connection threads -->
-<path d="M40 53 Q48 47 50 45" stroke="#f0e6fc" stroke-width="0.5" fill="none" opacity=".4"/>
-<path d="M35 67 Q40 62 46 60" stroke="#f0e6fc" stroke-width="0.5" fill="none" opacity=".35"/>
-<path d="M90 53 Q82 47 80 45" stroke="#f0e6fc" stroke-width="0.5" fill="none" opacity=".4"/>
-<path d="M95 67 Q90 62 84 60" stroke="#f0e6fc" stroke-width="0.5" fill="none" opacity=".35"/>
+<!-- Centre fissure -->
+<line x1="80" y1="28" x2="80" y2="106" stroke="#5828a0" stroke-width="1" opacity=".4"/>
 
-<!-- Central top highlight -->
-<ellipse cx="65" cy="44" rx="20" ry="10" fill="#f4ecfd" opacity=".28"/>
+<!-- ── LEFT hemisphere gyri (surface folds) ── -->
+<path d="M35 50 Q41 44 48 50 Q55 56 61 51 Q65 47 67 53 Q67 62 63 68" stroke="#f4eaff" stroke-width="1.6" fill="none" opacity=".65" stroke-linecap="round"/>
+<path d="M30 64 Q37 57 44 63 Q51 69 57 64 Q62 60 65 65" stroke="#f4eaff" stroke-width="1.4" fill="none" opacity=".6" stroke-linecap="round"/>
+<path d="M29 78 Q36 71 44 77 Q52 83 58 78 Q63 74 66 78" stroke="#f4eaff" stroke-width="1.3" fill="none" opacity=".55" stroke-linecap="round"/>
+<path d="M32 91 Q40 85 47 90 Q55 95 61 91 Q65 88 67 91" stroke="#f4eaff" stroke-width="1.2" fill="none" opacity=".5" stroke-linecap="round"/>
+<path d="M40 100 Q47 96 54 99 Q60 103 66 100" stroke="#f4eaff" stroke-width="1.1" fill="none" opacity=".45" stroke-linecap="round"/>
+
+<!-- ── RIGHT hemisphere gyri ── -->
+<path d="M125 50 Q119 44 112 50 Q105 56 99 51 Q95 47 93 53 Q93 62 97 68" stroke="#f4eaff" stroke-width="1.6" fill="none" opacity=".6" stroke-linecap="round"/>
+<path d="M130 64 Q123 57 116 63 Q109 69 103 64 Q98 60 95 65" stroke="#f4eaff" stroke-width="1.4" fill="none" opacity=".55" stroke-linecap="round"/>
+<path d="M131 78 Q124 71 116 77 Q108 83 102 78 Q97 74 94 78" stroke="#f4eaff" stroke-width="1.3" fill="none" opacity=".5" stroke-linecap="round"/>
+<path d="M128 91 Q120 85 113 90 Q105 95 99 91 Q95 88 93 91" stroke="#f4eaff" stroke-width="1.2" fill="none" opacity=".45" stroke-linecap="round"/>
+<path d="M120 100 Q113 96 106 99 Q100 103 94 100" stroke="#f4eaff" stroke-width="1.1" fill="none" opacity=".4" stroke-linecap="round"/>
+
+<!-- ── Neural glow nodes ── -->
+<circle cx="44" cy="56" r="3" fill="#fff" opacity=".75" filter="url(#sGlow)"/>
+<circle cx="57" cy="47" r="2.2" fill="#fff" opacity=".65"/>
+<circle cx="36" cy="72" r="2.2" fill="#fff" opacity=".6"/>
+<circle cx="50" cy="82" r="1.8" fill="#fff" opacity=".55"/>
+<circle cx="42" cy="95" r="1.5" fill="#fff" opacity=".5"/>
+<circle cx="116" cy="56" r="3" fill="#fff" opacity=".75" filter="url(#sGlow)"/>
+<circle cx="103" cy="47" r="2.2" fill="#fff" opacity=".65"/>
+<circle cx="124" cy="72" r="2.2" fill="#fff" opacity=".6"/>
+<circle cx="110" cy="82" r="1.8" fill="#fff" opacity=".55"/>
+<circle cx="118" cy="95" r="1.5" fill="#fff" opacity=".5"/>
+<circle cx="80" cy="38" r="2.5" fill="#fff" opacity=".6"/>
+
+<!-- Neural threads -->
+<path d="M44 56 Q50 50 57 47" stroke="#ecdcff" stroke-width="0.7" fill="none" opacity=".5"/>
+<path d="M36 72 Q43 67 50 65" stroke="#ecdcff" stroke-width="0.7" fill="none" opacity=".45"/>
+<path d="M50 82 Q56 78 62 76" stroke="#ecdcff" stroke-width="0.6" fill="none" opacity=".4"/>
+<path d="M116 56 Q110 50 103 47" stroke="#ecdcff" stroke-width="0.7" fill="none" opacity=".5"/>
+<path d="M124 72 Q117 67 110 65" stroke="#ecdcff" stroke-width="0.7" fill="none" opacity=".45"/>
+<path d="M110 82 Q104 78 98 76" stroke="#ecdcff" stroke-width="0.6" fill="none" opacity=".4"/>
+
+<!-- Top highlight -->
+<ellipse cx="80" cy="40" rx="28" ry="12" fill="#f8f0ff" opacity=".3"/>
+<ellipse cx="68" cy="38" rx="10" ry="5" fill="#fff" opacity=".18"/>
 </svg></div>`;
 
   // Absolutely positioned nodes
@@ -921,29 +1059,25 @@ function buildPopList() {
 function buildDurExplorer() {
   const wrap = document.getElementById('dur-explorer');
   const total = STUDIES.length;
-  const counts = DUR_BUCKETS.map(b => STUDIES.filter(b.match).length);
-  const ai = state.durFilter ? DUR_BUCKETS.findIndex(b=>b.label===state.durFilter) : -1;
-  const pct = ai >= 0 ? (ai/(DUR_BUCKETS.length-1)*100) : 0;
-
-  let h = `<div class="dur-line"></div>
-<div class="dur-progress" style="width:${ai>=0?pct+'%':'0%'}"></div>
-<div class="dur-nodes">`;
-  DUR_BUCKETS.forEach((b,i) => {
+  const icons = ['⚡','🔬','🌱'];
+  let h = '<div class="dur-cards">';
+  DUR_BUCKETS.forEach((b, i) => {
+    const count = STUDIES.filter(b.match).length;
+    const pct = total ? Math.round(count/total*100) : 0;
     const on = state.durFilter === b.label ? ' on' : '';
-    const countPct = counts[i] ? Math.round(counts[i]/total*100)+'%' : '—';
-    h += `<div class="dur-node${on}" data-lbl="${b.label}">
-      <div class="dur-dot"></div>
-      <div class="dur-lbl">${b.label.replace('\n','<br>')}</div>
+    h += `<div class="dur-card${on}" data-lbl="${b.label}"
+      style="background:${b.colorL};color:${b.color}">
+      <span class="dur-card-icon">${icons[i]}</span>
+      <div class="dur-card-label">${b.label}</div>
+      <div class="dur-card-sub">${b.sub}</div>
+      <span class="dur-card-count">${count}</span>
+      <span class="dur-card-pct">${pct}% of studies</span>
+      <div class="dur-card-bar" style="background:${b.color};opacity:.4;width:${pct}%"></div>
     </div>`;
   });
-  h += `</div><div class="dur-pcts">`;
-  DUR_BUCKETS.forEach((_,i) => {
-    const p = counts[i] ? Math.round(counts[i]/total*100)+'%' : '';
-    h += `<span class="dur-pct">${p}</span>`;
-  });
-  h += `</div>`;
+  h += '</div>';
   wrap.innerHTML = h;
-  wrap.querySelectorAll('.dur-node').forEach(el => {
+  wrap.querySelectorAll('.dur-card').forEach(el => {
     el.addEventListener('click', () => {
       state.durFilter = state.durFilter === el.dataset.lbl ? '' : el.dataset.lbl;
       state.page = 1; refresh();
