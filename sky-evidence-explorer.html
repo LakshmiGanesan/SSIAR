@@ -425,20 +425,20 @@ footer p{font-size:11.5px;color:var(--ink4)}
           <div class="db-right">
             <span class="db-meta"><strong id="vis-count">—</strong> studies shown</span>
             <div class="view-toggle">
-              <button class="vtbtn on" id="btn-card" onclick="setView('card')">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="0" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/></svg>
-                Card View
-              </button>
-              <button class="vtbtn" id="btn-line" onclick="setView('line')">
+              <button class="vtbtn on" id="btn-line" onclick="setView('line')">
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="1" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="5.5" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="10" width="13" height="1.6" rx=".8" fill="currentColor"/></svg>
                 Line View
+              </button>
+              <button class="vtbtn" id="btn-card" onclick="setView('card')">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="0" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="0" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/><rect x="7.5" y="7.5" width="5.5" height="5.5" rx="1" fill="currentColor"/></svg>
+                Card View
               </button>
             </div>
           </div>
         </div>
 
         <div class="db-shell">
-          <div id="line-view" style="display:none">
+          <div id="line-view">
             <table>
               <thead><tr>
                 <th class="col-sno" data-col="rating_sort">S.No <span class="sarr on" id="sa-rating_sort">↓</span></th>
@@ -456,7 +456,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
               <button class="empty-reset" onclick="resetAll()">Reset all filters</button>
             </div>
           </div>
-          <div id="card-view">
+          <div id="card-view" style="display:none">
             <div class="card-grid" id="card-grid"></div>
             <div id="card-empty" class="empty-state" style="display:none">
               <h3>No findings match your current filters</h3>
@@ -583,7 +583,7 @@ let STUDIES = [];
 let state = {
   search:'', phFilter:[], mhFilter:[], popFilter:'', durFilter:'', countryFilter:'',
   sort:{col:'rating_sort', dir:'desc'},
-  page:1, view:'card', selected:null
+  page:1, view:'line', selected:null
 };
 let geoBuilt = false;
 
