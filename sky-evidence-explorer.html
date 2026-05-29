@@ -641,6 +641,7 @@ async function loadData() {
           highlight:r['Highlight'] || benefits[0] || '',
           population:    r['Study Population'],
           participant_type: r['Participant Type'],
+          intervention: (r['Intervention ']||r['Intervention']||'').trim(),
           n:        r['Participants (n)'],
           duration: r['Intervention Duration'],
           followup: r['Follow-up Timepoints'],
@@ -987,7 +988,7 @@ function renderCardView(pageStudies) {
     const accent = primary.startsWith('PH') ? 'var(--teal)' :
                    primary.startsWith('MH') ? '#8050b8' : 'var(--blue)';
     const yr = s.year ? String(s.year).slice(0,4) : '';
-    const meta = [s.participant_type||s.population, s.duration||'', yr].filter(Boolean).join(' · ');
+    const meta = [s.participant_type||s.population, s.intervention||'', s.duration||'', yr].filter(Boolean).join(' · ');
     return `<div class="ev-card${sel}" data-id="${s.id}"
       style="border-left-color:${accent}">
       <div class="ev-card-top">
@@ -1140,7 +1141,7 @@ function openDrawer(s) {
     ${s.rating ? `<div class="drw-star-row">${s.rating} Featured Study</div>` : ''}
     <div class="drw-tags">${tags}</div>
     <div class="drw-meta-grid">
-      <div class="drw-mc"><div class="drw-ml">Number of Participants</div><div class="drw-mv">${s.n&&s.n!=='-'?'n = '+s.n:'Not reported'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Intervention</div><div class="drw-mv">${s.intervention||'SKY'}</div></div>
       <div class="drw-mc"><div class="drw-ml">Duration</div><div class="drw-mv">${s.duration||'—'}</div></div>
       <div class="drw-mc"><div class="drw-ml">Study Design</div><div class="drw-mv">${s.design||'—'}</div></div>
       <div class="drw-mc"><div class="drw-ml">Follow-up</div><div class="drw-mv">${s.followup||'Not reported'}</div></div>
