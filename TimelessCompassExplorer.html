@@ -448,7 +448,7 @@ td.col-journal{font-size:11.5px}
     </button>
     <div class="total-pill">
       <span class="total-pill-lbl">Total Publications</span>
-      <span class="total-pill-num" id="total-pub-count">248</span>
+      <span class="total-pill-num" id="total-pub-count">—</span>
     </div>
   </div>
 </header>
@@ -760,25 +760,34 @@ const S = {
    FILTER OPTIONS (derived from data)
    ───────────────────────────────────────── */
 function uniq(arr){ return [...new Set(arr.filter(Boolean))].sort(); }
-const F_TOPICS    = uniq(RAW.flatMap(d=>d.topics));
-const F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics));
-const F_POPS      = uniq(RAW.flatMap(d=>d.populations));
-const F_INTS      = uniq(RAW.flatMap(d=>d.interventions));
-const F_PARTNERS  = uniq(RAW.map(d=>d.partnership));
-const F_LANGS     = uniq(RAW.map(d=>d.language));
-const F_YEARS     = uniq(RAW.map(d=>d.year?String(d.year):'')).filter(Boolean).reverse();
-const F_COUNTRIES = uniq(RAW.map(d=>d.country));
+// Filter option arrays — populated after CSV loads via rebuildFilterDefs()
+let F_TOPICS = [], F_SUBS = [], F_POPS = [], F_INTS = [],
+    F_PARTNERS = [], F_LANGS = [], F_YEARS = [], F_COUNTRIES = [];
 
-const FILTER_DEFS = [
-  {key:'topic',       label:'Topic',       opts:F_TOPICS,    all:'All Topics'},
-  {key:'subtopic',    label:'Subtopic',    opts:F_SUBS,      all:'All Subtopics'},
-  {key:'population',  label:'Population',  opts:F_POPS,      all:'All Populations'},
-  {key:'intervention',label:'Intervention',opts:F_INTS,      all:'All Interventions'},
-  {key:'partnership', label:'Partnership', opts:F_PARTNERS,  all:'All Partnerships'},
-  {key:'language',    label:'Language',    opts:F_LANGS,     all:'All Languages'},
-  {key:'year',        label:'Year',        opts:F_YEARS,     all:'All Years'},
-  {key:'country',     label:'Country',     opts:F_COUNTRIES, all:'All Countries'},
-];
+// FILTER_DEFS references the arrays above; rebuilt in rebuildFilterDefs()
+let FILTER_DEFS = [];
+
+// Called once after RAW is populated from CSV
+function rebuildFilterDefs(){
+  F_TOPICS    = uniq(RAW.flatMap(d=>d.topics));
+  F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics));
+  F_POPS      = uniq(RAW.flatMap(d=>d.populations));
+  F_INTS      = uniq(RAW.flatMap(d=>d.interventions));
+  F_PARTNERS  = uniq(RAW.map(d=>d.partnership));
+  F_LANGS     = uniq(RAW.map(d=>d.language));
+  F_YEARS     = uniq(RAW.map(d=>d.year?String(d.year):'')).filter(Boolean).reverse();
+  F_COUNTRIES = uniq(RAW.map(d=>d.country));
+  FILTER_DEFS = [
+    {key:'topic',       label:'Topic',       opts:F_TOPICS,    all:'All Topics'},
+    {key:'subtopic',    label:'Subtopic',    opts:F_SUBS,      all:'All Subtopics'},
+    {key:'population',  label:'Population',  opts:F_POPS,      all:'All Populations'},
+    {key:'intervention',label:'Intervention',opts:F_INTS,      all:'All Interventions'},
+    {key:'partnership', label:'Partnership', opts:F_PARTNERS,  all:'All Partnerships'},
+    {key:'language',    label:'Language',    opts:F_LANGS,     all:'All Languages'},
+    {key:'year',        label:'Year',        opts:F_YEARS,     all:'All Years'},
+    {key:'country',     label:'Country',     opts:F_COUNTRIES, all:'All Countries'},
+  ];
+}
 
 function buildFilterHTML(prefix){
   return FILTER_DEFS.map(({key,label,opts,all})=>`
@@ -1554,8 +1563,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   hideLoadingSpinner();
 
+  // ── Rebuild filter arrays & FILTER_DEFS from loaded data ──────
+  rebuildFilterDefs();
+
+  // ── Update Total Publications scorecard ───────────────────────
+  const totEl = document.getElementById('total-pub-count');
+  if (totEl) totEl.textContent = RAW.length.toLocaleString();
+
   // ── Original init logic (unchanged) ───────────────────────────
-  // Build filter UIs
+  // Build filter UIs (now populated because FILTER_DEFS is ready)
   document.getElementById('adv-grid').innerHTML=buildFilterHTML('adv');
   document.getElementById('drawer-filter-body').innerHTML=buildFilterHTML('drawer');
 
