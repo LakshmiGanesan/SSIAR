@@ -198,7 +198,7 @@ tr:last-child td{border-bottom:none}
 .sarr{font-size:9px;margin-left:3px;opacity:.3}
 .sarr.on{opacity:1}
 .row-chevron{color:var(--ink4);font-size:14px;text-align:right}
-@media(max-width:680px){.col-pt,.col-dur,.col-arr{display:none}.col-sno{width:38px}}
+@media(max-width:680px){.col-pt,.col-dur,.col-arr,.col-iv{display:none}.col-sno{width:38px}}
 
 /* CARD VIEW */
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(284px,1fr));gap:22px;padding:20px 16px}
@@ -443,6 +443,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
               <thead><tr>
                 <th class="col-sno" data-col="rating_sort">S.No <span class="sarr on" id="sa-rating_sort">↓</span></th>
                 <th data-col="highlight">Research Highlight <span class="sarr" id="sa-highlight">↕</span></th>
+                <th class="col-iv" data-col="intervention">Intervention <span class="sarr" id="sa-intervention">↕</span></th>
                 <th class="col-pt" data-col="participant_type">Participant Type <span class="sarr" id="sa-participant_type">↕</span></th>
                 <th class="col-dur" data-col="duration">Duration <span class="sarr" id="sa-duration">↕</span></th>
                 <th class="col-arr"></th>
@@ -958,6 +959,7 @@ function renderLineView(pageStudies) {
     return `<tr class="study-row${sel}" data-id="${s.id}">
       <td class="sno">${num}${star}</td>
       <td><div class="s-hl">${s.highlight}</div><div class="s-tags">${tags}</div></td>
+      <td class="col-iv" style="font-size:12px;color:var(--ink3)">${s.intervention||'—'}</td>
       <td style="font-size:12px;color:var(--ink3)">${s.participant_type||s.population}</td>
       <td style="font-size:12px;color:var(--ink3)">${s.duration||'—'}</td>
       <td class="row-chevron">›</td>
