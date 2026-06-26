@@ -620,30 +620,45 @@ let geoBuilt = false;
 // CSV PARSER
 // ─────────────────────────────────────────────────────────────────────────────
 function parseCSV(text) {
-  const lines = text.split(/\r?\n/);
-  const headers = splitCSVLine(lines[0]);
+  // Character-level parser: required because some fields (e.g. affiliations)
+  // contain embedded newlines inside quoted values, which a naive line-split
+  // would misalign.
   const rows = [];
-  for (let i = 1; i < lines.length; i++) {
-    if (!lines[i].trim()) continue;
-    const vals = splitCSVLine(lines[i]);
-    const row = {};
-    headers.forEach((h, j) => row[h.trim()] = (vals[j] || '').trim());
-    rows.push(row);
+  let row = [];
+  let field = '';
+  let inQ = false;
+  let i = 0;
+  const n = text.length;
+  while (i < n) {
+    const ch = text[i];
+    if (inQ) {
+      if (ch === '"') {
+        if (text[i+1] === '"') { field += '"'; i += 2; continue; }
+        inQ = false; i++; continue;
+      }
+      field += ch; i++; continue;
+    } else {
+      if (ch === '"') { inQ = true; i++; continue; }
+      if (ch === ',') { row.push(field); field = ''; i++; continue; }
+      if (ch === '\r') { i++; continue; } // normalize CRLF / lone CR
+      if (ch === '\n') { row.push(field); field = ''; rows.push(row); row = []; i++; continue; }
+      field += ch; i++; continue;
+    }
   }
-  return rows;
-}
-function splitCSVLine(line) {
-  const result = []; let cur = ''; let inQ = false;
-  for (let i = 0; i < line.length; i++) {
-    const ch = line[i];
-    if (ch === '"') {
-      if (inQ && line[i+1] === '"') { cur += '"'; i++; }
-      else inQ = !inQ;
-    } else if (ch === ',' && !inQ) { result.push(cur); cur = ''; }
-    else cur += ch;
+  // flush trailing field/row (file may or may not end with newline)
+  if (field.length || row.length) { row.push(field); rows.push(row); }
+
+  if (!rows.length) return [];
+  const headers = rows[0].map(h => h.trim());
+  const out = [];
+  for (let r = 1; r < rows.length; r++) {
+    const vals = rows[r];
+    if (vals.length === 1 && vals[0].trim() === '') continue; // skip blank trailing row
+    const obj = {};
+    headers.forEach((h, j) => obj[h] = (vals[j] || '').trim());
+    out.push(obj);
   }
-  result.push(cur);
-  return result;
+  return out;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
