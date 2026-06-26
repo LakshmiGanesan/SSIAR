@@ -774,6 +774,12 @@ async function loadData() {
 // TAXONOMY (computed from loaded data)
 // ─────────────────────────────────────────────────────────────────────────────
 function tagCount(tag) { return STUDIES.filter(s=>s.subtopics.includes(tag)).length; }
+// Display-only label cleaner: strips the "PH: " / "MH: " category prefix so
+// inline tag chips read naturally to a non-specialist (e.g. "Heart" instead
+// of "PH: Heart"). Filtering logic always uses the raw tag string above —
+// only the rendered text is stripped. The colour of the chip (teal/rose/blue)
+// still encodes the category, so the grouping isn't lost, just the jargon.
+function tagLabel(tag) { return tag.replace(/^(PH|MH|SH):\s*/, ''); }
 function popCount(p)   { return STUDIES.filter(s=>s.population===p).length; }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1055,7 +1061,7 @@ function renderLineView(pageStudies) {
     const num = s.idx + 1;
     const tags = s.subtopics.slice(0,3).map(t => {
       const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
-      return `<span class="stag ${cl}">${t}</span>`;
+      return `<span class="stag ${cl}">${tagLabel(t)}</span>`;
     }).join('');
     const sel = state.selected?.id === s.id ? ' sel' : '';
     return `<tr class="study-row${sel}" data-id="${s.id}">
@@ -1084,7 +1090,7 @@ function renderCardView(pageStudies) {
     const num = s.idx + 1;
     const tags = s.subtopics.slice(0,3).map(t => {
       const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
-      return `<span class="stag ${cl}">${t}</span>`;
+      return `<span class="stag ${cl}">${tagLabel(t)}</span>`;
     }).join('');
     const sel = state.selected?.id === s.id ? ' sel' : '';
     // category accent colour for left border
@@ -1240,7 +1246,7 @@ function openDrawer(s) {
   state.selected = s;
   const tags = s.subtopics.map(t => {
     const cl = t.startsWith('PH')?'stag-ph':t.startsWith('MH')?'stag-mh':'stag-sh';
-    return `<span class="stag ${cl}" style="font-size:10.5px;padding:3px 9px">${t}</span>`;
+    return `<span class="stag ${cl}" style="font-size:10.5px;padding:3px 9px">${tagLabel(t)}</span>`;
   }).join(' ');
   const benefits = s.benefits.map(b => {
     const up=b.startsWith('↑'), dn=b.startsWith('↓');
