@@ -475,7 +475,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
             <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database</div>
           </div>
           <div class="db-right">
-            <span class="db-meta"><strong id="vis-count">—</strong> studies shown</span>
+            <span class="db-meta"><strong id="vis-count">—</strong> research highlights shown</span>
             <div class="view-toggle">
               <button class="vtbtn on" id="btn-line" onclick="setView('line')">
                 <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="0" y="1" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="5.5" width="13" height="1.6" rx=".8" fill="currentColor"/><rect x="0" y="10" width="13" height="1.6" rx=".8" fill="currentColor"/></svg>
@@ -652,7 +652,7 @@ const COUNTRY_COORDS = {
 let STUDIES = [];
 let INTERVENTIONS = []; // populated dynamically from CSV "Intervention" column
 let state = {
-  search:'', phFilter:[], mhFilter:[], popFilter:'', durFilter:'', countryFilter:'',
+  search:'', phFilter:[], mhFilter:[], popFilter:[], durFilter:'', countryFilter:'',
   interventionFilter:[],
   sort:{col:'rating_sort', dir:'desc'},
   page:1, view:'line', selected:null
@@ -728,13 +728,20 @@ async function loadData() {
         // A study can list multiple interventions (comma-separated), so we also
         // keep a parsed array for the multi-select Intervention filter.
         const interventions = interventionRaw.split(',').map(s=>s.trim()).filter(Boolean);
+        // A study can belong to multiple population categories (e.g. a breast
+        // cancer trial is both "Women" and "Patients"), comma-separated in the
+        // CSV — parse an array for the multi-select Population filter while
+        // keeping the raw joined string for display.
+        const populationRaw = (r['Study Population']||'').trim();
+        const populations = populationRaw.split(',').map(s=>s.trim()).filter(Boolean);
         return {
           idx,
           id:       r['Flashcard ID'],
           serial:   r['Serial No'],
           year:     r['Year'],
           highlight:r['Highlight'] || benefits[0] || '',
-          population:    r['Study Population'],
+          population:    populationRaw,
+          populations,
           participant_type: r['Participant Type'],
           intervention: interventionRaw,
           interventions,
@@ -780,7 +787,7 @@ function tagCount(tag) { return STUDIES.filter(s=>s.subtopics.includes(tag)).len
 // only the rendered text is stripped. The colour of the chip (teal/rose/blue)
 // still encodes the category, so the grouping isn't lost, just the jargon.
 function tagLabel(tag) { return tag.replace(/^(PH|MH|SH):\s*/, ''); }
-function popCount(p)   { return STUDIES.filter(s=>s.population===p).length; }
+function popCount(p)   { return STUDIES.filter(s=>s.populations.includes(p)).length; }
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FILTER ENGINE
@@ -796,7 +803,7 @@ function applyFilters() {
     }
     if (state.phFilter.length && !state.phFilter.some(t=>s.subtopics.includes(t))) return false;
     if (state.mhFilter.length && !state.mhFilter.some(t=>s.subtopics.includes(t))) return false;
-    if (state.popFilter && s.population !== state.popFilter) return false;
+    if (state.popFilter.length && !state.popFilter.some(p=>s.populations.includes(p))) return false;
     if (state.interventionFilter.length && !state.interventionFilter.some(t=>s.interventions.includes(t))) return false;
     if (state.durFilter) {
       const b = DUR_BUCKETS.find(b=>b.label===state.durFilter);
@@ -922,7 +929,7 @@ function buildPopList() {
   const total = STUDIES.length;
   const max = Math.max(...counts.map(d=>d.count));
   wrap.innerHTML = counts.map(d => {
-    const on = state.popFilter === d.pop ? ' on' : '';
+    const on = state.popFilter.includes(d.pop) ? ' on' : '';
     const pct = Math.round(d.count/total*100);
     const barW = Math.round(d.count/max*100);
     const ico = POP_ICONS[d.pop] || '👤';
@@ -935,7 +942,9 @@ function buildPopList() {
   }).join('');
   wrap.querySelectorAll('.pop-row').forEach(el => {
     el.addEventListener('click', () => {
-      state.popFilter = state.popFilter === el.dataset.pop ? '' : el.dataset.pop;
+      const p = el.dataset.pop;
+      const i = state.popFilter.indexOf(p);
+      i > -1 ? state.popFilter.splice(i,1) : state.popFilter.push(p);
       state.page = 1; refresh();
     });
   });
@@ -1173,7 +1182,9 @@ function renderFilterStrip() {
   const chips = [];
   state.phFilter.forEach(t => chips.push({ label:'Body: '+t.replace('PH: ',''), clear:()=>{ state.phFilter=state.phFilter.filter(x=>x!==t); } }));
   state.mhFilter.forEach(t => chips.push({ label:'Mind: '+t.replace('MH: ',''), clear:()=>{ state.mhFilter=state.mhFilter.filter(x=>x!==t); } }));
-  if (state.popFilter) chips.push({ label:state.popFilter, clear:()=>{ state.popFilter=''; } });
+  state.popFilter.forEach(p => chips.push({ label:p, clear:()=>{
+    state.popFilter = state.popFilter.filter(x=>x!==p);
+  } }));
   state.interventionFilter.forEach(t => chips.push({ label:t, clear:()=>{
     state.interventionFilter = state.interventionFilter.filter(x=>x!==t);
     const safeId = 'iv-' + t.replace(/[^a-z0-9]+/gi,'-');
@@ -1221,7 +1232,7 @@ function initSortHeaders() {
 // ─────────────────────────────────────────────────────────────────────────────
 function resetAll() {
   state.search=''; state.phFilter=[]; state.mhFilter=[];
-  state.popFilter=''; state.durFilter=''; state.countryFilter='';
+  state.popFilter=[]; state.durFilter=''; state.countryFilter='';
   state.interventionFilter=[];
   document.querySelectorAll('#iv-opt-list input[data-iv]').forEach(cb=>cb.checked=false);
   updateIvFilterLabel();
