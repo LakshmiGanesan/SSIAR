@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Timeless Compass: Evidence Explorer</title>
+<title>Timeless Compass: Interactive Evidence Explorer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
@@ -70,9 +70,13 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
   .clear-all-btn{flex:1 1 calc(40% - 4px);justify-content:center;order:3}
   .iv-filter-panel{left:0;right:auto;min-width:260px}
 }
+@media(max-width:900px){
+  .masthead{padding:36px 0 26px}
+}
 @media(max-width:480px){
   .masthead{padding:32px 0 22px}
   .masthead-sub{padding:0 16px}
+  .masthead-sub .ms-line2{font-size:.8em}
   .iv-filter,.clear-all-btn{flex:1 1 100%}
   .iv-filter-btn{padding:10px 12px}
   .search-field input{padding:10px 36px 10px 38px;font-size:13.5px}
@@ -88,12 +92,16 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 /* ── LAYOUT ── */
 .container{max-width:1280px;margin:0 auto;padding:0 24px}
 .page-body{padding:22px 0 60px}
+@media(max-width:900px){.container{padding:0 20px}.page-body{padding:18px 0 48px}}
+@media(max-width:480px){.container{padding:0 14px}.page-body{padding:14px 0 40px}}
 
 /* ── EXPLORER ROWS ── */
 .exp-row{display:grid;gap:14px;margin-bottom:14px}
 .row-1{grid-template-columns:1fr 1fr}
 .row-2{grid-template-columns:1fr 1fr 1fr}
-@media(max-width:900px){.row-1,.row-2{grid-template-columns:1fr}}
+/* Tablet: ease the 3-column row down to 2 columns before mobile forces 1 */
+@media(max-width:1080px){.row-2{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.row-1,.row-2{grid-template-columns:1fr}}
 
 /* ── EXPLORER CARD ── */
 .exp-card-body--explorer .body-layout,.exp-card-body--explorer .mind-layout{margin-top:0}
@@ -149,18 +157,6 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .pop-row.on .pop-pct{color:var(--teal);font-weight:500}
 
 /* ── DURATION TIMELINE ── */
-/* 3-card duration layout */
-.dur-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:4px 0}
-.dur-card{border-radius:10px;padding:14px 12px 12px;cursor:pointer;border:2px solid transparent;transition:all .2s;text-align:center;position:relative;overflow:hidden}
-.dur-card:hover{transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.1)}
-.dur-card.on{border-color:currentColor;box-shadow:0 2px 12px rgba(0,0,0,.12)}
-.dur-card-icon{font-size:22px;margin-bottom:6px;display:block}
-.dur-card-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
-.dur-card-sub{font-size:10px;opacity:.65;margin-bottom:10px;white-space:nowrap}
-.dur-card-count{font-family:var(--serif);font-size:1.5rem;font-weight:500;display:block;line-height:1}
-.dur-card-pct{font-size:10.5px;opacity:.6;margin-top:2px;display:block}
-.dur-card-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 10px 10px;transition:width .3s ease}
-/* /3-card */
 .dur3-wrap{padding:12px 0 4px}
 .dur3-rail{position:relative;height:4px;background:linear-gradient(90deg,#12a68c,#2460b5,#7e1e3c);border-radius:2px;margin:0 42px}
 .dur3-rail::before{content:"";position:absolute;inset:0;background:var(--border2);opacity:.25;border-radius:2px}
@@ -174,17 +170,12 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .dur3-count{font-family:var(--serif);font-size:1.4rem;text-align:center;line-height:1;font-weight:500}
 .dur3-pct{font-size:10px;opacity:.5;text-align:center;margin-top:2px}
 .dur-outer{position:relative;padding:28px 4px 0;margin-bottom:6px}
-.dur-line{position:absolute;left:4px;right:4px;top:34px;height:1.5px;background:var(--border2)}
-.dur-progress{position:absolute;left:4px;top:34px;height:1.5px;background:var(--teal-m);opacity:.55;transition:width .22s ease}
-.dur-nodes{display:flex;justify-content:space-between;position:relative;z-index:2}
-.dur-node{display:flex;flex-direction:column;align-items:center;cursor:pointer;user-select:none}
-.dur-dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--border2);background:var(--paper);transition:all .15s;margin-bottom:7px}
-.dur-node:hover .dur-dot{border-color:var(--teal-m);transform:scale(1.15)}
-.dur-node.on .dur-dot{background:var(--teal-m);border-color:var(--teal-m);box-shadow:0 0 0 4px rgba(18,166,140,.18)}
-.dur-lbl{font-size:9.5px;color:var(--ink3);text-align:center;line-height:1.3;width:62px}
-.dur-node.on .dur-lbl{color:var(--teal-d);font-weight:500}
-.dur-pcts{display:flex;justify-content:space-between;margin-top:4px;padding:0 4px}
-.dur-pct{font-size:9.5px;color:var(--ink4);text-align:center;width:62px}
+@media(max-width:480px){
+  .dur3-rail{margin:0 18px}
+  .dur3-dots{padding:0 10px}
+  .dur3-dot{width:16px;height:16px;margin-bottom:8px}
+  .dur3-sub{font-size:8.3px}
+}
 
 /* ── GEO MAP ── */
 .geo-wrap{width:100%;border-radius:var(--r);overflow:hidden;background:#e0d9ce;line-height:0}
@@ -203,6 +194,12 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .vtbtn:first-child{border-right:1px solid var(--border)}
 .vtbtn.on{background:var(--paper);color:var(--ink);font-weight:500}
 .vtbtn:hover:not(.on){background:var(--paper3)}
+@media(max-width:560px){
+  .db-header{gap:8px}
+  .db-right{width:100%;justify-content:space-between}
+  .view-toggle{flex:1}
+  .vtbtn{flex:1;justify-content:center;padding:9px 8px}
+}
 
 /* LINE TABLE */
 .db-shell{border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden;background:var(--paper)}
@@ -231,9 +228,15 @@ tr:last-child td{border-bottom:none}
 .sarr.on{opacity:1}
 .row-chevron{color:var(--ink4);font-size:14px;text-align:right}
 @media(max-width:680px){.col-pt,.col-dur,.col-arr,.col-iv{display:none}.col-sno{width:38px}}
+@media(max-width:420px){
+  th{padding:8px 10px;font-size:9px}
+  td{padding:9px 10px;font-size:12.5px}
+  .s-hl{font-size:13px}
+}
 
 /* CARD VIEW */
 .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(284px,1fr));gap:22px;padding:20px 16px}
+@media(max-width:420px){.card-grid{grid-template-columns:1fr;gap:14px;padding:16px 12px}}
 
 /* ── INDEX CARD / FLASHCARD AESTHETIC ── */
 .ev-card{
@@ -309,6 +312,11 @@ tr:last-child td{border-bottom:none}
 .pgbtn:disabled{opacity:.25;cursor:default}
 .pg-ell{color:var(--ink4);font-size:12px;padding:0 2px}
 .pg-info{font-size:12px;color:var(--ink3)}
+@media(max-width:480px){
+  .pagination{justify-content:center;padding:14px 12px}
+  .pg-info{width:100%;text-align:center;order:3}
+  .pgbtn{min-width:34px;height:34px;font-size:13px}
+}
 
 /* LOADING / ERROR */
 .status-banner{text-align:center;padding:60px 20px}
@@ -359,8 +367,8 @@ footer p{font-size:11.5px;color:var(--ink4)}
 
 <header class="masthead">
   <div class="container">
-    <h1>Timeless Compass: Evidence Explorer</h1>
-    <p class="masthead-sub"><span class="ms-line1">Research-backed evidence on breathwork, meditation, yoga &amp; traditional wellbeing practices</span><span class="ms-line2">Ancient systems of knowledge, examined through contemporary science</span></p>
+    <h1>Timeless Compass: Interactive Evidence Explorer</h1>
+    <p class="masthead-sub"><span class="ms-line1">Search and explore research-backed findings across breathwork, meditation, yoga and allied interventions</span><span class="ms-line2">Inspired by ancient systems of knowledge, adapted to contemporary times</span></p>
   </div>
 </header>
 
@@ -529,7 +537,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
 
 <footer>
   <div class="container">
-    <p>Timeless Compass: Evidence Explorer &nbsp;·&nbsp; Data source: <code>Explorer.csv</code> &nbsp;·&nbsp; Displaying Acceptable-reputation studies only</p>
+    <p>Timeless Compass: Interactive Evidence Explorer &nbsp;·&nbsp; Data source: <code>Explorer.csv</code> &nbsp;·&nbsp; Displaying Acceptable-reputation studies only</p>
   </div>
 </footer>
 

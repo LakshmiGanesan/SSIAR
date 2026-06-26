@@ -1,4 +1,4 @@
-# Timeless Compass: Evidence Explorer
+# Timeless Compass: Interactive Evidence Explorer
 
 A self-contained, client-side research explorer for studies on Sudarshan Kriya
 Yoga (SKY), Sahaj Samadhi Meditation, Advanced Meditation Programmes, Yoga,
