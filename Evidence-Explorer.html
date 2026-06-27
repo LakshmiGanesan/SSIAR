@@ -134,7 +134,9 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 
 /* ── EXPLORER CARD ── */
 .exp-card-body--explorer .body-layout,.exp-card-body--explorer .mind-layout{margin-top:0}
-.exp-card{background:var(--paper2);border:1px solid var(--border);border-radius:var(--card-r);overflow:hidden}
+.exp-card{background:var(--paper2);border:1px solid var(--border);border-radius:var(--card-r)}
+.exp-card-head{border-radius:var(--card-r) var(--card-r) 0 0}
+.exp-card-body,.exp-card-body--explorer{border-radius:0 0 var(--card-r) var(--card-r);overflow:hidden}
 .exp-card-head{padding:14px 20px 12px;border-bottom:1px solid var(--border)}
 .exp-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);font-weight:500;margin-bottom:2px}
 .exp-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);font-weight:500}
@@ -386,8 +388,12 @@ tr:last-child td{border-bottom:none}
 .drw-view-btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:18px;padding:11px 16px;border-radius:9px;border:1px solid var(--border2);background:var(--paper2);cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--ink2);transition:all .16s;text-decoration:none;font-weight:400}
 .drw-view-btn:hover{border-color:var(--teal-m);color:var(--teal);background:var(--teal-l)}
 
-footer{border-top:1px solid var(--border);padding:24px 0;text-align:center}
-footer p{font-size:11.5px;color:var(--ink4)}
+footer{border-top:1px solid var(--border);padding:18px 0}
+.footer-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.footer-row span,.footer-row p{font-size:11.5px;color:var(--ink4);margin:0}
+.footer-row a{color:var(--ink4);text-decoration:none;border-bottom:1px solid var(--border2);transition:color .15s,border-color .15s}
+.footer-row a:hover{color:var(--teal-d);border-color:var(--teal-m)}
+@media(max-width:560px){.footer-row{justify-content:center;text-align:center}}
 
 </style>
 </head>
@@ -411,7 +417,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
           <input type="text" id="search-input" placeholder="Search findings, populations, outcomes, geography, institutions…" autocomplete="off">
           <button class="srch-clr" id="srch-clr">×</button>
         </div>
-        <span class="tip" tabindex="0" data-tip="Search across study highlights, populations, interventions, journals, countries and institutions. Try a condition, a country, or an author's name."></span><span class="tip-arrow"></span>
+        <span class="tip" tabindex="0" data-tip="Search across research highlights, research areas, topics, keywords, study population, countries, authors, institutions, and journals."></span><span class="tip-arrow"></span>
         <div class="iv-filter" id="iv-filter">
           <button class="iv-filter-btn" id="iv-filter-btn" type="button">
             <span id="iv-filter-label" class="iv-filter-label">All Interventions</span>
@@ -504,7 +510,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
       <div class="db-section">
         <div class="db-header">
           <div>
-            <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database<span class="tip" tabindex="0" data-tip="Every study listed below already passed our Journal Reputation bar (rated 'Acceptable') — predatory and mixed-reputation sources are excluded from this view automatically."></span><span class="tip-arrow"></span></div>
+            <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database<span class="tip" tabindex="0" data-tip="Updates live as you search and filter above — showing the research highlights matching your selections. Click any row or card to open its flashcard: full study details, key takeaways, and a link to the original published work."></span><span class="tip-arrow"></span></div>
           </div>
           <div class="db-right">
             <span class="db-meta"><strong id="vis-count">—</strong> research highlights shown</span>
@@ -569,7 +575,10 @@ footer p{font-size:11.5px;color:var(--ink4)}
 
 <footer>
   <div class="container">
-    <p>Timeless Compass: Interactive Evidence Explorer &nbsp;·&nbsp; Data source: <code>Explorer.csv</code> &nbsp;·&nbsp; Displaying Acceptable-reputation studies only</p>
+    <div class="footer-row">
+      <span>Last updated: <span id="data-updated"></span></span>
+      <span>© 2026 SSIAR &nbsp;|&nbsp; <a href="http://research.artofliving.org/" target="_blank" rel="noopener">research.artofliving.org</a> &nbsp;|&nbsp; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span>
+    </div>
   </div>
 </footer>
 
@@ -607,6 +616,10 @@ footer p{font-size:11.5px;color:var(--ink4)}
 // ─────────────────────────────────────────────────────────────────────────────
 const CSV_FILE = 'Explorer.csv';
 const FILTER_REPUTATION = 'Acceptable'; // only rows matching this are shown
+// Update this date whenever Explorer.csv is replaced with new/revised data —
+// it drives the "Last updated" note in the footer. This is a manual flag
+// (not a file-system timestamp), since static hosting can't read file mtimes.
+const DATA_LAST_UPDATED = 'June 27, 2026';
 const PER_PAGE = 10;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1440,6 +1453,7 @@ function initApp() {
 }
 
 // Boot
+document.getElementById('data-updated').textContent = DATA_LAST_UPDATED;
 loadData();
 
 </script>
