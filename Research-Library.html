@@ -902,13 +902,33 @@ function initializeFilterOptions() {
 
 async function loadLibraryData() {
   try {
-    const response = await fetch('Library.csv');
+    // Try to determine the correct path to Library.csv
+    // Works for both local and GitHub Pages deployments
+    const getCSVPath = () => {
+      const currentPath = window.location.pathname;
+      const currentDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+      
+      // If on GitHub Pages (has repo name in path), use appropriate path
+      if (currentDir.includes('lakshmiganesan') || currentDir.includes('SSIAR')) {
+        return currentDir + '/Library.csv';
+      }
+      
+      // Otherwise use relative path (works locally)
+      return 'Library.csv';
+    };
+    
+    const csvPath = getCSVPath();
+    console.log('Loading CSV from:', csvPath);
+    
+    const response = await fetch(csvPath);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status} - Could not load from ${csvPath}`);
     }
     const csvText = await response.text();
     const csvData = parseCSV(csvText);
     RAW = transformLibraryData(csvData);
+    
+    console.log(`Successfully loaded ${RAW.length} research articles`);
     
     // Initialize all filters based on loaded data
     initializeFilterOptions();
@@ -925,8 +945,14 @@ async function loadLibraryData() {
       <div style="padding: 2rem; font-family: sans-serif; color: #c00;">
         <h2>Error Loading Data</h2>
         <p><strong>Problem:</strong> Could not load Library.csv</p>
-        <p><strong>Solution:</strong> Make sure Library.csv is in the same directory as this HTML file.</p>
+        <p><strong>Solution:</strong> Make sure Library.csv is in the same directory as Research-Library.html</p>
+        <p><strong>On GitHub:</strong> The files must be in the same repository folder</p>
         <p><strong>Error Details:</strong> ${error.message}</p>
+        <p style="margin-top: 1rem; font-size: 12px; color: #666;">
+          <strong>Debug Info:</strong><br>
+          Current location: ${window.location.href}<br>
+          CSV path attempted: ${error.csvPath || 'unknown'}
+        </p>
         <p><small><a href="">Reload page</a></small></p>
       </div>
     `;
