@@ -62,6 +62,35 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .iv-opt-all{font-weight:500;color:var(--ink)}
 .iv-opt-divider{height:1px;background:var(--border);margin:5px 2px}
 
+/* INFO TOOLTIPS — small "i" affordance used throughout the UI to explain
+   how to use a given section. Hover/focus shows it on desktop; on touch
+   devices a tap toggles it open (see delegated click handler in JS) and a
+   second tap anywhere else closes it. */
+.tip{position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:15px;height:15px;min-width:15px;border-radius:50%;
+  background:var(--paper3);border:1px solid var(--border2);color:var(--ink3);
+  font-size:9.5px;font-weight:700;font-family:var(--sans);font-style:normal;
+  cursor:help;flex-shrink:0;line-height:1;user-select:none;vertical-align:middle;
+  transition:background .15s,color .15s,border-color .15s}
+.tip::before{content:"i"}
+.tip:hover,.tip.show,.tip:focus-visible{background:var(--teal-m);color:#fff;border-color:var(--teal-m);outline:none}
+.tip::after{
+  content:attr(data-tip);position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%);
+  width:228px;max-width:min(228px,76vw);background:var(--ink);color:#fdfcf9;
+  font-size:11.5px;line-height:1.45;font-weight:400;font-family:var(--sans);letter-spacing:0;
+  text-align:left;text-transform:none;padding:9px 12px;border-radius:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s,visibility .15s;z-index:90}
+.tip::-webkit-details-marker{display:none}
+.tip-arrow{position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);
+  border:5px solid transparent;border-top-color:var(--ink);opacity:0;visibility:hidden;
+  transition:opacity .15s,visibility .15s;z-index:90;pointer-events:none}
+.tip:hover::after,.tip:hover + .tip-arrow,.tip.show::after,.tip.show + .tip-arrow,
+.tip:focus-visible::after,.tip:focus-visible + .tip-arrow{opacity:1;visibility:visible}
+/* Right-anchored variant for tips that sit near the right edge of their container */
+.tip--left::after{left:auto;right:-6px;transform:none}
+.tip--left + .tip-arrow{left:auto;right:6px;transform:none}
+
 /* SEARCH BAR RESPONSIVE BALANCE */
 @media(max-width:760px){
   .sb-top{gap:8px}
@@ -109,7 +138,8 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .exp-card-head{padding:14px 20px 12px;border-bottom:1px solid var(--border)}
 .exp-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);font-weight:500;margin-bottom:2px}
 .exp-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);font-weight:500}
-.exp-heading{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-d);font-weight:700;font-family:var(--sans)}
+.exp-heading{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-d);font-weight:700;font-family:var(--sans);display:inline-flex;align-items:center;gap:6px}
+.tip{margin-left:0}
 .db-header .exp-heading{font-size:13px;letter-spacing:.2em}
 .exp-card-body{padding:18px 18px 14px}
 .exp-card-body--explorer{padding:4px 8px 6px}
@@ -381,6 +411,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
           <input type="text" id="search-input" placeholder="Search findings, populations, outcomes, geography, institutions…" autocomplete="off">
           <button class="srch-clr" id="srch-clr">×</button>
         </div>
+        <span class="tip" tabindex="0" data-tip="Search across study highlights, populations, interventions, journals, countries and institutions. Try a condition, a country, or an author's name."></span><span class="tip-arrow"></span>
         <div class="iv-filter" id="iv-filter">
           <button class="iv-filter-btn" id="iv-filter-btn" type="button">
             <span id="iv-filter-label" class="iv-filter-label">All Interventions</span>
@@ -395,6 +426,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
             <div id="iv-opt-list"></div>
           </div>
         </div>
+        <span class="tip" tabindex="0" data-tip="Filter by one or more interventions (e.g. SKY, Yoga, Ayurveda). Selecting several shows studies matching any of them, combined with your other filters."></span><span class="tip-arrow"></span>
         <button class="clear-all-btn" id="clear-all">
           <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="4" x2="9" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="9" y1="4" x2="4" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
           Clear All
@@ -423,7 +455,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
       <div class="exp-row row-1">
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading">Physical Health Explorer</div>
+            <div class="exp-heading">Physical Health Explorer<span class="tip" tabindex="0" data-tip="Click any body system or condition tag below to filter the database. Select more than one — a study matching any of your picks will show."></span><span class="tip-arrow"></span></div>
           </div>
           <div class="exp-card-body exp-card-body--explorer">
             <div class="body-layout" id="body-explorer"></div>
@@ -431,7 +463,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
         </div>
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading" style="color:var(--rose)">Mental Health Explorer</div>
+            <div class="exp-heading" style="color:var(--rose)">Mental Health Explorer<span class="tip" tabindex="0" data-tip="Click any mental-health or wellbeing tag to filter the database. You can select multiple tags at once."></span><span class="tip-arrow"></span></div>
           </div>
           <div class="exp-card-body exp-card-body--explorer">
             <div class="mind-layout" id="mind-explorer"></div>
@@ -442,7 +474,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
       <div class="exp-row row-2">
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading" style="color:#2460b5">Study Population Explorer</div>
+            <div class="exp-heading" style="color:#2460b5">Study Population Explorer<span class="tip" tabindex="0" data-tip="Click one or more population groups (Patients, Women, Youth & Students, etc.) to filter. A study belonging to any selected group will show."></span><span class="tip-arrow"></span></div>
           </div>
           <div class="exp-card-body">
             <div class="pop-list" id="pop-list"></div>
@@ -450,7 +482,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
         </div>
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading" style="color:#8b4c00">Intervention Duration</div>
+            <div class="exp-heading" style="color:#8b4c00">Intervention Duration<span class="tip" tabindex="0" data-tip="Click a duration band to filter studies by how long participants practiced the intervention."></span><span class="tip-arrow"></span></div>
           </div>
           <div class="exp-card-body">
             <div class="dur-outer" id="dur-explorer"></div>
@@ -458,7 +490,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
         </div>
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading" style="color:#344e70">Global Research Spread</div>
+            <div class="exp-heading" style="color:#344e70">Global Research Spread<span class="tip tip--left" tabindex="0" data-tip="Hover (or tap) a highlighted country to see how many studies originated from corresponding authors based there."></span><span class="tip-arrow"></span></div>
           </div>
           <div class="exp-card-body" style="padding-bottom:6px;padding-top:6px">
             <div class="geo-wrap">
@@ -472,7 +504,7 @@ footer p{font-size:11.5px;color:var(--ink4)}
       <div class="db-section">
         <div class="db-header">
           <div>
-            <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database</div>
+            <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database<span class="tip" tabindex="0" data-tip="Every study listed below already passed our Journal Reputation bar (rated 'Acceptable') — predatory and mixed-reputation sources are excluded from this view automatically."></span><span class="tip-arrow"></span></div>
           </div>
           <div class="db-right">
             <span class="db-meta"><strong id="vis-count">—</strong> research highlights shown</span>
@@ -1363,6 +1395,25 @@ document.getElementById('iv-filter-btn').addEventListener('click', (e) => {
 document.addEventListener('click', (e) => {
   const wrap = document.getElementById('iv-filter');
   if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INFO TOOLTIPS — desktop gets hover/focus for free via CSS; this delegated
+// handler adds tap-to-toggle support for touch devices (tap opens, tap
+// elsewhere closes). Delegated on document so it also covers any .tip icons
+// added to dynamically-rendered content in the future.
+// ─────────────────────────────────────────────────────────────────────────────
+document.addEventListener('click', (e) => {
+  const tip = e.target.closest('.tip');
+  document.querySelectorAll('.tip.show').forEach(t => { if (t !== tip) t.classList.remove('show'); });
+  if (tip) { e.stopPropagation(); tip.classList.toggle('show'); }
+});
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.classList?.contains('tip')) {
+    e.preventDefault();
+    document.querySelectorAll('.tip.show').forEach(t => { if (t !== e.target) t.classList.remove('show'); });
+    e.target.classList.toggle('show');
+  }
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
