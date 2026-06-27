@@ -782,13 +782,19 @@ function transformLibraryData(csvData) {
     topic_subtopic_raw: row['Topic - Subtopic'] || '',
     topics: (row['Topic - Subtopic'] || '').split(',').map(t => {
       const parts = t.trim().split('-');
-      return parts[0].trim();
+      const pMap = {'MH':'Mental Health','PH':'Physical Health','SH':'Social Health'};
+      const prefix = parts[0].trim();
+      return pMap[prefix] || prefix;
     }).filter(Boolean),
     subtopics: (row['Topic - Subtopic'] || '').split(',').map(t => {
       const parts = t.trim().split('-');
       return parts[1]?.trim() || '';
     }).filter(Boolean),
-    topic: (row['Topic - Subtopic'] || '').split(',')[0].split('-')[0].trim() || '',
+    topic: (() => {
+      const first = (row['Topic - Subtopic'] || '').split(',')[0].split('-')[0].trim() || '';
+      const pMap = {'MH':'Mental Health','PH':'Physical Health','SH':'Social Health'};
+      return pMap[first] || first;
+    })(),
     subtopic: (row['Topic - Subtopic'] || '').split(',')[0].split('-')[1]?.trim() || '',
     interventions_raw: row['Interventions'] || '',
     interventions: (row['Interventions'] || '').split(',').map(i => i.trim()).filter(Boolean),
@@ -909,9 +915,6 @@ async function loadLibraryData() {
     
     // Build filter definitions after data is loaded
     buildFilterDefs();
-
-    // Build topic/subtopic color maps after data is loaded
-    buildColorMaps();
     
     // Initialize the application UI
     initializeApplication();
@@ -983,23 +986,19 @@ function buildFilterDefs() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// TOPIC / SUBTOPIC COLOR MAPS (built from data once topics are known)
+// TOPIC / SUBTOPIC COLOR MAPS
 // ─────────────────────────────────────────────────────────────────────────────
-let TOPIC_COLORS = {};
-let SUBTOPIC_PALETTE = [];
-
-function buildColorMaps() {
-  const palette = ['#0D9E7A','#E8A020','#C7325A','#3A6FB0','#8B5CF6','#D97706',
-                    '#059669','#DB2777','#2563EB','#9333EA','#DC2626','#0891B2'];
-  TOPIC_COLORS = {};
-  F_TOPICS.forEach((t, i) => { TOPIC_COLORS[t] = palette[i % palette.length]; });
-  // Lighter shade of each base color for the outer subtopic ring
-  SUBTOPIC_PALETTE = palette.map(hex => {
-    const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
-    const lighten = v => Math.round(v + (255 - v) * 0.45);
-    return `rgb(${lighten(r)},${lighten(g)},${lighten(b)})`;
-  });
-}
+const TOPIC_COLORS = {
+  'Mental Health':'#1A1840',
+  'Physical Health':'#0D9E7A',
+  'Social Health':'#E8A020',
+};
+const SUBTOPIC_PALETTE = [
+  '#2979FF','#00B0FF','#00E5FF','#1DE9B6','#69F0AE','#B2FF59',
+  '#FFFF00','#FFD740','#FF6D00','#FF1744','#E040FB','#7C4DFF',
+  '#64FFDA','#18FFFF','#40C4FF','#80D8FF','#CCF1FF','#A7FFEB',
+  '#B9F6CA','#CCFF90',
+];
 
 </script>
 <script>
@@ -1243,7 +1242,7 @@ function selectStudy(id){
 }
 
 function openStudyModal(p){
-  const topics=(p.topics||[]).map(t=>`<span class="topic-tag">${t}</span>`).join('');
+  const topics=[...new Set(p.topics||[])].map(t=>`<span class="topic-tag">${t}</span>`).join('');
   const subs=(p.subtopics||[]).map(s=>`<span class="subtopic-tag">${s}</span>`).join('');
   const ints=(p.interventions||[]).join(', ')||'—';
   const pops=(p.populations||[]).join(', ')||'—';
@@ -1313,7 +1312,7 @@ function closeStudyModal(){
 }
 
 function buildMicroHTML(p){
-  const topics=(p.topics||[]).map(t=>`<span class="topic-tag">${t}</span>`).join('');
+  const topics=[...new Set(p.topics||[])].map(t=>`<span class="topic-tag">${t}</span>`).join('');
   const subs=(p.subtopics||[]).map(s=>`<span class="subtopic-tag">${s}</span>`).join('');
   const ints=(p.interventions||[]).join(', ')||'—';
   const pops=(p.populations||[]).join(', ')||'—';
