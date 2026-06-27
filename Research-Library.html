@@ -1,0 +1,2191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Timeless Compass: Interactive Research Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<style>
+:root {
+  --ink:#0F0E17;--deep:#12112A;--indigo:#1A1840;--indigo-mid:#20204E;--indigo-lt:#2A2A6A;
+  --gold:#E8A020;--gold-lt:#F5C760;--gold-pale:#FEF6E4;--gold-glow:rgba(232,160,32,.18);
+  --jade:#0D9E7A;--jade-lt:#D4F5EC;
+  --rose:#C7325A;--rose-lt:#FDEAEF;
+  --ivory:#FDFAF3;--paper:#FFFFFF;--paper2:#F7F5EE;--paper3:#EDE8DC;
+  --rule:#DDD7C8;--rule-mid:#C8C0AE;
+  --text:#19172E;--text-mid:#3C3A5C;--text-muted:#7C789A;--text-faint:#ABA6C4;
+  --hdr-border:rgba(255,255,255,.09);
+  --r3:3px;--r5:5px;--r8:8px;--r10:10px;--r12:12px;--r16:16px;--r20:20px;
+  --sh-xs:0 1px 3px rgba(15,14,23,.06);
+  --sh-sm:0 2px 8px rgba(15,14,23,.08),0 1px 2px rgba(15,14,23,.05);
+  --sh:0 4px 16px rgba(15,14,23,.10),0 1px 4px rgba(15,14,23,.07);
+  --sh-md:0 8px 28px rgba(15,14,23,.14),0 2px 8px rgba(15,14,23,.08);
+  --sh-lg:0 16px 48px rgba(15,14,23,.20),0 4px 12px rgba(15,14,23,.10);
+  --font-display:'Spectral',Georgia,serif;
+  --font-body:'Plus Jakarta Sans',system-ui,sans-serif;
+  --t:.18s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font-body);background:var(--ivory);color:var(--text);font-size:13.5px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* HEADER */
+#header{background:linear-gradient(135deg,var(--indigo) 0%,var(--indigo-lt) 100%);padding:1.2rem 1.75rem;display:flex;align-items:center;gap:1rem;position:sticky;top:0;z-index:500;border-bottom:2px solid var(--gold);box-shadow:0 4px 24px rgba(0,0,0,.35)}
+#header::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.035) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;opacity:.4}
+#header::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold) 30%,var(--gold-lt) 60%,transparent);opacity:.8}
+.hdr-brand{display:flex;align-items:center;gap:1rem;flex:1;min-width:0;overflow:hidden;position:relative;z-index:1}
+.hdr-logo{width:42px;height:42px;flex-shrink:0;border-radius:var(--r10);background:rgba(232,160,32,.15);display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid rgba(232,160,32,.3)}
+.hdr-text{min-width:0;overflow:hidden}
+.hdr-title{font-family:var(--font-display);font-size:1.4rem;font-weight:600;color:#fff;letter-spacing:.02em;white-space:nowrap;line-height:1.2}
+.hdr-title span{color:var(--gold-lt);font-style:italic;font-weight:400}
+.hdr-sub{font-size:11px;color:rgba(255,255,255,.68);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:400;letter-spacing:.03em}
+.hdr-actions{display:flex;align-items:center;gap:.6rem;flex-shrink:0;position:relative;z-index:1}
+.hdr-btn{height:36px;padding:0 1rem;background:rgba(232,160,32,.12);border:1.5px solid rgba(232,160,32,.35);border-radius:var(--r10);color:var(--gold-lt);font-family:var(--font-body);font-size:12px;font-weight:600;cursor:pointer;transition:all var(--t);display:flex;align-items:center;gap:.4rem;white-space:nowrap;position:relative;letter-spacing:.02em;text-transform:uppercase}
+.hdr-btn:hover{background:rgba(232,160,32,.25);border-color:rgba(232,160,32,.55);box-shadow:0 4px 12px rgba(232,160,32,.2)}
+.btn-icon{font-size:13px;opacity:.85}
+.total-pill{background:linear-gradient(135deg,rgba(232,160,32,.25),rgba(232,160,32,.12));border:1.5px solid rgba(232,160,32,.4);border-radius:var(--r10);padding:.3rem 1rem;text-align:center;flex-shrink:0}
+.total-pill-lbl{font-size:8.5px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;font-weight:700;display:block;margin-bottom:.1rem}
+.total-pill-num{font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--gold-lt);line-height:1;display:block}
+.hdr-popover{display:none;position:fixed;top:80px;right:1rem;background:var(--indigo);border:1.5px solid rgba(232,160,32,.3);border-radius:var(--r12);padding:1.25rem 1.35rem;width:min(320px,calc(100vw - 2rem));font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.8;z-index:9999;box-shadow:var(--sh-lg);white-space:normal;word-wrap:break-word}
+.hdr-btn:hover .hdr-popover,.hdr-btn:focus-within .hdr-popover{display:block}
+.hdr-popover strong{color:#fff;display:block;margin-bottom:.6rem;font-family:var(--font-display);font-size:1.05rem;font-weight:400;font-style:italic;letter-spacing:.01em}
+
+/* CONTROL BAR */
+#ctrl-bar{background:linear-gradient(to bottom,var(--indigo-mid),var(--indigo));padding:.75rem 1.75rem;display:flex;align-items:center;gap:.65rem;flex-wrap:nowrap;position:sticky;top:78px;z-index:490;border-bottom:1.5px solid rgba(232,160,32,.15);box-shadow:0 2px 12px rgba(0,0,0,.2)}
+.search-outer{flex:1;min-width:0;position:relative}
+.search-icon{position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:rgba(232,160,32,.6);pointer-events:none;font-size:14px}
+#search-input{width:100%;height:38px;padding:0 .85rem 0 2.25rem;background:rgba(255,255,255,.96);border:1.5px solid transparent;border-radius:var(--r8);font-family:var(--font-body);font-size:13px;color:var(--text);transition:border-color var(--t),box-shadow var(--t)}
+#search-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-glow)}
+#search-input::placeholder{color:var(--text-muted);font-weight:300}
+.adv-wrap{position:relative;flex-shrink:0}
+.adv-btn{height:38px;padding:0 1rem;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.16);border-radius:var(--r8);color:rgba(255,255,255,.82);font-family:var(--font-body);font-size:12.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:.4rem;white-space:nowrap;transition:all var(--t)}
+.adv-btn:hover,.adv-btn.is-open{background:rgba(232,160,32,.18);border-color:rgba(232,160,32,.45);color:var(--gold-lt)}
+.adv-btn.has-filters{background:rgba(232,160,32,.22);border-color:rgba(232,160,32,.6);color:var(--gold-lt)}
+.adv-chevron{transition:transform .2s;font-size:10px}
+.adv-btn.is-open .adv-chevron{transform:rotate(180deg)}
+#adv-panel{display:none;position:absolute;top:calc(100% + 8px);left:0;background:var(--paper);border:1.5px solid var(--rule);border-radius:var(--r12);box-shadow:var(--sh-lg);padding:1.15rem;z-index:600;width:560px;max-width:calc(100vw - 2rem)}
+#adv-panel.is-open{display:block}
+.adv-panel-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;padding-bottom:.65rem;border-bottom:1px solid var(--rule)}
+.adv-panel-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text-muted)}
+.adv-close{width:24px;height:24px;border-radius:50%;background:var(--paper2);border:none;cursor:pointer;color:var(--text-muted);font-size:14px;display:flex;align-items:center;justify-content:center;transition:background var(--t)}
+.adv-close:hover{background:var(--paper3);color:var(--rose)}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.6rem .75rem;margin-bottom:.9rem}
+.fg label{display:block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.28rem}
+select.fsel{width:100%;height:34px;padding:0 .55rem;background:var(--paper);border:1.5px solid var(--rule);border-radius:var(--r5);font-family:var(--font-body);font-size:12.5px;color:var(--text);cursor:pointer;appearance:auto;transition:border-color var(--t)}
+select.fsel:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-glow)}
+.adv-footer{display:flex;gap:.5rem;padding-top:.7rem;border-top:1px solid var(--rule)}
+.btn-cancel{flex:1;height:34px;background:transparent;border:1.5px solid var(--rule);border-radius:var(--r5);font-family:var(--font-body);font-size:12.5px;color:var(--text-mid);cursor:pointer;transition:background var(--t)}
+.btn-cancel:hover{background:var(--paper2)}
+.btn-apply{flex:2;height:34px;background:var(--indigo);border:none;border-radius:var(--r5);font-family:var(--font-body);font-size:12.5px;font-weight:600;color:#fff;cursor:pointer;transition:background var(--t);letter-spacing:.02em}
+.btn-apply:hover{background:var(--indigo-lt)}
+.reset-btn{height:38px;padding:0 .9rem;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.14);border-radius:var(--r8);color:rgba(255,255,255,.68);font-family:var(--font-body);font-size:12.5px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:.35rem;white-space:nowrap;transition:all var(--t);flex-shrink:0}
+.reset-btn:hover{background:rgba(199,50,90,.22);border-color:rgba(199,50,90,.45);color:#fff}
+.view-toggle{display:flex;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.14);border-radius:var(--r8);overflow:hidden;flex-shrink:0}
+.vt-btn{height:35px;padding:0 1rem;background:transparent;border:none;color:rgba(255,255,255,.55);font-family:var(--font-body);font-size:12px;font-weight:500;cursor:pointer;transition:all var(--t);white-space:nowrap;letter-spacing:.02em}
+.vt-btn.active{background:var(--gold);color:var(--ink);font-weight:700}
+
+/* MAIN */
+#main{max-width:1680px;margin:0 auto;padding:1.5rem 1.75rem 2.8rem}
+
+/* SCORECARDS */
+.scorecard-row{display:grid;grid-template-columns:repeat(7,1fr);gap:.8rem;margin-bottom:1.3rem}
+.scard{background:linear-gradient(135deg,var(--paper) 0%,var(--paper2) 100%);border:1.5px solid var(--rule);border-radius:var(--r14);padding:1rem .8rem .9rem;box-shadow:var(--sh-sm);display:flex;flex-direction:column;align-items:center;text-align:center;gap:.2rem;cursor:default;transition:all var(--t);position:relative;overflow:hidden}
+.scard::before{content:'';position:absolute;top:0;left:0;right:0;height:3.5px;background:linear-gradient(90deg,var(--gold),var(--gold-lt),transparent);opacity:0;transition:opacity var(--t)}
+.scard::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(232,160,32,.08),transparent 80%);opacity:0;transition:opacity var(--t);pointer-events:none}
+.scard:hover{box-shadow:var(--sh),0 0 0 1.5px var(--gold-glow);border-color:var(--gold);transform:translateY(-3px)}
+.scard:hover::before{opacity:1}
+.scard:hover::after{opacity:1}
+.scard-icon{font-size:1.15rem;opacity:.6;margin-bottom:.1rem}
+.scard-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;margin-top:.05rem}
+.scard-val{font-family:var(--font-display);font-size:1.75rem;font-weight:300;color:var(--indigo);line-height:1;letter-spacing:-.02em;margin-top:.15rem}
+
+/* CHARTS */
+.charts-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.2rem}
+.chart-card{background:linear-gradient(135deg,var(--paper),var(--paper2));border:1.5px solid var(--rule);border-radius:var(--r14);padding:1.1rem 1.1rem .95rem;box-shadow:var(--sh-sm);overflow:hidden;display:flex;flex-direction:column;transition:all var(--t);position:relative}
+.chart-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at top right,rgba(232,160,32,.05),transparent 80%);pointer-events:none;opacity:0;transition:opacity var(--t)}
+.chart-card:hover{box-shadow:var(--sh);border-color:var(--gold);transform:translateY(-2px)}
+.chart-card:hover::before{opacity:1}
+.chart-card-hdr{display:flex;align-items:center;margin-bottom:.7rem;gap:.45rem}
+.chart-num{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--gold-lt));color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(232,160,32,.25)}
+.chart-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text-muted);flex:1}
+.chart-hint-icon{width:15px;height:15px;border-radius:50%;border:1px solid var(--rule);color:var(--text-faint);font-size:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chart-canvas-wrap{position:relative;flex:1}
+.chart-caption{font-size:9px;color:var(--text-faint);margin-top:.5rem;text-align:center;font-style:italic;letter-spacing:.02em}
+.topic-legend{display:flex;flex-wrap:wrap;gap:.28rem .5rem;margin-top:.35rem;justify-content:center}
+.topic-legend-item{display:flex;align-items:center;gap:.22rem;font-size:9px;color:var(--text-mid);cursor:pointer}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.partner-rows{padding:.05rem 0}
+.partner-row{display:flex;align-items:center;gap:.45rem;padding:.3rem .3rem;border-radius:var(--r5);cursor:pointer;transition:background var(--t);margin-bottom:.35rem}
+.partner-row:last-child{margin-bottom:0}
+.partner-row:hover{background:var(--gold-pale)}
+.partner-row.pactive{background:var(--gold-pale);outline:1.5px solid var(--gold)}
+.partner-name{font-size:11px;font-weight:500;color:var(--text-mid);width:82px;flex-shrink:0}
+.partner-bar-wrap{flex:1;height:8px;background:var(--paper3);border-radius:2px;overflow:hidden}
+.partner-bar{height:100%;border-radius:2px;transition:width .55s cubic-bezier(.4,0,.2,1)}
+.partner-count{font-size:11px;font-weight:600;color:var(--text-muted);width:26px;text-align:right;flex-shrink:0}
+#map-wrap{position:relative;width:100%;height:115px;overflow:hidden;border-radius:var(--r8);background:var(--paper2)}
+#world-svg{width:100%;height:100%;display:block}
+.map-tooltip{position:absolute;background:var(--indigo);color:#fff;padding:.28rem .6rem;border-radius:var(--r5);font-size:11px;font-weight:500;pointer-events:none;display:none;z-index:10;white-space:nowrap;box-shadow:var(--sh-md);border:1px solid rgba(232,160,32,.25)}
+.map-legend{display:flex;align-items:center;gap:.85rem;margin-top:.4rem;justify-content:center}
+.map-legend-item{display:flex;align-items:center;gap:.28rem;font-size:9px;color:var(--text-faint);letter-spacing:.02em}
+.map-bubble{border-radius:50%;background:rgba(13,158,122,.55);border:1px solid rgba(13,158,122,.8);display:inline-block}
+
+/* ACTIVE FILTERS */
+.af-bar{background:linear-gradient(135deg,var(--gold-pale),rgba(254,246,228,.5));border:1.5px solid rgba(232,160,32,.3);border-radius:var(--r12);padding:.7rem 1.1rem;display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:1.2rem;box-shadow:var(--sh-sm);min-height:46px}
+.af-label{display:flex;align-items:center;gap:.4rem;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);flex-shrink:0;margin-right:.2rem}
+.af-label svg{opacity:.6}
+.fpill{display:inline-flex;align-items:center;gap:.3rem;background:#fff;border:1.5px solid var(--gold);border-radius:999px;padding:.22rem .65rem;font-size:12px;font-weight:600;color:var(--gold);cursor:default;transition:all var(--t);box-shadow:0 2px 6px rgba(232,160,32,.12)}
+.fpill:hover{background:var(--gold-pale);border-color:var(--gold-lt)}
+.pill-x{width:16px;height:16px;border-radius:50%;background:var(--rose);color:#fff;border:none;cursor:pointer;font-family:var(--font-body);font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--t);line-height:1;font-weight:700;opacity:.8}
+.pill-x:hover{opacity:1;transform:scale(1.1)}
+.clear-all{font-size:11.5px;font-weight:600;color:var(--rose);cursor:pointer;text-decoration:none;background:none;border:none;font-family:var(--font-body);margin-left:.3rem;transition:opacity var(--t)}
+.clear-all:hover{opacity:.8;text-decoration:underline}
+.af-empty{font-size:12px;color:var(--text-muted);font-style:italic;font-weight:400;letter-spacing:.01em}
+
+/* MESO + MICRO */
+.bottom-row{display:grid;grid-template-columns:1fr;gap:.8rem;align-items:start}
+.db-card{background:linear-gradient(to bottom,var(--paper),var(--paper2));border:1.5px solid var(--rule);border-radius:var(--r14);box-shadow:var(--sh-sm);overflow:hidden;display:flex;flex-direction:column;transition:all var(--t)}
+.db-card:hover{box-shadow:var(--sh);border-color:var(--gold)}
+.db-header{padding:.85rem 1.2rem;border-bottom:1.5px solid var(--rule);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to right,var(--paper2),rgba(254,246,228,.4));flex-shrink:0}
+.db-title-wrap{display:flex;align-items:center;gap:.6rem}
+.db-section-lbl{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint)}
+.db-title-text{font-size:.9rem;font-weight:700;color:var(--indigo);letter-spacing:.02em}
+.db-showing{font-size:11.5px;color:var(--text-muted);display:flex;align-items:center;gap:.4rem}
+.db-showing strong{color:var(--text-mid);font-weight:700}
+.db-sort-icon{opacity:.45;cursor:pointer;transition:opacity var(--t)}
+.db-sort-icon:hover{opacity:.75}
+.table-scroll{overflow:auto;flex:1}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+thead th{background:var(--paper2);padding:.5rem .8rem;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint);border-bottom:1.5px solid var(--rule-mid);position:sticky;top:0;z-index:2;cursor:pointer;user-select:none;white-space:nowrap;transition:background var(--t)}
+thead th:hover{background:var(--paper3);color:var(--text-mid)}
+thead th.sort-asc::after{content:" ↑";color:var(--gold)}
+thead th.sort-desc::after{content:" ↓";color:var(--gold)}
+tbody tr{border-bottom:1px solid var(--rule);cursor:pointer;transition:background var(--t)}
+tbody tr:hover{background:var(--gold-pale)}
+tbody tr.row-selected{background:#FEF6E4;border-left:3px solid var(--gold)}
+tbody td{padding:.52rem .8rem;color:var(--text-mid);vertical-align:top;line-height:1.35}
+td.col-num{color:var(--text-faint);font-size:11px;width:36px;text-align:center}
+td.col-type{font-size:12px;color:var(--text-mid);white-space:nowrap}
+td.col-title{color:var(--text);font-weight:400}
+td.col-citation{white-space:nowrap;font-size:11.5px}
+td.col-journal{font-size:11.5px}
+.no-results{text-align:center;padding:2.5rem;color:var(--text-faint);font-style:italic}
+/* Clickable title link in table rows */
+.row-title-link{color:var(--text);text-decoration:none;display:inline-flex;align-items:baseline;gap:.3rem;transition:color var(--t)}
+.row-title-link:hover{color:var(--gold)}
+.row-title-link:hover .row-link-icon{opacity:1;color:var(--gold)}
+.row-link-icon{width:10px;height:10px;flex-shrink:0;opacity:0;color:var(--text-muted);transition:opacity var(--t);vertical-align:middle;position:relative;top:-1px}
+.tbadge{display:inline}.b-ra,.b-ja,.b-rv,.b-cp,.b-ot,.b-sp,.b-bo{}
+.db-footer{padding:.55rem 1rem;border-top:1.5px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap;background:var(--paper2);font-size:11px;color:var(--text-muted);flex-shrink:0}
+.rpp-wrap{display:flex;align-items:center;gap:.35rem}
+.rpp-sel{height:28px;width:auto;font-size:11px;padding:0 .35rem;border:1.5px solid var(--rule);border-radius:var(--r3);background:var(--paper);font-family:var(--font-body);cursor:pointer}
+.pager{display:flex;align-items:center;gap:.28rem;flex-wrap:wrap}
+.page-btn{min-width:28px;height:28px;padding:0 .45rem;background:var(--paper);border:1.5px solid var(--rule);border-radius:var(--r3);font-size:11.5px;font-family:var(--font-body);cursor:pointer;color:var(--text-mid);transition:all var(--t);display:flex;align-items:center;justify-content:center}
+.page-btn:hover:not(:disabled){background:var(--gold-pale);border-color:var(--gold);color:var(--text)}
+.page-btn:disabled{opacity:.3;cursor:not-allowed}
+.page-btn.pg-active{background:var(--indigo);color:#fff;border-color:var(--indigo);font-weight:600}
+.page-ellipsis{font-size:11.5px;color:var(--text-faint);padding:0 .12rem;align-self:center}
+
+/* MICRO VIEW */
+.micro-card{background:var(--paper);border:1.5px solid var(--rule);border-radius:var(--r16);box-shadow:var(--sh-xs);overflow:hidden;display:flex;flex-direction:column;position:sticky;top:120px;max-height:calc(100vh - 140px)}
+.micro-header{padding:.7rem .95rem;border-bottom:1.5px solid var(--rule);display:flex;align-items:center;justify-content:space-between;background:var(--paper2);flex-shrink:0}
+.micro-section-lbl{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint)}
+.micro-title-text{font-size:.82rem;font-weight:700;color:var(--text);letter-spacing:.02em}
+.micro-bookmark{opacity:.35;cursor:pointer;font-size:16px;transition:opacity var(--t)}
+.micro-bookmark:hover{opacity:.75}
+.micro-body{display:flex;flex-direction:column;overflow:hidden;flex:1}
+.micro-body-scroll{overflow-y:auto;padding:.95rem .95rem .5rem;flex:1}
+.micro-body-cta{padding:.75rem .95rem .9rem;border-top:1.5px solid var(--rule);background:var(--paper);flex-shrink:0}
+.micro-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2.5rem 1rem;text-align:center;gap:.7rem;color:var(--text-muted);min-height:280px}
+.micro-empty svg{opacity:.2}
+.micro-empty p{font-size:12px;line-height:1.6;font-weight:300;max-width:210px}
+.study-title-text{font-family:var(--font-display);font-size:1.05rem;font-weight:400;color:var(--text);line-height:1.4;margin-bottom:.8rem;font-style:italic;letter-spacing:.01em}
+.detail-row{display:flex;gap:.5rem;align-items:flex-start;padding:.42rem 0;border-bottom:1px solid var(--rule)}
+.detail-row:last-of-type{border-bottom:none}
+.detail-icon{font-size:12px;opacity:.45;flex-shrink:0;margin-top:.08rem}
+.detail-inner{flex:1;min-width:0}
+.detail-key{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);margin-bottom:.12rem}
+.detail-val{font-size:12px;color:var(--text-mid);line-height:1.5;word-break:break-word}
+.detail-val.abstract-val{max-height:140px;overflow-y:auto;padding-right:.2rem}
+.topic-tag{display:inline-flex;align-items:center;background:var(--gold-pale);color:#8B5E00;border:1px solid rgba(232,160,32,.4);border-radius:999px;padding:.1rem .48rem;font-size:10.5px;font-weight:600;margin:1px}
+.subtopic-tag{display:inline-flex;align-items:center;background:var(--jade-lt);color:var(--jade);border:1px solid rgba(13,158,122,.3);border-radius:999px;padding:.1rem .48rem;font-size:10.5px;font-weight:500;margin:1px}
+.cta-btn{display:flex;align-items:center;justify-content:center;gap:.45rem;width:100%;height:46px;background:linear-gradient(135deg,var(--indigo) 0%,#2A2A6A 100%);color:#fff;border:1px solid rgba(232,160,32,.3);border-radius:var(--r10);font-family:var(--font-body);font-size:12.5px;font-weight:700;text-decoration:none;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;margin-top:0;transition:all var(--t);box-shadow:0 3px 12px rgba(26,24,64,.25);position:relative;overflow:hidden}
+.cta-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,160,32,.12),rgba(232,160,32,0) 60%);opacity:0;transition:opacity var(--t)}
+.cta-btn:hover{background:linear-gradient(135deg,#2A2A6A,var(--indigo-lt));border-color:rgba(232,160,32,.6);box-shadow:0 5px 20px rgba(26,24,64,.35),0 0 0 1px rgba(232,160,32,.2);transform:translateY(-1px)}
+.cta-btn:hover::before{opacity:1}
+.cta-btn.cta-disabled{background:var(--paper3);color:var(--text-faint);border:none;pointer-events:none;box-shadow:none;transform:none}
+
+/* FOOTER */
+#footer{background:linear-gradient(to bottom,var(--paper),rgba(254,246,228,.3));border-top:1.5px solid var(--rule);padding:1.2rem 1.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;font-size:11.5px;color:var(--text-muted);margin-top:2rem}
+.footer-views{display:flex;align-items:center;gap:2rem;font-size:12px}
+.fv-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:.45rem;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.footer-links{display:flex;align-items:center;gap:1rem}
+.footer-links a{color:var(--gold);text-decoration:none;font-weight:600;transition:color var(--t)}
+.footer-links a:hover{color:var(--gold-lt);text-decoration:underline}
+
+/* MOBILE TABS */
+#mob-tabs{display:none;background:var(--indigo-mid);border-bottom:1px solid var(--hdr-border);position:sticky;top:62px;z-index:480}
+.mob-tab{flex:1;padding:.5rem .35rem .4rem;text-align:center;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:rgba(255,255,255,.45);cursor:pointer;border-bottom:2px solid transparent;transition:all var(--t);background:none;border-left:none;border-right:none;border-top:none;font-family:var(--font-body)}
+.mob-tab.active{color:var(--gold-lt);border-bottom-color:var(--gold)}
+.mob-tab-icon{display:block;font-size:16px;margin-bottom:2px}
+#flt-overlay{display:none;position:fixed;inset:0;background:rgba(10,9,30,.6);z-index:800;backdrop-filter:blur(3px)}
+#flt-drawer{position:fixed;left:0;top:0;bottom:0;width:290px;background:var(--paper);z-index:810;padding:1.1rem 1rem;overflow-y:auto;transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);box-shadow:var(--sh-lg);border-right:1px solid var(--rule)}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/* MODAL POPUP (Study Details) */
+/* ─────────────────────────────────────────────────────────────────────────── */
+#study-modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,9,30,0.65);z-index:950;align-items:center;justify-content:center;padding:1.5rem;backdrop-filter:blur(3px);animation:fadeIn .25s ease-out}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+#study-modal.is-open{display:flex}
+.modal-content{background:linear-gradient(to bottom,var(--paper),var(--paper2));border:1.5px solid var(--rule);border-radius:var(--r16);box-shadow:0 24px 72px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto;max-width:640px;width:100%;position:relative;animation:slideUp .32s cubic-bezier(.34,.1,.68,.55)}
+@keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{padding:1.75rem;border-bottom:1.5px solid var(--rule);display:flex;align-items:flex-start;justify-content:space-between;gap:1.2rem;background:linear-gradient(135deg,rgba(232,160,32,.08),transparent);position:sticky;top:0;z-index:10}
+.modal-title{flex:1}
+.modal-close-btn{background:none;border:none;font-size:26px;cursor:pointer;color:var(--text-muted);padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:all var(--t);flex-shrink:0;border-radius:var(--r8);opacity:.7}
+.modal-close-btn:hover{color:var(--text);background:var(--gold-pale);opacity:1}
+.modal-body{padding:1.75rem;display:flex;flex-direction:column;gap:1.25rem}
+.modal-section{display:flex;flex-direction:column;gap:.5rem;padding:.75rem;background:rgba(232,160,32,.04);border-radius:var(--r10);border:1px solid rgba(232,160,32,.1)}
+.modal-section-title{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:.2rem}
+.modal-field{font-size:13.5px;color:var(--text-mid);line-height:1.65;word-break:break-word}
+.modal-field strong{color:var(--text);font-weight:600}
+.modal-field.title-val{font-family:var(--font-display);font-size:1.2rem;font-weight:400;color:var(--indigo);line-height:1.6;font-style:italic;margin:0}
+.modal-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
+.modal-link-btn{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;padding:1.1rem;background:linear-gradient(135deg,var(--indigo) 0%,#2A2A6A 100%);color:#fff;border:1.5px solid rgba(232,160,32,.3);border-radius:var(--r10);font-family:var(--font-body);font-size:13px;font-weight:700;text-decoration:none;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all var(--t);box-shadow:0 4px 16px rgba(26,24,64,.3);margin-top:.75rem}
+.modal-link-btn:hover{background:linear-gradient(135deg,#2A2A6A,var(--indigo-lt));border-color:rgba(232,160,32,.55);box-shadow:0 8px 28px rgba(26,24,64,.4);transform:translateY(-2px)}
+.modal-link-btn.disabled{background:var(--paper3);color:var(--text-faint);border-color:var(--rule);cursor:not-allowed;transform:none;box-shadow:none}
+#flt-drawer.is-open{transform:translateX(0)}
+.drawer-close{position:absolute;top:.85rem;right:.85rem;width:28px;height:28px;background:var(--paper2);border:none;border-radius:50%;cursor:pointer;color:var(--text-muted);font-size:16px;display:flex;align-items:center;justify-content:center;transition:background var(--t)}
+.drawer-close:hover{background:var(--paper3)}
+.drawer-title{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.85rem;padding-top:.15rem}
+#worm-overlay{display:none;position:fixed;inset:0;background:rgba(10,9,30,.55);z-index:700;backdrop-filter:blur(3px)}
+#worm-sheet{position:fixed;bottom:0;left:0;right:0;background:var(--paper);border-radius:18px 18px 0 0;max-height:84vh;overflow-y:auto;z-index:710;transform:translateY(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);padding:0 1rem 1.5rem;box-shadow:var(--sh-lg);border-top:2px solid rgba(232,160,32,.25)}
+#worm-sheet.is-open{transform:translateY(0)}
+.sheet-handle{width:40px;height:4px;background:var(--rule-mid);border-radius:2px;margin:.85rem auto .75rem}
+
+/* RESPONSIVE */
+@media(max-width:1200px){.scorecard-row{grid-template-columns:repeat(4,1fr)}.scorecard-row .scard:nth-child(n+5){display:none}.charts-row{grid-template-columns:repeat(2,1fr)}}
+/* ── TABLET ≤ 1200px ────────────────────────────────────────── */
+@media(max-width:1200px){
+  .scorecard-row{grid-template-columns:repeat(4,1fr)}
+  .scorecard-row .scard:nth-child(n+5){display:none}
+  .charts-row{grid-template-columns:repeat(2,1fr)}
+}
+
+/* ── MOBILE / SMALL TABLET ≤ 960px ─────────────────────────── */
+@media(max-width:960px){
+  /* Show mobile tabs */
+  #mob-tabs{display:flex}
+
+  /* Control bar: wrap search to full width */
+  #ctrl-bar{top:62px;padding:.55rem .9rem;gap:.4rem;flex-wrap:wrap}
+  .search-outer{flex-basis:100%;order:-1;max-width:100%}
+  .adv-btn,.reset-btn{font-size:11.5px;padding:0 .75rem}
+
+  /* Main padding */
+  #main{padding:.9rem .9rem 5rem}
+
+  /* Bottom row: single column, desktop micro-card hidden */
+  .bottom-row{grid-template-columns:1fr;gap:.75rem}
+  .micro-card{display:none !important}
+
+  /* Database card: full width, no horizontal overflow */
+  .db-card{width:100%}
+  .table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+  table{min-width:480px;font-size:12px}
+  thead th{padding:.42rem .65rem;font-size:8.5px}
+  tbody td{padding:.45rem .65rem}
+  td.col-journal{display:none} /* hide journal col on mobile to reduce clutter */
+
+  /* Scorecards: 3 visible */
+  .scorecard-row{grid-template-columns:repeat(3,1fr);gap:.45rem}
+  .scorecard-row .scard:nth-child(n+4){display:none}
+  .scard{padding:.7rem .5rem .6rem}
+  .scard-val{font-size:1.4rem}
+
+  /* Charts: 2 per row, taller for touch */
+  .charts-row{grid-template-columns:1fr 1fr;gap:.65rem}
+  .chart-card{padding:.8rem .8rem .65rem}
+  .chart-canvas-wrap canvas{touch-action:manipulation}
+
+  /* Header */
+  .hdr-sub{display:none}
+
+  /* Active filters: allow more wrapping */
+  .af-bar{min-height:38px;padding:.5rem .75rem}
+
+  /* Footer */
+  #footer{padding:.65rem .9rem}
+  #footer .footer-views{flex-direction:column;align-items:flex-start;gap:.3rem;font-size:11px}
+  #footer .footer-links{display:none}
+
+  /* CTA in worm sheet: bigger tap target */
+  .cta-btn{height:52px;font-size:14px;letter-spacing:.05em}
+}
+
+/* ── SMALL MOBILE ≤ 640px ───────────────────────────────────── */
+@media(max-width:640px){
+  #header{padding:0 .9rem;height:56px}
+  .hdr-title{font-size:1rem}
+  .total-pill{display:none}
+  #ctrl-bar{top:56px;padding:.45rem .75rem}
+  #mob-tabs{top:56px}
+
+  /* Scorecards: 2 visible */
+  .scorecard-row{grid-template-columns:repeat(2,1fr);gap:.4rem}
+  .scorecard-row .scard:nth-child(n+3){display:none}
+  .scard-val{font-size:1.3rem}
+
+  /* Charts: 1 per row, give them breathing room */
+  .charts-row{grid-template-columns:1fr;gap:.6rem}
+  .chart-card{padding:.85rem .85rem .7rem}
+  .chart-canvas-wrap{height:140px !important}
+  #map-wrap{height:140px}
+
+  /* Scrollable table */
+  table{min-width:380px;font-size:11.5px}
+
+  /* View toggle: compact */
+  .vt-btn{padding:0 .6rem;font-size:11px}
+
+  /* Advanced search panel: full-width */
+  #adv-panel{width:calc(100vw - 1.5rem);left:-0.5rem}
+  .adv-grid{grid-template-columns:1fr 1fr}
+
+  /* Worm sheet: nearly full screen */
+  #worm-sheet{max-height:90vh}
+}
+
+/* ── WORM SHEET COMPONENTS ──────────────────────────────────── */
+.worm-sheet-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:.75rem;
+  padding-bottom:.65rem;
+  border-bottom:1px solid var(--rule);
+}
+.worm-sheet-lbl{
+  font-size:8.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+  color:var(--text-faint);
+}
+.worm-sheet-title{
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--text);
+  letter-spacing:.02em;
+}
+.worm-back-btn{
+  display:flex;
+  align-items:center;
+  gap:.35rem;
+  height:36px;
+  padding:0 .9rem;
+  background:var(--paper2);
+  border:1.5px solid var(--rule);
+  border-radius:var(--r8);
+  font-family:var(--font-body);
+  font-size:12px;
+  font-weight:600;
+  color:var(--text-mid);
+  cursor:pointer;
+  transition:all var(--t);
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.worm-back-btn:hover{background:var(--paper3);border-color:var(--rule-mid)}
+
+/* ── MOB TAB BAR ─────────────────────────────────────────────── */
+
+
+/* ── MOBILE MESO TAP HINT ────────────────────────────────────── */
+.mob-tap-hint{
+  display:none;
+  text-align:center;
+  font-size:11px;
+  color:var(--text-faint);
+  font-style:italic;
+  padding:.45rem 0 .15rem;
+  letter-spacing:.02em;
+}
+@media(max-width:960px){.mob-tap-hint{display:block}}
+</style>
+</head>
+<body>
+
+<!-- HEADER, CONTROLS, AND UI - same as before -->
+</head>
+<body>
+
+<!-- ═══ PINNED HEADER ═══════════════════════════════════════════ -->
+<header id="header">
+  <div class="hdr-brand">
+    <svg class="hdr-logo" viewBox="0 0 38 38" fill="none"><circle cx="19" cy="19" r="18" stroke="#E8A020" stroke-width="1.2"/><circle cx="19" cy="19" r="12" stroke="rgba(232,160,32,.3)" stroke-width=".8"/><line x1="19" y1="2.5" x2="19" y2="35.5" stroke="#E8A020" stroke-width=".8"/><line x1="2.5" y1="19" x2="35.5" y2="19" stroke="#E8A020" stroke-width=".8"/><line x1="8" y1="8" x2="30" y2="30" stroke="#E8A020" stroke-width=".5" stroke-dasharray="2 2"/><line x1="30" y1="8" x2="8" y2="30" stroke="#E8A020" stroke-width=".5" stroke-dasharray="2 2"/><polygon points="19,4.5 21.2,17 19,15 16.8,17" fill="#F5C760"/><polygon points="19,33.5 21.2,21 19,23 16.8,21" fill="#E8A020" opacity=".45"/><circle cx="19" cy="19" r="3" fill="#F5C760" opacity=".9"/></svg>
+    <div class="hdr-text">
+      <div class="hdr-title">Timeless Compass<span>:</span> Interactive Research Library</div>
+      <div class="hdr-sub">Explore published research on Ancient Systems of Knowledge.</div>
+    </div>
+  </div>
+  <div class="hdr-actions">
+    <button class="hdr-btn">
+      <span class="btn-icon">ⓘ</span> About
+      <div class="hdr-popover">
+        <strong>About Timeless Compass Explorer 2.0</strong>
+        Curated by the Sri Sri Institute for Advanced Research (SSIAR), this interactive evidence map explores 248 published studies on Ancient Systems of Knowledge — connecting ancient wisdom with modern scientific inquiry.
+        <br><br>
+        <span style="color:rgba(255,255,255,.55);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Exploration Flow</span><br>
+        <span style="color:rgba(255,255,255,.65)">📊 <b style="color:#fff">Macro View</b> — Strategic overview: scorecards, charts, map &amp; trends.<br>
+        📋 <b style="color:#fff">Meso View</b> — Browse &amp; compare studies in the database.<br>
+        🔬 <b style="color:#fff">Micro View</b> — Preview a selected study before accessing the original publication.</span>
+      </div>
+    </button>
+    <button class="hdr-btn">
+      <span class="btn-icon">?</span> Help
+      <div class="hdr-popover">
+        <strong>How to use this Explorer</strong>
+        <span style="color:rgba(255,255,255,.65)">
+        🔍 <b style="color:#fff">Search</b> by keyword, author, title or journal.<br>
+        ⚙️ <b style="color:#fff">Advanced Search</b> to filter by topic, population, intervention &amp; more.<br>
+        📊 <b style="color:#fff">Click any chart</b> element to instantly filter the database.<br>
+        📋 <b style="color:#fff">Click a database row</b> to preview study details on the right.<br>
+        🔖 <b style="color:#fff">Active filter chips</b> show what's applied — click × to remove.<br>
+        🔗 <b style="color:#fff">Link to Published Study</b> opens the original source.</span>
+      </div>
+    </button>
+    <div class="total-pill">
+      <span class="total-pill-lbl">Total Publications</span>
+      <span class="total-pill-num" id="total-pub-count">248</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ MOBILE TABS ══════════════════════════════════════════════ -->
+<div id="mob-tabs">
+  <button class="mob-tab active" data-tab="macro" onclick="mobTab('macro')">
+    <span class="mob-tab-icon">🔭</span>Macro
+  </button>
+  <button class="mob-tab" data-tab="meso" onclick="mobTab('meso')">
+    <span class="mob-tab-icon">📋</span>Meso
+  </button>
+  <button class="mob-tab" data-tab="micro" onclick="mobTab('micro')">
+    <span class="mob-tab-icon">🔬</span>Micro
+  </button>
+  <button class="mob-tab" onclick="openDrawer()">
+    <span class="mob-tab-icon">⚙️</span>Filters
+  </button>
+</div>
+
+<!-- Filter drawer overlay -->
+<div id="flt-overlay" onclick="closeDrawer()"></div>
+<div id="flt-drawer">
+  <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  <div class="drawer-title">⚙ Advanced Search</div>
+  <div id="drawer-filter-body"></div>
+  <div style="display:flex;gap:.5rem;margin-top:.75rem">
+    <button class="btn-cancel" style="flex:1" onclick="clearAll()">Clear All</button>
+    <button class="btn-apply" style="flex:2" onclick="closeDrawer()">Done</button>
+  </div>
+</div>
+
+<!-- Worm's-eye bottom sheet overlay -->
+<div id="worm-overlay" onclick="closeMobWorm()"></div>
+<div id="worm-sheet">
+  <div class="sheet-handle"></div>
+  <div class="worm-sheet-header">
+    <div>
+      <div class="worm-sheet-lbl">Micro View</div>
+      <div class="worm-sheet-title">SELECTED STUDY</div>
+    </div>
+    <button class="worm-back-btn" onclick="closeMobWorm()">← Back to Database</button>
+  </div>
+  <div id="worm-sheet-body"></div>
+</div>
+
+<!-- ═══ CONTROL BAR ══════════════════════════════════════════════ -->
+<div id="ctrl-bar">
+  <!-- Search -->
+  <div class="search-outer">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search-input" type="search" autocomplete="off" placeholder="Search title, abstract, author, keyword, journal…" oninput="onSearch()">
+  </div>
+
+  <!-- Advanced Search -->
+  <div class="adv-wrap" id="adv-wrap">
+    <button class="adv-btn" id="adv-btn" onclick="toggleAdv(event)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      Advanced Search
+      <span class="adv-chevron">▾</span>
+    </button>
+    <div id="adv-panel">
+      <div class="adv-panel-hdr">
+        <span class="adv-panel-title">Advanced Search Filters</span>
+        <button class="adv-close" onclick="toggleAdv(event)">✕</button>
+      </div>
+      <div class="adv-grid" id="adv-grid"></div>
+      <div class="adv-footer">
+        <button class="btn-cancel" onclick="clearAll()">Clear All</button>
+        <button class="btn-apply" onclick="toggleAdv(event)">Apply Filters</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset -->
+  <button class="reset-btn" onclick="clearAll()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.56"/></svg>
+    Reset Filters
+  </button>
+
+  <!-- View Toggle -->
+  <div class="view-toggle">
+    <button class="vt-btn active" id="vt-all" onclick="setView('all')">Macro View</button>
+    <button class="vt-btn" id="vt-db" onclick="setView('database')">Research View</button>
+  </div>
+</div>
+
+<!-- ═══ MAIN CONTENT ══════════════════════════════════════════════ -->
+<div id="main">
+
+  <!-- ── MACRO VIEW ── -->
+  <div id="macro-section">
+
+    <!-- Scorecards -->
+    <div class="scorecard-row">
+      <div class="scard"><div class="scard-icon">👥</div><div class="scard-lbl">Selected Studies</div><div class="scard-val" id="sc-sel">248</div></div>
+      <div class="scard"><div class="scard-icon">%</div><div class="scard-lbl">Selected Studies (%)</div><div class="scard-val" id="sc-pct">100%</div></div>
+      <div class="scard"><div class="scard-icon">📅</div><div class="scard-lbl">Range of Years Covered</div><div class="scard-val" id="sc-yrs">—</div></div>
+      <div class="scard"><div class="scard-icon">🌍</div><div class="scard-lbl">Countries</div><div class="scard-val" id="sc-cty">—</div></div>
+      <div class="scard"><div class="scard-icon">🧭</div><div class="scard-lbl">Continents</div><div class="scard-val" id="sc-con">—</div></div>
+      <div class="scard"><div class="scard-icon">🔬</div><div class="scard-lbl">Independent Research (%)</div><div class="scard-val" id="sc-ind">—</div></div>
+      <div class="scard"><div class="scard-icon">💬</div><div class="scard-lbl">Languages</div><div class="scard-val" id="sc-lng">—</div></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+
+      <!-- Chart 1: Year Histogram -->
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <span class="chart-num">1</span>
+          <span class="chart-title">Explore by Year</span>
+          <span class="chart-hint-icon">ⓘ</span>
+        </div>
+        <div class="chart-canvas-wrap" style="height:130px">
+          <canvas id="year-chart"></canvas>
+        </div>
+        <div class="chart-caption">Click a bar to filter by year.</div>
+      </div>
+
+      <!-- Chart 2: Topics Nested Donut -->
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <span class="chart-num">2</span>
+          <span class="chart-title">Explore by Topics</span>
+          <span class="chart-hint-icon">ⓘ</span>
+        </div>
+        <div class="chart-canvas-wrap" style="height:130px">
+          <canvas id="topic-chart"></canvas>
+        </div>
+        <div class="topic-legend" id="topic-legend"></div>
+        <div class="chart-caption">Click a topic or subtopic segment to filter.</div>
+      </div>
+
+      <!-- Chart 3: World Bubble Map -->
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <span class="chart-num">3</span>
+          <span class="chart-title">Geo-distribution of Authors</span>
+          <span class="chart-hint-icon">ⓘ</span>
+        </div>
+        <div id="map-wrap">
+          <svg id="world-svg"></svg>
+          <div class="map-tooltip" id="map-tooltip"></div>
+        </div>
+        <div class="map-legend">
+          <div class="map-legend-item"><span class="map-bubble" style="width:14px;height:14px"></span> More publications</div>
+          <div class="map-legend-item"><span class="map-bubble" style="width:7px;height:7px"></span> Fewer publications</div>
+        </div>
+        <div class="chart-caption">Click a country bubble to filter.</div>
+      </div>
+
+      <!-- Chart 4: Partnership Bars -->
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <span class="chart-num">4</span>
+          <span class="chart-title">Explore by Partnership</span>
+          <span class="chart-hint-icon">ⓘ</span>
+        </div>
+        <div class="partner-rows" id="partner-chart"></div>
+        <div class="chart-caption">Click a partnership type to filter.</div>
+      </div>
+
+    </div>
+
+    <!-- Active Filters -->
+    <div class="af-bar">
+      <span class="af-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Active Filters
+      </span>
+      <span id="active-pills-inner"></span>
+    </div>
+
+  </div><!-- /macro-section -->
+
+  <!-- ── MESO + MICRO VIEW ── -->
+  <div class="bottom-row" id="bottom-row">
+
+    <!-- MESO: Database -->
+    <div class="db-card">
+      <div class="db-header">
+        <div class="db-title-wrap">
+          <span class="db-section-lbl">Meso View:</span>&nbsp;
+          <span class="db-title-text">DATABASE</span>
+        </div>
+        <div class="db-showing">
+          Showing <strong id="showing-label">0 of 248</strong> records
+          <svg class="db-sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table id="main-table">
+          <thead>
+            <tr>
+              <th style="width:38px" class="col-num">#</th>
+              <th onclick="doSort('type')" id="th-type">Type</th>
+              <th onclick="doSort('title')" id="th-title">Title</th>
+              <th onclick="doSort('citation')" id="th-citation">Citation</th>
+              <th onclick="doSort('journal')" id="th-journal">Journal / Source</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="mob-tap-hint">Tap a row to preview the study</div>
+      <div class="db-footer">
+        <div class="rpp-wrap">
+          <span>Rows per page:</span>
+          <select class="rpp-sel" onchange="onRPP(this.value)">
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+        <span id="showing-footer">Showing 1–10 of 248</span>
+        <div class="pager" id="pager"></div>
+      </div>
+    </div>
+
+    <!-- MICRO: Selected Study -->
+    <div class="micro-card" id="micro-card">
+      <div class="micro-header">
+        <div>
+          <div class="micro-section-lbl">Micro View:</div>
+          <div class="micro-title-text">SELECTED STUDY</div>
+        </div>
+        <span class="micro-bookmark">🔖</span>
+      </div>
+      <div class="micro-body" id="micro-body">
+        <div class="micro-empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <p>Click a row in the database to view study details here.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /bottom-row -->
+
+</div><!-- /main -->
+
+<!-- ═══ STUDY DETAILS MODAL ════════════════════════════════════════ -->
+<div id="study-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title">
+        <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);margin-bottom:.3rem;">Study Details</div>
+        <div class="modal-field title-val" id="modal-title"></div>
+      </div>
+      <button class="modal-close-btn" onclick="closeStudyModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
+<footer id="footer">
+  <div class="footer-views">
+    <span><span class="fv-dot" style="background:var(--blue)"></span><b>Macro View</b> → Understand the research landscape and trends.</span>
+    <span><span class="fv-dot" style="background:var(--teal)"></span><b>Meso View</b> → Compare and navigate studies within the database.</span>
+    <span><span class="fv-dot" style="background:var(--amber)"></span><b>Micro View</b> → Preview key details of a selected study before accessing the original publication.</span>
+  </div>
+  <div class="footer-links">
+    © 2026 SSIAR &nbsp;·&nbsp;
+    <a href="https://research.artofliving.org" target="_blank">research.artofliving.org</a>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * TIMELESS COMPASS: INTERACTIVE RESEARCH LIBRARY
+ * Container-Content Architecture
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * ARCHITECTURE:
+ *   - Research-Library.html: UI Container (this file)
+ *   - Library.csv: Research data (can be updated independently)
+ *   - Institutions.csv: Top contributing institutes
+ * 
+ * This design allows updating content without modifying the HTML file.
+ * ═══════════════════════════════════════════════════════════════════════════════
+ */
+
+let RAW = []; // Research data - loaded from CSV
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CSV PARSING & DATA TRANSFORMATION
+// ─────────────────────────────────────────────────────────────────────────────
+
+function parseCSV(text) {
+  const lines = text.split('\n');
+  const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+  const data = [];
+  
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i].trim()) continue;
+    
+    const row = {};
+    let current = '';
+    let inQuotes = false;
+    let colIndex = 0;
+    
+    for (let j = 0; j < lines[i].length; j++) {
+      const char = lines[i][j];
+      const nextChar = lines[i][j + 1];
+      
+      if (char === '"') {
+        if (inQuotes && nextChar === '"') {
+          current += '"';
+          j++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (char === ',' && !inQuotes) {
+        row[headers[colIndex]] = current.trim().replace(/^"|"$/g, '');
+        current = '';
+        colIndex++;
+      } else {
+        current += char;
+      }
+    }
+    if (colIndex < headers.length) {
+      row[headers[colIndex]] = current.trim().replace(/^"|"$/g, '');
+    }
+    data.push(row);
+  }
+  return data;
+}
+
+function getContinent(country) {
+  const continents = {
+    'India': 'Asia', 'United States': 'North America', 'United Kingdom': 'Europe',
+    'Canada': 'North America', 'Sweden': 'Europe', 'Norway': 'Europe', 'Italy': 'Europe',
+    'Germany': 'Europe', 'Finland': 'Europe', 'Poland': 'Europe', 'Japan': 'Asia',
+    'Nepal': 'Asia', 'United Arab Emirates': 'Asia', 'Denmark': 'Europe'
+  };
+  return continents[country] || 'Other';
+}
+
+function transformLibraryData(csvData) {
+  return csvData.map((row, idx) => ({
+    id: parseInt(row['Record Number']) || (idx + 1),
+    type: row['Type'] || '',
+    author: row['Author'] || '',
+    year: parseInt(row['Year']) || new Date().getFullYear(),
+    citation: row['Author'] && row['Year'] ? `${row['Author']}, ${row['Year']}` : '',
+    title: row['Title'] || '',
+    journal: row['Journal / Source'] || '',
+    url: row['Link to Published Study'] || '',
+    abstract: row['Abstract'] || '',
+    study_design: row['Study Design'] || '',
+    topic_subtopic_raw: row['Topic - Subtopic'] || '',
+    topics: (row['Topic - Subtopic'] || '').split(',').map(t => {
+      const parts = t.trim().split('-');
+      return parts[0].trim();
+    }).filter(Boolean),
+    subtopics: (row['Topic - Subtopic'] || '').split(',').map(t => {
+      const parts = t.trim().split('-');
+      return parts[1]?.trim() || '';
+    }).filter(Boolean),
+    topic: (row['Topic - Subtopic'] || '').split(',')[0].split('-')[0].trim() || '',
+    subtopic: (row['Topic - Subtopic'] || '').split(',')[0].split('-')[1]?.trim() || '',
+    interventions_raw: row['Interventions'] || '',
+    interventions: (row['Interventions'] || '').split(',').map(i => i.trim()).filter(Boolean),
+    partnership: row['Partnership'] || 'Independent',
+    population_raw: row['Study Population'] || '',
+    populations: (row['Study Population'] || '').split(',').map(p => p.trim()).filter(Boolean),
+    affiliation: row['Author Affiliation'] || '',
+    city: row['City'] || '',
+    state: row['State'] || '',
+    country: row['Country'] || '',
+    continent: getContinent(row['Country'] || ''),
+    language: row['Language'] || 'English'
+  }));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TOP CONTRIBUTING INSTITUTES (Static List)
+// ─────────────────────────────────────────────────────────────────────────────
+const F_INSTITUTES = [
+  'Sri Sri Institute for Advanced Research',
+  'All India Institute of Medical Sciences, New Delhi',
+  'NIMHANS',
+  'Stanford University',
+  'AIIMS Rishikesh',
+  'Western University',
+  'Columbia University',
+  'Yale University',
+  'University of Toronto',
+  'Harvard Medical School',
+  'Kagoshima University',
+  'Tata Institute of Social Sciences',
+  'University of Oslo',
+  'International Association for Human Values',
+  'Central Jail Hospital',
+  'Institute of Nuclear Medicine and Allied Sciences',
+  'Rzeszow University',
+  'START Clinic',
+  'University of Helsinki',
+  'Baylor College of Medicine',
+  'BITS Pilani',
+  'Boston University',
+  'Brown University',
+  'Indian Institute of Technology, Chennai'
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DYNAMICALLY GENERATED FILTER OPTIONS (from CSV data)
+// ─────────────────────────────────────────────────────────────────────────────
+let F_TOPICS = [];
+let F_SUBS = [];
+let F_POPS = [];
+let F_INTS = [];
+let F_PARTNERS = [];
+let F_LANGS = [];
+let F_YEARS = [];
+let F_COUNTRIES = [];
+
+function uniq(arr){ return [...new Set(arr.filter(Boolean))].sort(); }
+
+function initializeFilterOptions() {
+  F_TOPICS    = uniq(RAW.flatMap(d=>d.topics));
+  F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics));
+  F_POPS      = uniq(RAW.flatMap(d=>d.populations));
+  F_INTS      = uniq(RAW.flatMap(d=>d.interventions));
+  F_PARTNERS  = uniq(RAW.map(d=>d.partnership));
+  F_LANGS     = uniq(RAW.map(d=>d.language));
+  F_YEARS     = uniq(RAW.map(d=>d.year?String(d.year):'')).filter(Boolean).reverse();
+  F_COUNTRIES = uniq(RAW.map(d=>d.country));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATA LOADING
+// ─────────────────────────────────────────────────────────────────────────────
+
+async function loadLibraryData() {
+  try {
+    // Try to determine the correct path to Library.csv
+    // Works for both local and GitHub Pages deployments
+    const getCSVPath = () => {
+      const currentPath = window.location.pathname;
+      const currentDir = currentPath.substring(0, currentPath.lastIndexOf('/'));
+      
+      // If on GitHub Pages (has repo name in path), use appropriate path
+      if (currentDir.includes('lakshmiganesan') || currentDir.includes('SSIAR')) {
+        return currentDir + '/Library.csv';
+      }
+      
+      // Otherwise use relative path (works locally)
+      return 'Library.csv';
+    };
+    
+    const csvPath = getCSVPath();
+    console.log('Loading CSV from:', csvPath);
+    
+    const response = await fetch(csvPath);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status} - Could not load from ${csvPath}`);
+    }
+    const csvText = await response.text();
+    const csvData = parseCSV(csvText);
+    RAW = transformLibraryData(csvData);
+    
+    console.log(`Successfully loaded ${RAW.length} research articles`);
+    
+    // Initialize all filters based on loaded data
+    initializeFilterOptions();
+    
+    // Build filter definitions after data is loaded
+    buildFilterDefs();
+    
+    // Initialize the application UI
+    initializeApplication();
+    
+  } catch (error) {
+    console.error('Error loading Library.csv:', error);
+    document.body.innerHTML = `
+      <div style="padding: 2rem; font-family: sans-serif; color: #c00;">
+        <h2>Error Loading Data</h2>
+        <p><strong>Problem:</strong> Could not load Library.csv</p>
+        <p><strong>Solution:</strong> Make sure Library.csv is in the same directory as Research-Library.html</p>
+        <p><strong>On GitHub:</strong> The files must be in the same repository folder</p>
+        <p><strong>Error Details:</strong> ${error.message}</p>
+        <p style="margin-top: 1rem; font-size: 12px; color: #666;">
+          <strong>Debug Info:</strong><br>
+          Current location: ${window.location.href}<br>
+          CSV path attempted: ${error.csvPath || 'unknown'}
+        </p>
+        <p><small><a href="">Reload page</a></small></p>
+      </div>
+    `;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUILD FILTER DEFINITIONS (after data is loaded)
+// ─────────────────────────────────────────────────────────────────────────────
+let FILTER_DEFS = [];
+
+function buildFilterDefs() {
+  FILTER_DEFS = [
+    {key:'topic',       label:'Topic',       opts:F_TOPICS,    all:'All Topics'},
+    {key:'subtopic',    label:'Subtopic',    opts:F_SUBS,      all:'All Subtopics'},
+    {key:'population',  label:'Population',  opts:F_POPS,      all:'All Populations'},
+    {key:'intervention',label:'Intervention',opts:F_INTS,      all:'All Interventions'},
+    {key:'partnership', label:'Partnership', opts:F_PARTNERS,  all:'All Partnerships'},
+    {key:'institute',   label:'Top Contributing Institutes', opts:F_INSTITUTES, all:'All Institutes'},
+    {key:'language',    label:'Language',    opts:F_LANGS,     all:'All Languages'},
+    {key:'year',        label:'Year',        opts:F_YEARS,     all:'All Years'},
+    {key:'country',     label:'Country',     opts:F_COUNTRIES, all:'All Countries'},
+  ];
+}
+
+</head>
+<body>
+
+<!-- ═══ PINNED HEADER ═══════════════════════════════════════════ -->
+<header id="header">
+  <div class="hdr-brand">
+    <svg class="hdr-logo" viewBox="0 0 38 38" fill="none"><circle cx="19" cy="19" r="18" stroke="#E8A020" stroke-width="1.2"/><circle cx="19" cy="19" r="12" stroke="rgba(232,160,32,.3)" stroke-width=".8"/><line x1="19" y1="2.5" x2="19" y2="35.5" stroke="#E8A020" stroke-width=".8"/><line x1="2.5" y1="19" x2="35.5" y2="19" stroke="#E8A020" stroke-width=".8"/><line x1="8" y1="8" x2="30" y2="30" stroke="#E8A020" stroke-width=".5" stroke-dasharray="2 2"/><line x1="30" y1="8" x2="8" y2="30" stroke="#E8A020" stroke-width=".5" stroke-dasharray="2 2"/><polygon points="19,4.5 21.2,17 19,15 16.8,17" fill="#F5C760"/><polygon points="19,33.5 21.2,21 19,23 16.8,21" fill="#E8A020" opacity=".45"/><circle cx="19" cy="19" r="3" fill="#F5C760" opacity=".9"/></svg>
+    <div class="hdr-text">
+      <div class="hdr-title">Timeless Compass<span>:</span> Interactive Research Library</div>
+      <div class="hdr-sub">Explore published research on Ancient Systems of Knowledge.</div>
+    </div>
+  </div>
+  <div class="hdr-actions">
+    <button class="hdr-btn">
+      <span class="btn-icon">ⓘ</span> About
+      <div class="hdr-popover">
+        <strong>About Timeless Compass Explorer 2.0</strong>
+        Curated by the Sri Sri Institute for Advanced Research (SSIAR), this interactive evidence map explores 248 published studies on Ancient Systems of Knowledge — connecting ancient wisdom with modern scientific inquiry.
+        <br><br>
+        <span style="color:rgba(255,255,255,.55);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Exploration Flow</span><br>
+        <span style="color:rgba(255,255,255,.65)">📊 <b style="color:#fff">Macro View</b> — Strategic overview: scorecards, charts, map &amp; trends.<br>
+        📋 <b style="color:#fff">Meso View</b> — Browse &amp; compare studies in the database.<br>
+        🔬 <b style="color:#fff">Micro View</b> — Preview a selected study before accessing the original publication.</span>
+      </div>
+    </button>
+    <button class="hdr-btn">
+      <span class="btn-icon">?</span> Help
+      <div class="hdr-popover">
+        <strong>How to use this Explorer</strong>
+        <span style="color:rgba(255,255,255,.65)">
+        🔍 <b style="color:#fff">Search</b> by keyword, author, title or journal.<br>
+        ⚙️ <b style="color:#fff">Advanced Search</b> to filter by topic, population, intervention &amp; more.<br>
+        📊 <b style="color:#fff">Click any chart</b> element to instantly filter the database.<br>
+        📋 <b style="color:#fff">Click a database row</b> to preview study details on the right.<br>
+        🔖 <b style="color:#fff">Active filter chips</b> show what's applied — click × to remove.<br>
+        🔗 <b style="color:#fff">Link to Published Study</b> opens the original source.</span>
+      </div>
+    </button>
+    <div class="total-pill">
+      <span class="total-pill-lbl">Total Publications</span>
+      <span class="total-pill-num" id="total-pub-count">248</span>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ MOBILE TABS ══════════════════════════════════════════════ -->
+<div id="mob-tabs">
+  <button class="mob-tab active" data-tab="macro" onclick="mobTab('macro')">
+    <span class="mob-tab-icon">🔭</span>Macro
+  </button>
+  <button class="mob-tab" data-tab="meso" onclick="mobTab('meso')">
+    <span class="mob-tab-icon">📋</span>Meso
+  </button>
+  <button class="mob-tab" data-tab="micro" onclick="mobTab('micro')">
+    <span class="mob-tab-icon">🔬</span>Micro
+  </button>
+  <button class="mob-tab" onclick="openDrawer()">
+    <span class="mob-tab-icon">⚙️</span>Filters
+  </button>
+</div>
+
+<!-- Filter drawer overlay -->
+<div id="flt-overlay" onclick="closeDrawer()"></div>
+<div id="flt-drawer">
+  <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  <div class="drawer-title">⚙ Advanced Search</div>
+  <div id="drawer-filter-body"></div>
+  <div style="display:flex;gap:.5rem;margin-top:.75rem">
+    <button class="btn-cancel" style="flex:1" onclick="clearAll()">Clear All</button>
+    <button class="btn-apply" style="flex:2" onclick="closeDrawer()">Done</button>
+  </div>
+</div>
+
+<!-- Worm's-eye bottom sheet overlay -->
+<div id="worm-overlay" onclick="closeMobWorm()"></div>
+<div id="worm-sheet">
+  <div class="sheet-handle"></div>
+  <div class="worm-sheet-header">
+    <div>
+      <div class="worm-sheet-lbl">Micro View</div>
+      <div class="worm-sheet-title">SELECTED STUDY</div>
+    </div>
+    <button class="worm-back-btn" onclick="closeMobWorm()">← Back to Database</button>
+  </div>
+  <div id="worm-sheet-body"></div>
+</div>
+
+<!-- ═══ CONTROL BAR ══════════════════════════════════════════════ -->
+<div id="ctrl-bar">
+  <!-- Search -->
+  <div class="search-outer">
+    <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input id="search-input" type="search" autocomplete="off" placeholder="Search title, abstract, author, keyword, journal…" oninput="onSearch()">
+  </div>
+
+  <!-- Advanced Search -->
+  <div class="adv-wrap" id="adv-wrap">
+    <button class="adv-btn" id="adv-btn" onclick="toggleAdv(event)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+      Advanced Search
+      <span class="adv-chevron">▾</span>
+    </button>
+    <div id="adv-panel">
+      <div class="adv-panel-hdr">
+        <span class="adv-panel-title">Advanced Search Filters</span>
+        <button class="adv-close" onclick="toggleAdv(event)">✕</button>
+      </div>
+      <div class="adv-grid" id="adv-grid"></div>
+      <div class="adv-footer">
+        <button class="btn-cancel" onclick="clearAll()">Clear All</button>
+        <button class="btn-apply" onclick="toggleAdv(event)">Apply Filters</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reset -->
+  <button class="reset-btn" onclick="clearAll()">
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.56"/></svg>
+    Reset Filters
+  </button>
+
+  <!-- View Toggle -->
+  <div class="view-toggle">
+    <button class="vt-btn active" id="vt-all" onclick="setView('all')">Macro View</button>
+    <button class="vt-btn" id="vt-db" onclick="setView('database')">Research View</button>
+  </div>
+</div>
+
+<!-- ═══ MAIN CONTENT ══════════════════════════════════════════════ -->
+<div id="main">
+
+  <!-- ── MACRO VIEW ── -->
+  <div id="macro-section">
+
+    <!-- Scorecards -->
+    <div class="scorecard-row">
+      <div class="scard"><div class="scard-icon">👥</div><div class="scard-lbl">Selected Studies</div><div class="scard-val" id="sc-sel">248</div></div>
+      <div class="scard"><div class="scard-icon">%</div><div class="scard-lbl">Selected Studies (%)</div><div class="scard-val" id="sc-pct">100%</div></div>
+      <div class="scard"><div class="scard-icon">📅</div><div class="scard-lbl">Range of Years Covered</div><div class="scard-val" id="sc-yrs">—</div></div>
+      <div class="scard"><div class="scard-icon">🌍</div><div class="scard-lbl">Countries</div><div class="scard-val" id="sc-cty">—</div></div>
+      <div class="scard"><div class="scard-icon">🧭</div><div class="scard-lbl">Continents</div><div class="scard-val" id="sc-con">—</div></div>
+      <div class="scard"><div class="scard-icon">🔬</div><div class="scard-lbl">Independent Research (%)</div><div class="scard-val" id="sc-ind">—</div></div>
+      <div class="scard"><div class="scard-icon">💬</div><div class="scard-lbl">Languages</div><div class="scard-val" id="sc-lng">—</div></div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-row">
+
+      <!-- Chart 1: Year Histogram -->
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <span class="chart-num">1</span>
+          <span class="chart-title">Explore by Year</span>
+          <span class="chart-hint-icon">ⓘ</span>
+        </div>
+        <div class="chart-canvas-wrap" style="height:130px">
+          <canvas id="year-chart"></canvas>
+        </div>
+        <div class="chart-caption">Click a bar to filter by year.</div>
+      </div>
+
+      <!-- Chart 2: Topics Nested Donut -->
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <span class="chart-num">2</span>
+          <span class="chart-title">Explore by Topics</span>
+          <span class="chart-hint-icon">ⓘ</span>
+        </div>
+        <div class="chart-canvas-wrap" style="height:130px">
+          <canvas id="topic-chart"></canvas>
+        </div>
+        <div class="topic-legend" id="topic-legend"></div>
+        <div class="chart-caption">Click a topic or subtopic segment to filter.</div>
+      </div>
+
+      <!-- Chart 3: World Bubble Map -->
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <span class="chart-num">3</span>
+          <span class="chart-title">Geo-distribution of Authors</span>
+          <span class="chart-hint-icon">ⓘ</span>
+        </div>
+        <div id="map-wrap">
+          <svg id="world-svg"></svg>
+          <div class="map-tooltip" id="map-tooltip"></div>
+        </div>
+        <div class="map-legend">
+          <div class="map-legend-item"><span class="map-bubble" style="width:14px;height:14px"></span> More publications</div>
+          <div class="map-legend-item"><span class="map-bubble" style="width:7px;height:7px"></span> Fewer publications</div>
+        </div>
+        <div class="chart-caption">Click a country bubble to filter.</div>
+      </div>
+
+      <!-- Chart 4: Partnership Bars -->
+      <div class="chart-card">
+        <div class="chart-card-hdr">
+          <span class="chart-num">4</span>
+          <span class="chart-title">Explore by Partnership</span>
+          <span class="chart-hint-icon">ⓘ</span>
+        </div>
+        <div class="partner-rows" id="partner-chart"></div>
+        <div class="chart-caption">Click a partnership type to filter.</div>
+      </div>
+
+    </div>
+
+    <!-- Active Filters -->
+    <div class="af-bar">
+      <span class="af-label">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Active Filters
+      </span>
+      <span id="active-pills-inner"></span>
+    </div>
+
+  </div><!-- /macro-section -->
+
+  <!-- ── MESO + MICRO VIEW ── -->
+  <div class="bottom-row" id="bottom-row">
+
+    <!-- MESO: Database -->
+    <div class="db-card">
+      <div class="db-header">
+        <div class="db-title-wrap">
+          <span class="db-section-lbl">Meso View:</span>&nbsp;
+          <span class="db-title-text">DATABASE</span>
+        </div>
+        <div class="db-showing">
+          Showing <strong id="showing-label">0 of 248</strong> records
+          <svg class="db-sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </div>
+      </div>
+      <div class="table-scroll">
+        <table id="main-table">
+          <thead>
+            <tr>
+              <th style="width:38px" class="col-num">#</th>
+              <th onclick="doSort('type')" id="th-type">Type</th>
+              <th onclick="doSort('title')" id="th-title">Title</th>
+              <th onclick="doSort('citation')" id="th-citation">Citation</th>
+              <th onclick="doSort('journal')" id="th-journal">Journal / Source</th>
+            </tr>
+          </thead>
+          <tbody id="table-body"></tbody>
+        </table>
+      </div>
+      <div class="mob-tap-hint">Tap a row to preview the study</div>
+      <div class="db-footer">
+        <div class="rpp-wrap">
+          <span>Rows per page:</span>
+          <select class="rpp-sel" onchange="onRPP(this.value)">
+            <option value="10" selected>10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+        <span id="showing-footer">Showing 1–10 of 248</span>
+        <div class="pager" id="pager"></div>
+      </div>
+    </div>
+
+    <!-- MICRO: Selected Study -->
+    <div class="micro-card" id="micro-card">
+      <div class="micro-header">
+        <div>
+          <div class="micro-section-lbl">Micro View:</div>
+          <div class="micro-title-text">SELECTED STUDY</div>
+        </div>
+        <span class="micro-bookmark">🔖</span>
+      </div>
+      <div class="micro-body" id="micro-body">
+        <div class="micro-empty">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <p>Click a row in the database to view study details here.</p>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /bottom-row -->
+
+</div><!-- /main -->
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
+<footer id="footer">
+  <div class="footer-views">
+    <span><span class="fv-dot" style="background:var(--blue)"></span><b>Macro View</b> → Understand the research landscape and trends.</span>
+    <span><span class="fv-dot" style="background:var(--teal)"></span><b>Meso View</b> → Compare and navigate studies within the database.</span>
+    <span><span class="fv-dot" style="background:var(--amber)"></span><b>Micro View</b> → Preview key details of a selected study before accessing the original publication.</span>
+  </div>
+  <div class="footer-links">
+    © 2026 SSIAR &nbsp;·&nbsp;
+    <a href="https://research.artofliving.org" target="_blank">research.artofliving.org</a>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════════════ -->
+<script>
+const TYPE_BADGE = {
+  'Research Article':'b-ra','Journal Article':'b-ja','Review Article':'b-rv',
+  'Conference Proceedings':'b-cp','Study Protocol':'b-sp','Book Section':'b-bo',
+  'Editorial':'b-ot','Letter':'b-ot','Report':'b-ot',
+};
+const PARTNER_COLORS = {
+  'Independent':'#1A1840', 'Collaborative':'#0D9E7A', 'Internal':'#E8A020'
+};
+
+/* ── COUNTRY → ISO NUMERIC (for D3 map) ── */
+const COUNTRY_ISO = {
+  'India':'356','United States':'840','Canada':'124','United Kingdom':'826',
+  'Italy':'380','United Arab Emirates':'784','Poland':'616','Norway':'578',
+  'Ireland':'372','Nepal':'524','Sweden':'752','Finland':'246','Portugal':'620',
+  'Netherlands':'528','Thailand':'764','South Africa':'710','Turkey':'792',
+  'Australia':'36','Japan':'392','Hungary':'348','Colombia':'170',
+};
+
+/* ─────────────────────────────────────────
+   STATE
+   ───────────────────────────────────────── */
+const S = {
+  query: '',
+  filters: {topic:'',subtopic:'',population:'',intervention:'',partnership:'',language:'',year:'',country:''},
+  chartF: {},           // chart-click filters
+  filtered: [...RAW],
+  sort: {col:'year', dir:'desc'},
+  page: 1,
+  rpp: 10,
+  selId: null,
+  view: 'all',          // 'all' | 'database'
+  mobTab: 'macro',
+};
+
+/* ─────────────────────────────────────────
+   FILTER OPTIONS (derived from data)
+   ───────────────────────────────────────── */
+function uniq(arr){ return [...new Set(arr.filter(Boolean))].sort(); }
+const F_TOPICS    = uniq(RAW.flatMap(d=>d.topics));
+const F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics));
+const F_POPS      = uniq(RAW.flatMap(d=>d.populations));
+const F_INTS      = uniq(RAW.flatMap(d=>d.interventions));
+const F_PARTNERS  = uniq(RAW.map(d=>d.partnership));
+const F_LANGS     = uniq(RAW.map(d=>d.language));
+const F_YEARS     = uniq(RAW.map(d=>d.year?String(d.year):'')).filter(Boolean).reverse();
+const F_COUNTRIES = uniq(RAW.map(d=>d.country));
+
+// Top Contributing Institutes
+const F_INSTITUTES = [
+  'Sri Sri Institute for Advanced Research',
+  'All India Institute of Medical Sciences, New Delhi',
+  'NIMHANS',
+  'Stanford University',
+  'AIIMS Rishikesh',
+  'Western University',
+  'Columbia University',
+  'Yale University',
+  'University of Toronto',
+  'Harvard Medical School',
+  'Kagoshima University',
+  'Tata Institute of Social Sciences',
+  'University of Oslo',
+  'International Association for Human Values',
+  'Central Jail Hospital',
+  'Institute of Nuclear Medicine and Allied Sciences',
+  'Rzeszow University',
+  'START Clinic',
+  'University of Helsinki',
+  'Baylor College of Medicine',
+  'BITS Pilani',
+  'Boston University',
+  'Brown University',
+  'Indian Institute of Technology, Chennai'
+];
+
+const FILTER_DEFS = [
+  {key:'topic',       label:'Topic',       opts:F_TOPICS,    all:'All Topics'},
+  {key:'subtopic',    label:'Subtopic',    opts:F_SUBS,      all:'All Subtopics'},
+  {key:'population',  label:'Population',  opts:F_POPS,      all:'All Populations'},
+  {key:'intervention',label:'Intervention',opts:F_INTS,      all:'All Interventions'},
+  {key:'partnership', label:'Partnership', opts:F_PARTNERS,  all:'All Partnerships'},
+  {key:'institute',   label:'Top Contributing Institutes', opts:F_INSTITUTES, all:'All Institutes'},
+  {key:'language',    label:'Language',    opts:F_LANGS,     all:'All Languages'},
+  {key:'year',        label:'Year',        opts:F_YEARS,     all:'All Years'},
+  {key:'country',     label:'Country',     opts:F_COUNTRIES, all:'All Countries'},
+];
+
+function buildFilterHTML(prefix){
+  return FILTER_DEFS.map(({key,label,opts,all})=>`
+    <div class="fg">
+      <label for="${prefix}-${key}">${label}</label>
+      <select class="fsel" id="${prefix}-${key}" onchange="onFilter('${key}',this.value)">
+        <option value="">${all}</option>
+        ${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
+      </select>
+    </div>`).join('');
+}
+
+/* ─────────────────────────────────────────
+   COMPUTE FILTERED DATASET
+   ───────────────────────────────────────── */
+function compute(){
+  let d = RAW;
+  const q = S.query.toLowerCase().trim();
+  if(q){
+    d = d.filter(p=>[
+      p.title,p.abstract,p.citation,p.author,p.journal,p.country,
+      ...(p.topics||[]),...(p.subtopics||[]),...(p.interventions||[])
+    ].some(v=>v&&String(v).toLowerCase().includes(q)));
+  }
+  const {topic,subtopic,population,intervention,partnership,institute,language,year,country} = S.filters;
+  if(topic)       d = d.filter(p=>p.topics&&p.topics.includes(topic));
+  if(subtopic)    d = d.filter(p=>p.subtopics&&p.subtopics.includes(subtopic));
+  if(population)  d = d.filter(p=>p.populations&&p.populations.includes(population));
+  if(intervention)d = d.filter(p=>p.interventions&&p.interventions.includes(intervention));
+  if(partnership) d = d.filter(p=>p.partnership===partnership);
+  if(institute)   d = d.filter(p=>p.affiliation&&p.affiliation.toLowerCase().includes(institute.toLowerCase()));
+  if(language)    d = d.filter(p=>p.language===language);
+  if(year)        d = d.filter(p=>String(p.year)===year);
+  if(country)     d = d.filter(p=>p.country===country);
+
+  // chart filters
+  if(S.chartF.year)        d = d.filter(p=>String(p.year)===S.chartF.year);
+  if(S.chartF.topic)       d = d.filter(p=>p.topics&&p.topics.includes(S.chartF.topic));
+  if(S.chartF.subtopic)    d = d.filter(p=>p.subtopics&&p.subtopics.includes(S.chartF.subtopic));
+  if(S.chartF.partnership) d = d.filter(p=>p.partnership===S.chartF.partnership);
+  if(S.chartF.country)     d = d.filter(p=>p.country===S.chartF.country);
+
+  S.filtered = d;
+}
+
+/* ─────────────────────────────────────────
+   FILTER SETTERS
+   ───────────────────────────────────────── */
+function onFilter(key,val){
+  S.filters[key]=val; S.page=1; syncSelects(); update();
+}
+function setChartFilter(key,val){
+  if(S.chartF[key]===val) delete S.chartF[key]; else S.chartF[key]=val;
+  S.page=1; update();
+}
+function clearAll(){
+  S.filters={topic:'',subtopic:'',population:'',intervention:'',partnership:'',institute:'',language:'',year:'',country:''};
+  S.chartF={}; S.query=''; S.page=1;
+  const inp=document.getElementById('search-input'); if(inp) inp.value='';
+  syncSelects(); update();
+}
+function removeFilter(type,key){
+  if(type==='f') { S.filters[key]=''; syncSelects(); }
+  else delete S.chartF[key];
+  S.page=1; update();
+}
+function removeSearchFilter(){ S.query=''; document.getElementById('search-input').value=''; S.page=1; update(); }
+
+function syncSelects(){
+  FILTER_DEFS.forEach(({key})=>{
+    ['adv','drawer'].forEach(pfx=>{
+      const el=document.getElementById(`${pfx}-${key}`);
+      if(el) el.value=S.filters[key]||'';
+    });
+  });
+}
+
+/* ─────────────────────────────────────────
+   SEARCH
+   ───────────────────────────────────────── */
+let searchT;
+function onSearch(){
+  clearTimeout(searchT);
+  searchT=setTimeout(()=>{ S.query=document.getElementById('search-input').value; S.page=1; update(); }, 180);
+}
+
+/* ─────────────────────────────────────────
+   SORT
+   ───────────────────────────────────────── */
+function doSort(col){
+  if(S.sort.col===col) S.sort.dir=S.sort.dir==='asc'?'desc':'asc';
+  else { S.sort.col=col; S.sort.dir='asc'; }
+  renderTable(); updateSortHeaders();
+}
+function sortedData(d){
+  const {col,dir}=S.sort;
+  return [...d].sort((a,b)=>{
+    let av=a[col]??'', bv=b[col]??'';
+    if(typeof av==='number') return dir==='asc'?av-bv:bv-av;
+    return dir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+  });
+}
+function updateSortHeaders(){
+  ['type','title','citation','journal'].forEach(col=>{
+    const el=document.getElementById('th-'+col);
+    if(!el) return;
+    el.classList.remove('sort-asc','sort-desc');
+    if(S.sort.col===col) el.classList.add(S.sort.dir==='asc'?'sort-asc':'sort-desc');
+  });
+}
+
+/* ─────────────────────────────────────────
+   RENDER SCORECARDS
+   ───────────────────────────────────────── */
+function renderScorecards(){
+  const d=S.filtered, n=d.length, total=RAW.length;
+  const years=d.map(p=>p.year).filter(Boolean);
+  const minY=years.length?Math.min(...years):'—', maxY=years.length?Math.max(...years):'—';
+  const countries=new Set(d.map(p=>p.country).filter(Boolean));
+  const conts=new Set(d.map(p=>p.continent).filter(Boolean));
+  const indep=d.filter(p=>p.partnership==='Independent').length;
+  const langs=new Set(d.map(p=>p.language).filter(Boolean));
+
+  $('#sc-sel').textContent=n.toLocaleString();
+  $('#sc-pct').textContent=total?Math.round(n/total*100)+'%':'—';
+  $('#sc-yrs').textContent=years.length?(minY===maxY?String(minY):minY+' – '+maxY):'—';
+  $('#sc-cty').textContent=countries.size||'—';
+  $('#sc-con').textContent=conts.size||'—';
+  $('#sc-ind').textContent=n?Math.round(indep/n*100)+'%':'—';
+  $('#sc-lng').textContent=langs.size||'—';
+}
+
+/* ─────────────────────────────────────────
+   RENDER TABLE
+   ───────────────────────────────────────── */
+function renderTable(){
+  const sorted=sortedData(S.filtered);
+  const totalPages=Math.max(1,Math.ceil(sorted.length/S.rpp));
+  if(S.page>totalPages) S.page=totalPages;
+  const start=(S.page-1)*S.rpp, end=Math.min(start+S.rpp, sorted.length);
+  const rows=sorted.slice(start,end);
+
+  const tbody=$('#table-body');
+  if(!rows.length){
+    tbody.innerHTML=`<tr><td colspan="5" class="no-results">No publications match the current filters.</td></tr>`;
+  } else {
+    tbody.innerHTML=rows.map((p,i)=>{
+      const sel=S.selId===p.id?'row-selected':'';
+      const titleTrunc=p.title.length>80?p.title.slice(0,80)+'…':p.title;
+      const hasUrl=p.url&&p.url.startsWith('http');
+      const titleCell=hasUrl
+        ?`<a class="row-title-link" href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${titleTrunc}<svg class="row-link-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7"/><path d="M8 1h3v3"/><line x1="11" y1="1" x2="5.5" y2="6.5"/></svg></a>`
+        :`${titleTrunc}`;
+      return `<tr class="${sel}" onclick="selectStudy(${p.id})">
+        <td class="col-num">${start+i+1}</td>
+        <td class="col-type">${p.type||'—'}</td>
+        <td class="col-title">${titleCell}</td>
+        <td class="col-citation">${p.citation||'—'}</td>
+        <td class="col-journal">${p.journal||'—'}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  $('#showing-label').textContent=`${sorted.length.toLocaleString()} of ${RAW.length}`;
+  $('#showing-footer').textContent=sorted.length
+    ? `Showing ${start+1}–${end} of ${sorted.length.toLocaleString()}`
+    : 'No results';
+
+  renderPagination(totalPages);
+}
+
+function renderPagination(total){
+  if(total<=1){ $('#pager').innerHTML=''; return; }
+  let html=`<button class="page-btn" onclick="goPage(${S.page-1})" ${S.page<=1?'disabled':''}>‹ Prev</button>`;
+  const lo=Math.max(1,S.page-2), hi=Math.min(total,S.page+2);
+  if(lo>1){ html+=`<button class="page-btn" onclick="goPage(1)">1</button>`; if(lo>2) html+=`<span class="page-ellipsis">…</span>`; }
+  for(let i=lo;i<=hi;i++) html+=`<button class="page-btn${i===S.page?' pg-active':''}" onclick="goPage(${i})">${i}</button>`;
+  if(hi<total){ if(hi<total-1) html+=`<span class="page-ellipsis">…</span>`; html+=`<button class="page-btn" onclick="goPage(${total})">${total}</button>`; }
+  html+=`<button class="page-btn" onclick="goPage(${S.page+1})" ${S.page>=total?'disabled':''}>Next ›</button>`;
+  $('#pager').innerHTML=html;
+}
+
+function goPage(p){ const t=Math.ceil(S.filtered.length/S.rpp); if(p<1||p>t)return; S.page=p; renderTable(); }
+function onRPP(v){ S.rpp=parseInt(v); S.page=1; renderTable(); }
+
+/* ─────────────────────────────────────────
+   SELECT STUDY (MICRO VIEW)
+   ───────────────────────────────────────── */
+function selectStudy(id){
+  S.selId = id;
+  const p = RAW.find(r => r.id === id);
+  if(!p) return;
+  
+  // Update desktop micro panel (for backward compatibility)
+  const microBody = document.getElementById('micro-body');
+  if(microBody) microBody.innerHTML = buildMicroHTML(p);
+
+  // Update mobile bottom sheet
+  const sheetBody = document.getElementById('worm-sheet-body');
+  if(sheetBody) sheetBody.innerHTML = buildMicroHTML(p);
+
+  // Open modal with study details
+  openStudyModal(p);
+
+  // Re-render table to update row highlight
+  renderTable();
+
+  // Mobile: open the bottom sheet if available
+  if(window.innerWidth < 960){
+    // openMobWorm();  // Commented - using modal instead
+    document.querySelectorAll('.mob-tab[data-tab]').forEach(t=>t.classList.remove('active'));
+    const microTab = document.querySelector('.mob-tab[data-tab="micro"]');
+    if(microTab) microTab.classList.add('active');
+  }
+}
+
+function openStudyModal(p){
+  const topics=(p.topics||[]).map(t=>`<span class="topic-tag">${t}</span>`).join('');
+  const subs=(p.subtopics||[]).map(s=>`<span class="subtopic-tag">${s}</span>`).join('');
+  const ints=(p.interventions||[]).join(', ')||'—';
+  const pops=(p.populations||[]).join(', ')||'—';
+  const url=p.url&&p.url.startsWith('http')?p.url:null;
+
+  const ctaHTML=url
+    ?`<a class="modal-link-btn" href="${url}" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Link to Published Study
+      </a>`
+    :`<button class="modal-link-btn disabled" disabled>No Published Link Available</button>`;
+
+  const modalBody = document.getElementById('modal-body');
+  const modalTitle = document.getElementById('modal-title');
+  
+  modalTitle.textContent = p.title;
+  
+  modalBody.innerHTML = `
+    <div class="modal-section">
+      <div class="modal-section-title">Authors & Publication</div>
+      <div class="modal-field"><strong>${p.author || '—'}</strong></div>
+      <div class="modal-field" style="font-size:12px;color:var(--text-faint);">${p.year || '—'} · ${p.journal || '—'}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Location</div>
+      <div class="modal-field">${p.country || '—'}${p.city ? ' (' + p.city + ')' : ''}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Interventions</div>
+      <div class="modal-field">${ints}</div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Study Population</div>
+      <div class="modal-field">${pops}</div>
+    </div>
+
+    ${topics ? `<div class="modal-section">
+      <div class="modal-section-title">Topics</div>
+      <div class="modal-tags">${topics}</div>
+    </div>` : ''}
+
+    ${subs ? `<div class="modal-section">
+      <div class="modal-section-title">Subtopics</div>
+      <div class="modal-tags">${subs}</div>
+    </div>` : ''}
+
+    <div class="modal-section">
+      <div class="modal-section-title">Abstract</div>
+      <div class="modal-field" style="max-height:200px;overflow-y:auto;">${p.abstract || 'No abstract available.'}</div>
+    </div>
+
+    <div style="margin-top:.5rem;">
+      ${ctaHTML}
+    </div>
+  `;
+
+  const modal = document.getElementById('study-modal');
+  if(modal) modal.classList.add('is-open');
+}
+
+function closeStudyModal(){
+  const modal = document.getElementById('study-modal');
+  if(modal) modal.classList.remove('is-open');
+}
+
+function buildMicroHTML(p){
+  const topics=(p.topics||[]).map(t=>`<span class="topic-tag">${t}</span>`).join('');
+  const subs=(p.subtopics||[]).map(s=>`<span class="subtopic-tag">${s}</span>`).join('');
+  const ints=(p.interventions||[]).join(', ')||'—';
+  const pops=(p.populations||[]).join(', ')||'—';
+  const url=p.url&&p.url.startsWith('http')?p.url:null;
+
+  const ctaHTML=url
+    ?`<a class="cta-btn" href="${url}" target="_blank" rel="noopener">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        LINK TO PUBLISHED STUDY
+      </a>`
+    :`<span class="cta-btn cta-disabled">No Published Link Available</span>`;
+
+  return `<div class="micro-body-scroll">
+    <div class="study-title-text">${p.title}</div>
+    <div class="detail-row">
+      <span class="detail-icon">👤</span>
+      <div class="detail-inner"><div class="detail-key">Authors / Year</div><div class="detail-val">${p.author||'—'}, ${p.year||'—'}</div></div>
+    </div>
+    <div class="detail-row">
+      <span class="detail-icon">📰</span>
+      <div class="detail-inner"><div class="detail-key">Journal / Source</div><div class="detail-val">${p.journal||'—'}</div></div>
+    </div>
+    <div class="detail-row">
+      <span class="detail-icon">📍</span>
+      <div class="detail-inner"><div class="detail-key">Country</div><div class="detail-val">${p.country||'—'}</div></div>
+    </div>
+    <div class="detail-row">
+      <span class="detail-icon">🧘</span>
+      <div class="detail-inner"><div class="detail-key">Intervention</div><div class="detail-val">${ints}</div></div>
+    </div>
+    <div class="detail-row">
+      <span class="detail-icon">🏷️</span>
+      <div class="detail-inner"><div class="detail-key">Topics</div><div class="detail-val">${topics||'—'}</div></div>
+    </div>
+    <div class="detail-row">
+      <span class="detail-icon">🔖</span>
+      <div class="detail-inner"><div class="detail-key">Subtopics</div><div class="detail-val">${subs||'—'}</div></div>
+    </div>
+    <div class="detail-row">
+      <span class="detail-icon">📝</span>
+      <div class="detail-inner">
+        <div class="detail-key">Abstract</div>
+        <div class="detail-val abstract-val">${p.abstract||'No abstract available.'}</div>
+      </div>
+    </div>
+  </div>
+  <div class="micro-body-cta">${ctaHTML}</div>`;
+}
+
+/* ─────────────────────────────────────────
+   RENDER ACTIVE FILTERS
+   ───────────────────────────────────────── */
+function renderActivePills(){
+  const pills=[];
+  if(S.query) pills.push(`<span class="fpill">Search: "${S.query.slice(0,25)}${S.query.length>25?'…':''}" <button class="pill-x" onclick="removeSearchFilter()">×</button></span>`);
+  FILTER_DEFS.forEach(({key,label})=>{
+    const v=S.filters[key]; if(v) pills.push(`<span class="fpill">${label}: ${v} <button class="pill-x" onclick="removeFilter('f','${key}')">×</button></span>`);
+  });
+  const CF_LABELS={year:'Year',topic:'Topic',subtopic:'Subtopic',partnership:'Partnership',country:'Country'};
+  Object.entries(S.chartF).forEach(([k,v])=>{
+    if(v) pills.push(`<span class="fpill">${CF_LABELS[k]||k}: ${v} <button class="pill-x" onclick="removeFilter('c','${k}')">×</button></span>`);
+  });
+  const clearBtn=pills.length?`<button class="clear-all" onclick="clearAll()">Clear all</button>`:'';
+  $('#active-pills-inner').innerHTML=pills.length
+    ? pills.join('')+clearBtn
+    : `<span class="af-empty">No filters applied — showing all ${RAW.length} publications</span>`;
+
+  // Highlight adv button if has filters
+  const hasFilters=pills.length>0;
+  const advBtn=document.getElementById('adv-btn');
+  if(advBtn) advBtn.classList.toggle('has-filters', hasFilters&&(Object.values(S.filters).some(Boolean)||Object.keys(S.chartF).length>0));
+}
+
+/* ─────────────────────────────────────────
+   CHART 1 — YEAR HISTOGRAM
+   ───────────────────────────────────────── */
+let yearChart;
+function renderYearChart(){
+  const allYears=[...new Set(RAW.map(d=>d.year).filter(Boolean))].sort();
+  const counts={};
+  S.filtered.forEach(p=>{ if(p.year) counts[p.year]=(counts[p.year]||0)+1; });
+  const activeY=S.chartF.year;
+  const bg=allYears.map(y=>activeY?(String(y)===activeY?'#1A1840':'rgba(26,24,64,.22)'):'rgba(26,24,64,.65)');
+  const hov=allYears.map(()=>'#E8A020');
+
+  if(yearChart){yearChart.destroy();yearChart=null;}
+  const ctx=document.getElementById('year-chart'); if(!ctx) return;
+  yearChart=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:allYears.map(String),
+      datasets:[{data:allYears.map(y=>counts[y]||0),backgroundColor:bg,hoverBackgroundColor:hov,borderRadius:2,borderSkipped:false}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{
+        callbacks:{
+          title:([c])=>`Year: ${c.label}`,
+          label:c=>`${c.raw} publication${c.raw!==1?'s':''}`
+        }
+      }},
+      scales:{
+        x:{ticks:{font:{size:7,family:'Outfit'},maxRotation:45,color:'#6B7FA3'},grid:{display:false}},
+        y:{ticks:{font:{size:8,family:'Outfit'},stepSize:10,color:'#6B7FA3'},grid:{color:'rgba(0,0,0,.04)'}}
+      },
+      onClick:(_,els)=>{ if(els.length) setChartFilter('year',String(allYears[els[0].index])); }
+    }
+  });
+}
+
+/* ─────────────────────────────────────────
+   CHART 2 — TOPICS NESTED DONUT
+   ───────────────────────────────────────── */
+let topicChart;
+function renderTopicChart(){
+  // Inner: topic counts
+  const topicC={};
+  S.filtered.forEach(p=>(p.topics||[]).forEach(t=>{ topicC[t]=(topicC[t]||0)+1; }));
+  const tNames=Object.keys(topicC), tVals=Object.values(topicC);
+  const tColors=tNames.map(t=>TOPIC_COLORS[t]||'#888');
+
+  // Outer: subtopic counts, grouped by parent topic
+  const subByTopic={};
+  S.filtered.forEach(p=>{
+    if(!p.topics||!p.subtopics) return;
+    p.topic_subtopic_raw.split(',').forEach(chunk=>{
+      chunk=chunk.trim();
+      if(!chunk||!chunk.includes(' - ')) return;
+      const [pre,sub]=chunk.split(' - ',2);
+      const pMap={'MH':'Mental Health','PH':'Physical Health','SH':'Social Health'};
+      const t=pMap[pre.trim()]||pre.trim();
+      if(!subByTopic[t]) subByTopic[t]={};
+      subByTopic[t][sub.trim()]=(subByTopic[t][sub.trim()]||0)+1;
+    });
+  });
+
+  const outerLabels=[],outerVals=[],outerColors=[],outerTopics=[];
+  let subColorIdx=0;
+  tNames.forEach(t=>{
+    const subs=subByTopic[t]||{};
+    Object.entries(subs).forEach(([s,c])=>{
+      outerLabels.push(s); outerVals.push(c); outerTopics.push(t);
+      // shade from the topic color
+      outerColors.push(SUBTOPIC_PALETTE[subColorIdx%SUBTOPIC_PALETTE.length]);
+      subColorIdx++;
+    });
+  });
+
+  if(topicChart){topicChart.destroy();topicChart=null;}
+  const ctx=document.getElementById('topic-chart'); if(!ctx) return;
+  topicChart=new Chart(ctx,{
+    data:{
+      datasets:[
+        {type:'pie',data:tVals,backgroundColor:tColors,labels:tNames,borderWidth:1.5,borderColor:'#fff',radius:'55%'},
+        {type:'doughnut',data:outerVals,backgroundColor:outerColors,labels:outerLabels,borderWidth:1,borderColor:'#fff',cutout:'57%',radius:'99%'}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          callbacks:{
+            title:([c])=>c.dataset.labels[c.dataIndex]||'',
+            label:c=>`${c.raw} publications (${Math.round(c.raw/(S.filtered.length||1)*100)}%)`
+          }
+        }
+      },
+      onClick:(_,els)=>{
+        if(!els.length) return;
+        const {datasetIndex:di,index:idx}=els[0];
+        if(di===0) setChartFilter('topic',tNames[idx]);
+        else setChartFilter('subtopic',outerLabels[idx]);
+      }
+    }
+  });
+
+  // Legend
+  const leg=document.getElementById('topic-legend');
+  if(leg) leg.innerHTML=tNames.map((t,i)=>`
+    <div class="topic-legend-item" onclick="setChartFilter('topic','${t}')" style="cursor:pointer">
+      <span class="tl-dot" style="background:${tColors[i]}"></span>
+      <span>${t.replace(' Health','').replace('Ancient Systems of ','')}</span>
+    </div>`).join('');
+}
+
+/* ─────────────────────────────────────────
+   CHART 3 — WORLD BUBBLE MAP
+   ───────────────────────────────────────── */
+let worldTopo=null, mapBuilt=false;
+
+async function initMap(){
+  if(!mapBuilt){
+    try {
+      worldTopo=await d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json');
+      mapBuilt=true;
+    } catch(e){ return; }
+  }
+  renderMap();
+}
+
+function renderMap(){
+  const wrap=document.getElementById('map-wrap');
+  const svgEl=document.getElementById('world-svg');
+  if(!wrap||!svgEl||!worldTopo) return;
+  const W=wrap.clientWidth||320, H=115;
+  svgEl.setAttribute('viewBox',`0 0 ${W} ${H}`);
+
+  const countryCounts={};
+  S.filtered.forEach(p=>{ if(p.country) countryCounts[p.country]=(countryCounts[p.country]||0)+1; });
+  const maxC=Math.max(...Object.values(countryCounts),1);
+
+  const proj=d3.geoNaturalEarth1().fitSize([W,H],{type:'Sphere'});
+  const path=d3.geoPath().projection(proj);
+  const svg=d3.select(svgEl);
+  svg.selectAll('*').remove();
+
+  // Background
+  svg.append('path').datum({type:'Sphere'}).attr('d',path).attr('fill','#EEF2F9').attr('stroke','none');
+
+  // Countries (light base, no choropleth)
+  const countries=topojson.feature(worldTopo,worldTopo.objects.countries);
+  svg.selectAll('path.country')
+    .data(countries.features).join('path')
+    .attr('class','country').attr('d',path)
+    .attr('fill','#CDD8ED').attr('stroke','#fff').attr('stroke-width',.35);
+
+  // Bubbles only — no country fill
+  const activeCountry=S.chartF.country;
+  const tip=document.getElementById('map-tooltip');
+  Object.entries(countryCounts).forEach(([cname,count])=>{
+    const iso=COUNTRY_ISO[cname]; if(!iso) return;
+    const feat=countries.features.find(f=>f.id===iso); if(!feat) return;
+    try {
+      const c=path.centroid(feat);
+      if(!c||isNaN(c[0])||isNaN(c[1])) return;
+      const r=4+Math.sqrt(count/maxC)*14;
+      const isActive=activeCountry===cname;
+      svg.append('circle')
+        .attr('cx',c[0]).attr('cy',c[1]).attr('r',r)
+        .attr('fill',isActive?'rgba(232,160,32,.85)':'rgba(13,158,122,.6)')
+        .attr('stroke',isActive?'#E8A020':'rgba(13,158,122,.9)')
+        .attr('stroke-width',isActive?1.5:1)
+        .style('cursor','pointer')
+        .on('mouseover',function(ev){
+          tip.textContent=`${cname}: ${count} publication${count>1?'s':''}`;
+          tip.style.display='block';
+          const r=wrap.getBoundingClientRect();
+          tip.style.left=(ev.clientX-r.left+10)+'px';
+          tip.style.top=(ev.clientY-r.top-32)+'px';
+        })
+        .on('mousemove',function(ev){
+          const r=wrap.getBoundingClientRect();
+          tip.style.left=(ev.clientX-r.left+10)+'px';
+          tip.style.top=(ev.clientY-r.top-32)+'px';
+        })
+        .on('mouseout',()=>{ tip.style.display='none'; })
+        .on('click',()=>setChartFilter('country',cname));
+    } catch(e){}
+  });
+}
+
+/* ─────────────────────────────────────────
+   CHART 4 — PARTNERSHIP BARS
+   ───────────────────────────────────────── */
+function renderPartnerChart(){
+  const counts={};
+  S.filtered.forEach(p=>{ if(p.partnership) counts[p.partnership]=(counts[p.partnership]||0)+1; });
+  const total=S.filtered.length||1;
+  const partners=['Independent','Collaborative','Internal'];
+  const active=S.chartF.partnership;
+  const el=document.getElementById('partner-chart'); if(!el) return;
+
+  el.innerHTML=partners.map(p=>{
+    const n=counts[p]||0;
+    const maxN=Math.max(...partners.map(pp=>counts[pp]||0),1);
+    const pct=Math.round(n/maxN*100);
+    const isA=active===p;
+    return `<div class="partner-row${isA?' pactive':''}" onclick="setChartFilter('partnership','${p}')">
+      <span class="partner-name">${p}</span>
+      <div class="partner-bar-wrap"><div class="partner-bar" style="width:${pct}%;background:${PARTNER_COLORS[p]}"></div></div>
+      <span class="partner-count">${n}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ─────────────────────────────────────────
+   VIEW TOGGLE
+   ───────────────────────────────────────── */
+function setView(v){
+  S.view = v;
+  document.getElementById('vt-all').classList.toggle('active', v==='all');
+  document.getElementById('vt-db').classList.toggle('active', v==='database');
+
+  if(window.innerWidth < 960){
+    // On mobile, setView just records preference; tabs control visibility
+    // Switch to appropriate tab
+    if(v === 'database') mobTab('meso');
+    else mobTab('macro');
+  } else {
+    // Desktop: show/hide macro section
+    const macroSec = document.getElementById('macro-section');
+    if(macroSec) macroSec.style.display = (v==='all') ? '' : 'none';
+  }
+  renderTable();
+}
+
+/* ─────────────────────────────────────────
+   MOBILE
+   ───────────────────────────────────────── */
+function mobTab(tab){
+  S.mobTab = tab;
+  // Update tab indicators
+  document.querySelectorAll('.mob-tab[data-tab]').forEach(t=>t.classList.remove('active'));
+  const activeTab = document.querySelector('.mob-tab[data-tab="'+tab+'"]');
+  if(activeTab) activeTab.classList.add('active');
+
+  // Desktop: do nothing — all panels always visible
+  if(window.innerWidth >= 960) return;
+
+  const macroSec = document.getElementById('macro-section');
+  const dbCard   = document.querySelector('.db-card');
+  const microCard= document.getElementById('micro-card');
+  const ctrlBar  = document.getElementById('ctrl-bar');
+
+  // Hide all panels first
+  if(macroSec)  macroSec.style.display  = 'none';
+  if(dbCard)    dbCard.style.display    = 'none';
+  if(microCard){microCard.style.display = 'none'; microCard.classList.remove('mob-visible');}
+
+  // Show the active panel
+  if(tab === 'macro'){
+    if(macroSec) macroSec.style.display = '';
+  }
+  if(tab === 'meso'){
+    if(dbCard) dbCard.style.display = '';
+    // Scroll to top of db on tab switch
+    const ts = document.querySelector('.table-scroll');
+    if(ts) ts.scrollTop = 0;
+  }
+  if(tab === 'micro'){
+    // Micro on mobile opens as bottom sheet, not inline
+    // If a study is selected, open the sheet; else show db
+    if(S.selId){
+      if(dbCard) dbCard.style.display = '';
+      openMobWorm();
+    } else {
+      // No study selected: go to meso instead
+      if(dbCard) dbCard.style.display = '';
+      const mesoTab = document.querySelector('.mob-tab[data-tab="meso"]');
+      if(mesoTab){ mesoTab.classList.add('active'); activeTab&&activeTab.classList.remove('active'); }
+    }
+  }
+}
+
+function openDrawer(){
+  document.getElementById('flt-overlay').style.display='block';
+  document.getElementById('flt-drawer').classList.add('is-open');
+}
+function closeDrawer(){
+  document.getElementById('flt-overlay').style.display='none';
+  document.getElementById('flt-drawer').classList.remove('is-open');
+}
+function openMobWorm(){
+  const overlay = document.getElementById('worm-overlay');
+  const sheet   = document.getElementById('worm-sheet');
+  if(overlay) overlay.style.display = 'block';
+  if(sheet){
+    sheet.classList.add('is-open');
+    sheet.scrollTop = 0; // always scroll to top when opening
+  }
+}
+function closeMobWorm(){
+  const overlay = document.getElementById('worm-overlay');
+  const sheet   = document.getElementById('worm-sheet');
+  if(overlay) overlay.style.display = 'none';
+  if(sheet)   sheet.classList.remove('is-open');
+  // Return to Meso tab after closing
+  document.querySelectorAll('.mob-tab[data-tab]').forEach(t=>t.classList.remove('active'));
+  const mesoTab = document.querySelector('.mob-tab[data-tab="meso"]');
+  if(mesoTab) mesoTab.classList.add('active');
+  // Ensure db-card visible
+  if(window.innerWidth < 960){
+    const db = document.querySelector('.db-card');
+    if(db) db.style.display = '';
+  }
+}
+
+/* ─────────────────────────────────────────
+   ADVANCED PANEL TOGGLE
+   ───────────────────────────────────────── */
+function toggleAdv(e){
+  e&&e.stopPropagation();
+  const panel=document.getElementById('adv-panel');
+  const btn=document.getElementById('adv-btn');
+  const open=panel.classList.toggle('is-open');
+  btn.classList.toggle('is-open',open);
+  if(open) setTimeout(()=>document.addEventListener('click',advOutsideClick),10);
+  else document.removeEventListener('click',advOutsideClick);
+}
+function advOutsideClick(e){
+  const wrap=document.getElementById('adv-wrap');
+  if(wrap&&!wrap.contains(e.target)){
+    document.getElementById('adv-panel').classList.remove('is-open');
+    document.getElementById('adv-btn').classList.remove('is-open');
+    document.removeEventListener('click',advOutsideClick);
+  }
+}
+
+/* ─────────────────────────────────────────
+   UTILITY
+   ───────────────────────────────────────── */
+function $(sel){ return document.getElementById(sel)||document.querySelector(sel); }
+
+/* ─────────────────────────────────────────
+   MASTER UPDATE
+   ───────────────────────────────────────── */
+function update(){
+  compute();
+  renderScorecards();
+  renderActivePills();
+  renderTable();
+  updateSortHeaders();
+  renderYearChart();
+  renderTopicChart();
+  renderPartnerChart();
+  renderMap();
+}
+
+/* ─────────────────────────────────────────
+   INIT
+   ───────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded',()=>{
+  // Build filter UIs
+  document.getElementById('adv-grid').innerHTML=buildFilterHTML('adv');
+  document.getElementById('drawer-filter-body').innerHTML=buildFilterHTML('drawer');
+
+  // Mobile init — start on Macro tab
+  function applyMobileLayout(){
+    if(window.innerWidth < 960){
+      // Restore tab state, or default to macro
+      mobTab(S.mobTab || 'macro');
+    } else {
+      // Desktop: ensure all panels visible
+      const db = document.querySelector('.db-card');
+      const mc = document.getElementById('micro-card');
+      const ms = document.getElementById('macro-section');
+      if(db) db.style.display = '';
+      if(mc){ mc.style.display='flex'; mc.classList.remove('mob-visible'); }
+      if(ms && S.view==='all') ms.style.display = '';
+    }
+  }
+  applyMobileLayout();
+  let resizeTimer;
+  window.addEventListener('resize',()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(applyMobileLayout, 80);
+  });
+
+  // Search enter key
+  document.getElementById('search-input').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){clearTimeout(searchT);S.query=e.target.value;S.page=1;update();}
+  });
+
+
+  // Modal: close when clicking outside
+  document.getElementById('study-modal').addEventListener('click', (e) => {
+    if(e.target.id === 'study-modal') closeStudyModal();
+  });
+  // Run initial render
+  update();
+  initMap();
+
+  // Auto-select first study on load
+  if(RAW.length > 0){
+    S.selId = RAW[0].id;
+    const html = buildMicroHTML(RAW[0]);
+    const microBody = document.getElementById('micro-body');
+    if(microBody) microBody.innerHTML = html;
+    // worm sheet body also pre-populated for mobile
+    const sheetBody = document.getElementById('worm-sheet-body');
+    if(sheetBody) sheetBody.innerHTML = html;
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// INITIALIZE APPLICATION
+// ─────────────────────────────────────────────────────────────────────────────
+function initializeApplication() {
+  // Build filter UIs
+  document.getElementById('adv-grid').innerHTML=buildFilterHTML('adv');
+  document.getElementById('drawer-filter-body').innerHTML=buildFilterHTML('drawer');
+
+  // Mobile init — start on Macro tab
+  function applyMobileLayout(){
+    if(window.innerWidth < 960){
+      mobTab(S.mobTab || 'macro');
+    } else {
+      const db = document.querySelector('.db-card');
+      const mc = document.getElementById('micro-card');
+      const ms = document.getElementById('macro-section');
+      if(db) db.style.display = '';
+      if(mc){ mc.style.display='flex'; mc.classList.remove('mob-visible'); }
+      if(ms && S.view==='all') ms.style.display = '';
+    }
+  }
+  applyMobileLayout();
+  let resizeTimer;
+  window.addEventListener('resize',()=>{
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(applyMobileLayout, 80);
+  });
+
+  // Search enter key
+  document.getElementById('search-input').addEventListener('keydown',e=>{
+    if(e.key==='Enter'){clearTimeout(searchT);S.query=e.target.value;S.page=1;update();}
+  });
+
+  // Run initial render
+  update();
+  initMap();
+
+  // Auto-select first study on load
+  if(RAW.length > 0){
+    S.selId = RAW[0].id;
+    const html = buildMicroHTML(RAW[0]);
+    const microBody = document.getElementById('micro-body');
+    if(microBody) microBody.innerHTML = html;
+    const sheetBody = document.getElementById('worm-sheet-body');
+    if(sheetBody) sheetBody.innerHTML = html;
+  }
+}
+
+// Start loading data when page loads
+document.addEventListener('DOMContentLoaded', loadLibraryData);
+</script>
+</body>
+</html>
