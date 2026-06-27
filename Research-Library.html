@@ -50,7 +50,7 @@ body{font-family:var(--font-body);background:var(--ivory);color:var(--text);font
 .total-pill{background:linear-gradient(135deg,rgba(232,160,32,.25),rgba(232,160,32,.12));border:1.5px solid rgba(232,160,32,.4);border-radius:var(--r10);padding:.3rem 1rem;text-align:center;flex-shrink:0}
 .total-pill-lbl{font-size:8.5px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;font-weight:700;display:block;margin-bottom:.1rem}
 .total-pill-num{font-family:var(--font-display);font-size:1.6rem;font-weight:600;color:var(--gold-lt);line-height:1;display:block}
-.hdr-popover{display:none;position:fixed;top:80px;right:1rem;background:var(--indigo);border:1.5px solid rgba(232,160,32,.3);border-radius:var(--r12);padding:1.25rem 1.35rem;width:min(320px,calc(100vw - 2rem));font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.8;z-index:9999;box-shadow:var(--sh-lg);white-space:normal;word-wrap:break-word}
+.hdr-popover{display:none;position:fixed;top:80px;right:1rem;background:var(--indigo);border:1.5px solid rgba(232,160,32,.3);border-radius:var(--r12);padding:1.25rem 1.35rem;width:min(360px,calc(100vw - 2rem));font-size:12.5px;color:rgba(255,255,255,.75);line-height:1.7;text-align:left;z-index:9999;box-shadow:var(--sh-lg);white-space:normal;word-wrap:break-word}
 .hdr-btn:hover .hdr-popover,.hdr-btn:focus-within .hdr-popover{display:block}
 .hdr-popover strong{color:#fff;display:block;margin-bottom:.6rem;font-family:var(--font-display);font-size:1.05rem;font-weight:400;font-style:italic;letter-spacing:.01em}
 
@@ -432,26 +432,27 @@ td.col-journal{font-size:11.5px}
     <button class="hdr-btn">
       <span class="btn-icon">ⓘ</span> About
       <div class="hdr-popover">
-        <strong>About Timeless Compass Explorer 2.0</strong>
-        Curated by the Sri Sri Institute for Advanced Research (SSIAR), this interactive evidence map explores 248 published studies on Ancient Systems of Knowledge — connecting ancient wisdom with modern scientific inquiry.
+        <strong>Welcome to Timeless Compass</strong>
+        <span style="color:rgba(255,255,255,.78)">This library is curated by the Sri Sri Institute for Advanced Research (SSIAR) to bring together published research on yoga, breathwork, meditation, and other ancient systems of knowledge — studied through the lens of modern science.</span>
         <br><br>
-        <span style="color:rgba(255,255,255,.55);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Exploration Flow</span><br>
-        <span style="color:rgba(255,255,255,.65)">📊 <b style="color:#fff">Macro View</b> — Strategic overview: scorecards, charts, map &amp; trends.<br>
-        📋 <b style="color:#fff">Meso View</b> — Browse &amp; compare studies in the database.<br>
-        🔬 <b style="color:#fff">Micro View</b> — Preview a selected study before accessing the original publication.</span>
+        <span style="color:rgba(255,255,255,.78)">It's a living collection, growing as new studies are published. The scorecards above always reflect the current count, so you'll never be looking at a stale number here.</span>
+        <br><br>
+        <span style="color:var(--gold-lt);font-size:11px;font-weight:700;letter-spacing:.02em">How it's organized</span><br>
+        <span style="color:rgba(255,255,255,.78)">📊 <b style="color:#fff">Macro View</b> — start here for the big picture: trends, topics, geography, and partnerships.<br>
+        📋 <b style="color:#fff">Meso View</b> — browse the full database and compare studies side by side.<br>
+        🔬 <b style="color:#fff">Micro View</b> — click into any study for a quick preview before opening the original publication.</span>
       </div>
     </button>
     <button class="hdr-btn">
       <span class="btn-icon">?</span> Help
       <div class="hdr-popover">
-        <strong>How to use this Explorer</strong>
-        <span style="color:rgba(255,255,255,.65)">
-        🔍 <b style="color:#fff">Search</b> by keyword, author, title or journal.<br>
-        ⚙️ <b style="color:#fff">Advanced Search</b> to filter by topic, population, intervention &amp; more.<br>
-        📊 <b style="color:#fff">Click any chart</b> element to instantly filter the database.<br>
-        📋 <b style="color:#fff">Click a database row</b> to preview study details on the right.<br>
-        🔖 <b style="color:#fff">Active filter chips</b> show what's applied — click × to remove.<br>
-        🔗 <b style="color:#fff">Link to Published Study</b> opens the original source.</span>
+        <strong>Finding your way around</strong>
+        <span style="color:rgba(255,255,255,.78)">
+        Start with a quick keyword search, or open <b style="color:#fff">Advanced Search</b> to narrow things down by topic, population, intervention, and more.
+        <br><br>
+        Curious about a pattern you notice in a chart or the map? Click directly on it — a bar, a slice, a country bubble — and the database below will filter to match. Anything you've filtered shows up as a chip you can remove with a tap on its ×.
+        <br><br>
+        When something catches your eye in the database, click the row. A study card will open with the key details and a link straight to the published source.</span>
       </div>
     </button>
     <div class="total-pill">
@@ -553,7 +554,7 @@ td.col-journal{font-size:11.5px}
         <div class="chart-card-hdr">
           <span class="chart-num">1</span>
           <span class="chart-title">Explore by Year</span>
-          <span class="chart-hint-icon">ⓘ</span>
+          <span class="chart-hint-icon" title="Shows how many studies were published each year. Click any bar to filter the database to that year.">ⓘ</span>
         </div>
         <div class="chart-canvas-wrap" style="height:130px">
           <canvas id="year-chart"></canvas>
@@ -566,7 +567,7 @@ td.col-journal{font-size:11.5px}
         <div class="chart-card-hdr">
           <span class="chart-num">2</span>
           <span class="chart-title">Explore by Topics</span>
-          <span class="chart-hint-icon">ⓘ</span>
+          <span class="chart-hint-icon" title="Inner ring groups studies by topic; outer ring breaks them into subtopics. Click any slice to filter.">ⓘ</span>
         </div>
         <div class="chart-canvas-wrap" style="height:130px">
           <canvas id="topic-chart"></canvas>
@@ -580,7 +581,7 @@ td.col-journal{font-size:11.5px}
         <div class="chart-card-hdr">
           <span class="chart-num">3</span>
           <span class="chart-title">Geo-distribution of Authors</span>
-          <span class="chart-hint-icon">ⓘ</span>
+          <span class="chart-hint-icon" title="Bubble size reflects how many studies came from each country. Click a bubble to filter by that country.">ⓘ</span>
         </div>
         <div id="map-wrap">
           <svg id="world-svg"></svg>
@@ -598,7 +599,7 @@ td.col-journal{font-size:11.5px}
         <div class="chart-card-hdr">
           <span class="chart-num">4</span>
           <span class="chart-title">Explore by Partnership</span>
-          <span class="chart-hint-icon">ⓘ</span>
+          <span class="chart-hint-icon" title="Shows the split between independent, collaborative, and internal research. Click a bar to filter.">ⓘ</span>
         </div>
         <div class="partner-rows" id="partner-chart"></div>
         <div class="chart-caption">Click a partnership type to filter.</div>
@@ -623,9 +624,10 @@ td.col-journal{font-size:11.5px}
     <!-- MESO: Database -->
     <div class="db-card">
       <div class="db-header">
-        <div class="db-title-wrap">
+        <div class="db-title-wrap" title="Every study in the library, in one sortable table. Click a row to preview its details, or use search and filters above to narrow it down.">
           <span class="db-section-lbl">Meso View:</span>&nbsp;
           <span class="db-title-text">DATABASE</span>
+          <span class="chart-hint-icon" style="margin-left:.4rem" title="Every study in the library, in one sortable table. Click a row to preview its details, or use search and filters above to narrow it down.">ⓘ</span>
         </div>
         <div class="db-showing">
           Showing <strong id="showing-label">0 of 248</strong> records
