@@ -243,16 +243,16 @@ td.col-journal{font-size:11.5px}
 #study-modal.is-open{display:flex}
 .modal-content{background:linear-gradient(to bottom,var(--paper),var(--paper2));border:1.5px solid var(--rule);border-radius:var(--r16);box-shadow:0 24px 72px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.2);max-height:90vh;overflow-y:auto;max-width:640px;width:100%;position:relative;animation:slideUp .32s cubic-bezier(.34,.1,.68,.55)}
 @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-header{padding:1.75rem;border-bottom:1.5px solid var(--rule);display:flex;align-items:flex-start;justify-content:space-between;gap:1.2rem;background:linear-gradient(135deg,rgba(232,160,32,.08),transparent);position:sticky;top:0;z-index:10}
+.modal-header{padding:1.75rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1.2rem;background:linear-gradient(135deg,var(--indigo) 0%,var(--indigo-lt) 100%);border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,.25)}
 .modal-title{flex:1}
-.modal-close-btn{background:none;border:none;font-size:26px;cursor:pointer;color:var(--text-muted);padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:all var(--t);flex-shrink:0;border-radius:var(--r8);opacity:.7}
-.modal-close-btn:hover{color:var(--text);background:var(--gold-pale);opacity:1}
+.modal-close-btn{background:none;border:none;font-size:26px;cursor:pointer;color:rgba(255,255,255,.75);padding:0;width:36px;height:36px;display:flex;align-items:center;justify-content:center;transition:all var(--t);flex-shrink:0;border-radius:var(--r8);opacity:.9}
+.modal-close-btn:hover{color:var(--gold-lt);background:rgba(255,255,255,.08);opacity:1}
 .modal-body{padding:1.75rem;display:flex;flex-direction:column;gap:1.25rem}
 .modal-section{display:flex;flex-direction:column;gap:.5rem;padding:.75rem;background:rgba(232,160,32,.04);border-radius:var(--r10);border:1px solid rgba(232,160,32,.1)}
 .modal-section-title{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:.2rem}
 .modal-field{font-size:13.5px;color:var(--text-mid);line-height:1.65;word-break:break-word}
 .modal-field strong{color:var(--text);font-weight:600}
-.modal-field.title-val{font-family:var(--font-display);font-size:1.2rem;font-weight:400;color:var(--indigo);line-height:1.6;font-style:italic;margin:0}
+.modal-field.title-val{font-family:var(--font-display);font-size:1.2rem;font-weight:400;color:var(--ivory);line-height:1.6;font-style:italic;margin:0}
 .modal-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
 .modal-link-btn{display:flex;align-items:center;justify-content:center;gap:.6rem;width:100%;padding:1.1rem;background:linear-gradient(135deg,var(--indigo) 0%,#2A2A6A 100%);color:#fff;border:1.5px solid rgba(232,160,32,.3);border-radius:var(--r10);font-family:var(--font-body);font-size:13px;font-weight:700;text-decoration:none;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;transition:all var(--t);box-shadow:0 4px 16px rgba(26,24,64,.3);margin-top:.75rem}
 .modal-link-btn:hover{background:linear-gradient(135deg,#2A2A6A,var(--indigo-lt));border-color:rgba(232,160,32,.55);box-shadow:0 8px 28px rgba(26,24,64,.4);transform:translateY(-2px)}
@@ -670,7 +670,7 @@ td.col-journal{font-size:11.5px}
   <div class="modal-content">
     <div class="modal-header">
       <div class="modal-title">
-        <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-faint);margin-bottom:.3rem;">Study Details</div>
+        <div style="font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold-lt);margin-bottom:.3rem;">Study Details</div>
         <div class="modal-field title-val" id="modal-title"></div>
       </div>
       <button class="modal-close-btn" onclick="closeStudyModal()">✕</button>
@@ -689,6 +689,7 @@ td.col-journal{font-size:11.5px}
   <div class="footer-links">
     © 2026 SSIAR &nbsp;·&nbsp;
     <a href="https://research.artofliving.org" target="_blank">research.artofliving.org</a>
+    <span id="footer-last-updated"></span>
   </div>
 </footer>
 
@@ -712,6 +713,7 @@ td.col-journal{font-size:11.5px}
  */
 
 let RAW = []; // Research data - loaded from CSV
+let CSV_LAST_UPDATED = ''; // Set from Library.csv's HTTP Last-Modified header, if available
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CSV PARSING & DATA TRANSFORMATION
@@ -900,6 +902,15 @@ async function loadLibraryData() {
     const response = await fetch(csvPath);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Capture when the data file was last updated (for footer display)
+    const lastModifiedHeader = response.headers.get('Last-Modified');
+    if (lastModifiedHeader) {
+      const lmDate = new Date(lastModifiedHeader);
+      if (!isNaN(lmDate)) {
+        CSV_LAST_UPDATED = lmDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      }
     }
     
     const csvText = await response.text();
@@ -1774,6 +1785,12 @@ function initializeApplication() {
   // Build filter UIs
   document.getElementById('adv-grid').innerHTML=buildFilterHTML('adv');
   document.getElementById('drawer-filter-body').innerHTML=buildFilterHTML('drawer');
+
+  // Reflect the data file's last-updated date in the footer, if known
+  const footerLU = document.getElementById('footer-last-updated');
+  if (footerLU && CSV_LAST_UPDATED) {
+    footerLU.textContent = ` · Last updated on ${CSV_LAST_UPDATED}`;
+  }
 
   // Mobile init — start on Macro tab
   function applyMobileLayout(){
