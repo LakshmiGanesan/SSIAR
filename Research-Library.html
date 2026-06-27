@@ -221,11 +221,16 @@ td.col-journal{font-size:11.5px}
 
 /* FOOTER */
 #footer{background:linear-gradient(to bottom,var(--paper),rgba(254,246,228,.3));border-top:1.5px solid var(--rule);padding:1.2rem 1.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;font-size:11.5px;color:var(--text-muted);margin-top:2rem}
-.footer-views{display:flex;align-items:center;gap:2rem;font-size:12px}
-.fv-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:.45rem;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.15)}
-.footer-links{display:flex;align-items:center;gap:1rem}
-.footer-links a{color:var(--gold);text-decoration:none;font-weight:600;transition:color var(--t)}
-.footer-links a:hover{color:var(--gold-lt);text-decoration:underline}
+.footer-views{display:flex;align-items:center;gap:2rem;font-size:12px;flex:1;min-width:300px}
+.fv-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:.45rem;flex-shrink:0}
+.footer-center{display:flex;align-items:center;justify-content:center;flex:1}
+.footer-links{display:flex;align-items:center;gap:1rem;flex:1;justify-content:flex-end;min-width:250px}
+.footer-links a,.footer-center a{color:var(--gold);text-decoration:none;font-weight:600;transition:color var(--t)}
+.footer-links a:hover,.footer-center a:hover{color:var(--gold-lt);text-decoration:underline}
+@media(max-width:1200px){
+  #footer{flex-direction:column;gap:.6rem}
+  .footer-views,.footer-center,.footer-links{flex:1 1 auto;justify-content:center;min-width:auto}
+}
 
 /* MOBILE TABS */
 #mob-tabs{display:none;background:var(--indigo-mid);border-bottom:1px solid var(--hdr-border);position:sticky;top:62px;z-index:480}
@@ -684,14 +689,15 @@ td.col-journal{font-size:11.5px}
 <!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
 <footer id="footer">
   <div class="footer-views">
-    <span><span class="fv-dot" style="background:var(--blue)"></span><b>Macro View</b> → Understand the research landscape and trends.</span>
-    <span><span class="fv-dot" style="background:var(--teal)"></span><b>Meso View</b> → Compare and navigate studies within the database.</span>
-    <span><span class="fv-dot" style="background:var(--amber)"></span><b>Micro View</b> → Preview key details of a selected study before accessing the original publication.</span>
+    <span><span class="fv-dot" style="background:var(--jade)"></span><b>Macro View</b> — Understand the research landscape and trends.</span>
+    <span><span class="fv-dot" style="background:var(--rose)"></span><b>Meso View</b> — Compare and navigate studies within the database.</span>
+    <span><span class="fv-dot" style="background:var(--gold)"></span><b>Micro View</b> — Preview key details of a selected study.</span>
+  </div>
+  <div class="footer-center">
+    <a href="https://heyzine.com/flip-book/e74c1a53ca.html#page/1" target="_blank">📖 Timeless Compass eBook</a>
   </div>
   <div class="footer-links">
-    © 2026 SSIAR &nbsp;·&nbsp;
-    <a href="https://research.artofliving.org" target="_blank">research.artofliving.org</a>
-    <span id="footer-last-updated"></span>
+    © 2026 Sri Sri Institute for Advanced Research
   </div>
 </footer>
 
