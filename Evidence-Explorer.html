@@ -12,61 +12,26 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --ink:#0F0E17;--deep:#12112A;--indigo:#1A1840;--indigo-mid:#20204E;--indigo-lt:#2A2A6A;
-  --gold:#E8A020;--gold-lt:#F5C760;--gold-pale:#FEF6E4;--gold-glow:rgba(232,160,32,.18);
-  --jade:#0D9E7A;--jade-lt:#D4F5EC;
-  --rose:#C7325A;--rose-lt:#FDEAEF;
-  --ivory:#FDFAF3;--paper:#FFFFFF;--paper2:#F7F5EE;--paper3:#EDE8DC;
-  --rule:#DDD7C8;--rule-mid:#C8C0AE;
-  --text:#19172E;--text-mid:#3C3A5C;--text-muted:#7C789A;--text-faint:#ABA6C4;
-  --hdr-border:rgba(255,255,255,.09);
-  /* Backwards compatibility: map old variable names to new palette */
-  --teal:#0D9E7A;--teal-l:#D4F5EC;--teal-m:#0D9E7A;--teal-d:#087860;
-  --ink2:#3C3A5C;--ink3:#7C789A;--ink4:#ABA6C4;
-  --border:#DDD7C8;--border2:#C8C0AE;
-  --amber:#E8A020;--amber-l:#FEF6E4;--amber-m:#E8A020;
-  /* Radius and spacing variables */
-  --r3:3px;--r5:5px;--r8:8px;--r10:10px;--r12:12px;--r16:16px;--r20:20px;
-  --card-r:13px;--r:8px;
-  /* Shadows */
-  --sh-xs:0 1px 3px rgba(15,14,23,.06);
-  --sh-sm:0 2px 8px rgba(15,14,23,.08),0 1px 2px rgba(15,14,23,.05);
-  --sh:0 4px 16px rgba(15,14,23,.10),0 1px 4px rgba(15,14,23,.07);
-  --sh-md:0 8px 28px rgba(15,14,23,.14),0 2px 8px rgba(15,14,23,.08);
-  --sh-lg:0 16px 48px rgba(15,14,23,.20),0 4px 12px rgba(15,14,23,.10);
-  /* Typography */
+  --ink:#1c1b18;--ink2:#3a3830;--ink3:#78746b;--ink4:#aaa69e;
+  --paper:#f8f6f1;--paper2:#f1ede5;--paper3:#e5dfd2;--paper4:#d2ccbe;
+  --teal:#0a7865;--teal-l:#ddf0ea;--teal-m:#12a68c;--teal-d:#075c4d;
+  --rose:#7e1e3c;--rose-l:#fae2ea;--rose-m:#ad2b55;
+  --blue:#1a4880;--blue-l:#e2ecf8;--blue-m:#2460b5;
+  --amber:#7b5006;--amber-l:#fdf0d6;--amber-m:#b0740f;
+  --border:#cec8b8;--border2:#bdb6a5;
   --serif:"EB Garamond",Georgia,serif;
   --sans:"DM Sans",system-ui,sans-serif;
-  /* Timing */
-  --t:.18s cubic-bezier(.4,0,.2,1);
+  --card-r:13px;--r:8px;
 }
-html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
-body{font-family:var(--sans);background:var(--ivory);color:var(--text);line-height:1.6;font-size:13.5px;overflow-x:hidden;min-height:100vh;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;font-size:14px;overflow-x:hidden;min-height:100vh}
 
 /* ── MASTHEAD ── */
-.masthead{padding:0;background:linear-gradient(135deg,var(--indigo) 0%,var(--indigo-lt) 100%);color:#fff;border-bottom:2px solid var(--gold);display:flex;align-items:center;box-shadow:0 4px 24px rgba(0,0,0,.35)}
-.masthead::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.035) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;opacity:.4}
-.masthead::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold) 30%,var(--gold-lt) 60%,transparent);opacity:.8}
-.masthead .container{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 24px;position:relative;z-index:1}
-.masthead-left{display:flex;align-items:center;gap:16px;flex:1}
-.masthead-icon{width:40px;height:40px;min-width:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.masthead-icon svg{width:100%;height:100%;stroke:#fff;fill:none;stroke-width:1.8}
-.masthead-text h1{font-family:var(--serif);font-size:1.4rem;letter-spacing:-.015em;line-height:1.1;margin:0;font-weight:500;color:#fff}
-.masthead-text p{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.75);margin:4px 0 0;font-weight:400;line-height:1.2}
-.masthead-right{display:flex;align-items:center;gap:6px;flex-shrink:0;position:relative;z-index:1}
-.mh-toggle{background:rgba(232,160,32,.12);border:1.5px solid rgba(232,160,32,.35);color:var(--gold-lt);padding:6px 12px;border-radius:var(--r10);font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;transition:all var(--t);text-decoration:none;display:inline-flex;align-items:center;gap:5px;user-select:none;text-transform:uppercase;letter-spacing:.02em}
-.mh-toggle:hover{background:rgba(232,160,32,.25);border-color:rgba(232,160,32,.55);box-shadow:0 4px 12px rgba(232,160,32,.2)}
-@media(max-width:900px){
-  .masthead .container{flex-wrap:wrap;gap:16px;padding:16px 24px}
-  .masthead-left{flex:1 1 100%;order:1}
-  .masthead-right{flex:1 1 100%;order:2;justify-content:flex-start}
-}
-@media(max-width:480px){
-  .masthead-text h1{font-size:1.2rem}
-  .masthead-left{gap:12px}
-  .masthead .container{padding:14px 16px;gap:12px}
-  .mh-toggle{padding:5px 10px;font-size:11px}
-}
+.masthead{padding:44px 0 30px;text-align:center;background:var(--paper);border-bottom:1px solid var(--border)}
+.masthead h1{font-family:var(--serif);font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:-.015em;color:var(--ink);line-height:1.08;margin-bottom:9px;font-weight:500}
+.masthead-sub{font-size:.95rem;color:var(--ink3);font-weight:300;letter-spacing:.01em;max-width:640px;margin:0 auto}
+.masthead-sub .ms-line1{display:block;font-style:italic}
+.masthead-sub .ms-line2{display:block;margin-top:5px;font-size:.84em;font-style:normal;color:var(--ink4);letter-spacing:.03em}
 
 /* ── STICKY SEARCH BAR ── */
 .searchbar-wrap{background:rgba(248,246,241,.96);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:0;z-index:300;backdrop-filter:blur(10px)}
@@ -436,40 +401,6 @@ footer{border-top:1px solid var(--border);padding:18px 0}
 .footer-row a:hover{color:var(--teal-d);border-color:var(--teal-m)}
 @media(max-width:560px){.footer-row{justify-content:center;text-align:center}}
 
-/* ── MODAL POPUPS FOR ABOUT/HELP ── */
-.info-modal{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
-.info-modal.open{display:flex}
-.info-modal-content{background:#fff;border-radius:12px;max-width:580px;width:100%;max-height:70vh;overflow-y:auto;padding:28px;box-shadow:0 12px 48px rgba(0,0,0,.25);position:relative}
-.info-modal-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:24px;color:var(--ink3);cursor:pointer;line-height:1;padding:4px;transition:color .15s}
-.info-modal-close:hover{color:var(--ink)}
-.info-modal-title{font-family:var(--serif);font-size:1.4rem;color:var(--ink);margin:0 0 16px;font-weight:500}
-.info-modal-body{font-size:13.5px;color:var(--ink2);line-height:1.7}
-.info-modal-body p{margin:0 0 14px}
-.info-modal-body p:last-child{margin-bottom:0}
-.info-modal-body strong{font-weight:600;color:var(--ink)}
-.info-modal-body em{font-style:italic;color:var(--ink3)}
-@media(max-width:600px){
-  .info-modal-content{border-radius:8px;padding:20px;max-height:80vh}
-  .info-modal-title{font-size:1.2rem;margin-bottom:12px}
-  .info-modal-body{font-size:13px}
-}
-
-/* ── UNIFIED FOOTER ── */
-footer{background:linear-gradient(to bottom,var(--paper),rgba(254,246,228,.3));border-top:1.5px solid var(--rule);padding:1.2rem 1.75rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.8rem;font-size:11.5px;color:var(--text-muted);margin-top:2rem}
-.footer-left{display:flex;align-items:center;gap:.3rem;flex:1;min-width:200px}
-.footer-center{display:flex;align-items:center;gap:.5rem;flex:1;justify-content:center;flex-shrink:0}
-.footer-center a{color:var(--gold);text-decoration:none;font-weight:600;transition:color var(--t)}
-.footer-center a:hover{color:var(--gold-lt);text-decoration:underline}
-.footer-right{display:flex;align-items:center;gap:.3rem;flex:1;justify-content:flex-end;min-width:200px}
-@media(max-width:900px){
-  footer{flex-direction:column;gap:.5rem;padding:.9rem 1.2rem;text-align:center}
-  .footer-left,.footer-center,.footer-right{flex:1 1 auto;justify-content:center}
-}
-@media(max-width:480px){
-  footer{padding:.65rem .9rem;font-size:10.5px}
-  .footer-left,.footer-center,.footer-right{width:100%;flex-direction:column;gap:.2rem}
-}
-
 </style>
 </head>
 <body>
@@ -478,57 +409,10 @@ footer{background:linear-gradient(to bottom,var(--paper),rgba(254,246,228,.3));b
 
 <header class="masthead">
   <div class="container">
-    <div class="masthead-left">
-      <div class="masthead-icon">
-        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="16" cy="16" r="14"/>
-          <path d="M16 4 L18 10 M16 4 L14 10"/>
-          <path d="M16 28 L14 22 M16 28 L18 22"/>
-          <path d="M4 16 L10 14 M4 16 L10 18"/>
-          <path d="M28 16 L22 18 M28 16 L22 14"/>
-          <circle cx="16" cy="16" r="3"/>
-        </svg>
-      </div>
-      <div class="masthead-text">
-        <h1>Timeless Compass</h1>
-        <p>Evidence Explorer</p>
-      </div>
-    </div>
-    <div class="masthead-right">
-      <button class="mh-toggle" onclick="document.getElementById('aboutModal').classList.add('open')">About</button>
-      <button class="mh-toggle" onclick="document.getElementById('helpModal').classList.add('open')">Help</button>
-    </div>
+    <h1>Timeless Compass: Interactive Evidence Explorer</h1>
+    <p class="masthead-sub"><span class="ms-line1">Search and explore research-backed findings across breathwork, meditation, yoga and allied interventions</span><span class="ms-line2">Inspired by ancient systems of knowledge, adapted to contemporary times</span></p>
   </div>
 </header>
-
-<!-- About Modal -->
-<div id="aboutModal" class="info-modal" onclick="if(event.target===this) this.classList.remove('open')">
-  <div class="info-modal-content">
-    <button class="info-modal-close" onclick="document.getElementById('aboutModal').classList.remove('open')">×</button>
-    <h2 class="info-modal-title">About This Explorer</h2>
-    <div class="info-modal-body">
-      <p><strong>Welcome to Timeless Compass: Evidence Explorer</strong></p>
-      <p>This is a curated collection of research summaries on <strong>Sudarshan Kriya Yoga (SKY), Sahaj Samadhi Meditation (SSM), Advanced Meditation Programmes (AMP), Integrated Practices (IP), Yoga, and Ayurveda</strong>—presented in an accessible, popular science writing style.</p>
-      <p>Each summary distills peer-reviewed findings into clear, engaging language that makes cutting-edge research on mind-body practices understandable to everyone. Whether you're exploring the neuroscience of meditation, the physiology of breathwork, or the wellness benefits of traditional practices, you'll find rigorously documented evidence here.</p>
-      <p>The explorer is continuously updated as new peer-reviewed studies are published, reflecting the growing scientific validation of these ancient systems of knowledge.</p>
-    </div>
-  </div>
-</div>
-
-<!-- Help Modal -->
-<div id="helpModal" class="info-modal" onclick="if(event.target===this) this.classList.remove('open')">
-  <div class="info-modal-content">
-    <button class="info-modal-close" onclick="document.getElementById('helpModal').classList.remove('open')">×</button>
-    <h2 class="info-modal-title">How to Use</h2>
-    <div class="info-modal-body">
-      <p><strong>Search:</strong> Use the search box to find studies by keywords, research areas, participant populations, countries, institutions, or author names.</p>
-      <p><strong>Filter by Intervention:</strong> Select one or more interventions (SKY, Yoga, Meditation, Ayurveda, etc.) using the dropdown. Selecting multiple shows studies matching any of them.</p>
-      <p><strong>View Modes:</strong> Toggle between <em>Table</em> view for detailed exploration and <em>Card</em> view for a visual card-based layout.</p>
-      <p><strong>Study Details:</strong> Click any study row or card to open a detailed view with research highlights, methodology, participant information, and a direct link to the published paper.</p>
-      <p><strong>Clear Filters:</strong> Use the "Clear All" button to reset your search and start fresh.</p>
-    </div>
-  </div>
-</div>
 
 <div class="searchbar-wrap">
   <div class="container">
@@ -694,6 +578,15 @@ footer{background:linear-gradient(to bottom,var(--paper),rgba(254,246,228,.3));b
 
   </div>
 </div>
+
+<footer>
+  <div class="container">
+    <div class="footer-row">
+      <span>Last updated: <span id="data-updated"></span></span>
+      <span>© 2026 SSIAR &nbsp;|&nbsp; <a href="http://research.artofliving.org/" target="_blank" rel="noopener">research.artofliving.org</a> &nbsp;|&nbsp; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span>
+    </div>
+  </div>
+</footer>
 
 <div class="overlay" id="overlay"></div>
 <div class="drawer" id="drawer">
@@ -1434,7 +1327,7 @@ function openDrawer(s) {
       <div class="drw-mc"><div class="drw-ml">Participant Type</div><div class="drw-mv">${s.participant_type||s.population}</div></div>
       <div class="drw-mc"><div class="drw-ml">Year</div><div class="drw-mv">${s.year||'—'}</div></div>
     </div>
-    <div class="drw-section-lbl">Key Takeaways</div>
+    <div class="drw-section-lbl">Proven Benefits</div>
     <div class="drw-benefits">${benefits}</div>
     <div class="drw-citation">
       <div class="drw-cite1">${s.citation}</div>
@@ -1459,15 +1352,6 @@ function closeDrawer() {
 document.getElementById('overlay').onclick = closeDrawer;
 document.getElementById('drw-close').onclick = closeDrawer;
 document.getElementById('clear-all').onclick = resetAll;
-
-// Close modals and drawer with Escape key
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape') {
-    document.getElementById('aboutModal').classList.remove('open');
-    document.getElementById('helpModal').classList.remove('open');
-    closeDrawer();
-  }
-});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SEARCH
@@ -1578,24 +1462,6 @@ function initApp() {
 document.getElementById('data-updated').textContent = DATA_LAST_UPDATED;
 loadData();
 
-// Set footer last updated date
-if (document.getElementById('footer-updated')) {
-  document.getElementById('footer-updated').textContent = 'Last updated: ' + DATA_LAST_UPDATED;
-}
-
 </script>
-
-<footer>
-  <div class="footer-left">
-    <span id="footer-updated"></span>
-  </div>
-  <div class="footer-center">
-    <a href="https://heyzine.com/flip-book/e74c1a53ca.html#page/1" target="_blank">📖 Timeless Compass eBook</a>
-  </div>
-  <div class="footer-right">
-    © 2026 Sri Sri Institute for Advanced Research
-  </div>
-</footer>
-
 </body>
 </html>
