@@ -2158,20 +2158,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('study-modal').addEventListener('click', (e) => {
     if(e.target.id === 'study-modal') closeStudyModal();
   });
-  // Run initial render
-  update();
-  initMap();
-
-  // Auto-select first study on load
-  if(RAW.length > 0){
-    S.selId = RAW[0].id;
-    const html = buildMicroHTML(RAW[0]);
-    const microBody = document.getElementById('micro-body');
-    if(microBody) microBody.innerHTML = html;
-    // worm sheet body also pre-populated for mobile
-    const sheetBody = document.getElementById('worm-sheet-body');
-    if(sheetBody) sheetBody.innerHTML = html;
-  }
+  // NOTE: update() and initMap() are called in initializeApplication() after CSV loads
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
