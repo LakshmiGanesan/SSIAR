@@ -44,10 +44,10 @@ html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
 body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:14px;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased}
 
 /* HEADER */
-#header{background:var(--paper);border-bottom:1px solid var(--border);padding:44px 0 30px;text-align:center;position:sticky;top:0;z-index:500}
-#header .container{max-width:1280px;margin:0 auto;padding:0 24px}
+#header{background:var(--paper);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500}
+#header .container{max-width:1280px;margin:0 auto;text-align:center}
 #header h1{font-family:var(--serif);font-size:clamp(1.8rem,3.8vw,3rem);letter-spacing:-.015em;color:var(--ink);line-height:1.1;margin-bottom:8px;font-weight:600}
-#header .hdr-sub{font-size:.95rem;color:var(--ink3);font-weight:300;letter-spacing:.01em}
+#header .hdr-sub{font-size:.95rem;color:var(--ink3);font-weight:300;letter-spacing:.01em;margin:0}
 .hdr-nav{display:flex;justify-content:center;gap:16px;margin-top:16px;flex-wrap:wrap}
 .hdr-nav-btn{background:none;border:none;color:var(--ink3);font-family:var(--sans);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:6px;transition:all .18s;font-weight:500;letter-spacing:.01em}
 .hdr-nav-btn:hover{color:var(--ink);background:var(--paper3)}
@@ -84,22 +84,23 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
 .adv-btn.has-filters{background:var(--paper3);border-color:var(--teal-m);color:var(--teal)}
 .adv-chevron{transition:transform .2s;font-size:10px}
 .adv-btn.is-open .adv-chevron{transform:rotate(180deg)}
-#adv-panel{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--paper);border:1px solid var(--border);border-radius:9px;box-shadow:0 8px 28px rgba(0,0,0,.12);padding:6px;z-index:50;width:560px;max-width:calc(100vw - 2rem)}
+#adv-panel{display:none;position:absolute;top:calc(100% + 6px);left:0;background:var(--paper);border:1px solid var(--border);border-radius:9px;box-shadow:0 8px 28px rgba(0,0,0,.12);padding:6px;z-index:50;width:720px;max-width:calc(100vw - 2rem)}
 #adv-panel.is-open{display:block}
 .adv-panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid var(--border);margin-bottom:6px}
 .adv-panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3)}
 .adv-close{background:none;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .18s}
 .adv-close:hover{background:var(--paper2);color:var(--ink)}
-.adv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 12px;padding:0 12px;margin-bottom:12px}
-.fg{display:flex;flex-direction:column;gap:4px}
-.fg label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3)}
-select.fsel{padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:var(--paper2);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;appearance:auto;transition:border .18s}
-select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1)}
-.adv-footer{display:flex;gap:8px;padding:0 12px 8px;border-top:1px solid var(--border)}
-.btn-cancel{flex:1;padding:10px 12px;background:transparent;border:1px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;transition:all .18s}
-.btn-cancel:hover{border-color:var(--teal-m);color:var(--ink)}
-.btn-apply{flex:2;padding:10px 12px;background:var(--teal);border:none;border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:600;color:#fff;cursor:pointer;transition:all .18s}
-.btn-apply:hover{background:var(--teal-m)}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 16px;padding:12px 16px;margin-bottom:12px;background:var(--paper2);border-radius:6px}
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:2px}
+select.fsel{padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;appearance:auto;transition:all .18s;font-weight:500}
+select.fsel:hover{border-color:var(--ink3);background:var(--paper3)}
+select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1);background:var(--paper)}
+.adv-footer{display:flex;gap:12px;padding:12px 16px;border-top:1px solid var(--border);background:var(--paper)}
+.btn-cancel{flex:1;padding:12px 14px;background:transparent;border:1px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;transition:all .18s}
+.btn-cancel:hover{background:var(--paper3);border-color:var(--teal-m);color:var(--ink)}
+.btn-apply{flex:2;padding:12px 14px;background:var(--teal);border:none;border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:600;color:#fff;cursor:pointer;transition:all .18s;letter-spacing:.02em}
+.btn-apply:hover{background:var(--teal-m);box-shadow:0 2px 8px rgba(10,120,101,.2)}
 .reset-btn{padding:8px 14px;background:var(--paper2);border:1px solid var(--border2);border-radius:8px;color:var(--ink3);font-family:var(--sans);font-size:12.5px;cursor:pointer;display:none;align-items:center;gap:5px;white-space:nowrap;transition:all .14s;flex-shrink:0}
 .reset-btn:hover{border-color:var(--teal-m);color:var(--teal)}
 .view-toggle{display:none;background:var(--paper2);border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0}
@@ -108,7 +109,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 .filters-row{display:none;align-items:center;gap:6px;flex-wrap:wrap}
 .filters-row.show{display:flex}
 
-/* MAIN */
+.total-pill{display:none !important}
 #main{max-width:1280px;margin:0 auto;padding:30px 0 60px}
 .container{max-width:1280px;margin:0 auto;padding:0 24px}
 
@@ -363,10 +364,12 @@ td.col-journal{font-size:11px}
 
 /* ── SMALL MOBILE ≤ 640px ───────────────────────────────────── */
 @media(max-width:640px){
-  #header{padding:0 .9rem;height:56px}
-  .hdr-title{font-size:1rem}
-  .total-pill{display:none}
-  #ctrl-bar{top:56px;padding:.45rem .75rem}
+  #header{padding:16px 0}
+  #header .container{padding:0 16px}
+  #header h1{font-size:clamp(1.4rem,5vw,1.8rem)}
+  #header .hdr-sub{font-size:.9rem}
+  #header .container > div{position:relative !important;top:auto !important;right:auto !important}
+  .hdr-nav-btn{padding:4px 8px;font-size:11px}
   #mob-tabs{top:56px}
 
   /* Scorecards: 2 visible */
@@ -387,8 +390,8 @@ td.col-journal{font-size:11px}
   .vt-btn{padding:0 .6rem;font-size:11px}
 
   /* Advanced search panel: full-width */
-  #adv-panel{width:calc(100vw - 1.5rem);left:-0.5rem}
-  .adv-grid{grid-template-columns:1fr 1fr}
+  #adv-panel{width:calc(100vw - 1.5rem);left:-0.5rem;max-width:none}
+  .adv-grid{grid-template-columns:1fr 1fr;gap:10px 12px}
 
   /* Worm sheet: nearly full screen */
   #worm-sheet{max-height:90vh}
@@ -456,21 +459,13 @@ td.col-journal{font-size:11px}
 
 <!-- ═══ HEADER ═══════════════════════════════════════════════════ -->
 <header id="header">
-  <div class="container">
-    <h1>Timeless Compass: Research Library</h1>
-    <p class="hdr-sub">Explore published research on ancient systems of knowledge.</p>
-    
-    <div style="display:flex;align-items:center;justify-content:center;margin-top:16px;margin-bottom:16px;padding:12px 16px;background:var(--paper2);border-radius:13px;border:1px solid var(--border);max-width:200px;margin-left:auto;margin-right:auto">
-      <div style="text-align:center">
-        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);margin-bottom:4px">Total Studies</div>
-        <div style="font-family:var(--serif);font-size:1.8rem;font-weight:600;color:var(--teal);line-height:1">248</div>
-      </div>
-    </div>
-    
-    <div class="hdr-nav">
+  <div class="container" style="position:relative;text-align:center;padding:32px 24px">
+    <div style="position:absolute;top:20px;right:24px;display:flex;gap:16px;align-items:center">
       <button class="hdr-nav-btn" data-toggle="about-panel">ⓘ About</button>
       <button class="hdr-nav-btn" data-toggle="help-panel">? Help</button>
     </div>
+    <h1>Timeless Compass: Research Library</h1>
+    <p class="hdr-sub">Explore published research on ancient systems of knowledge.</p>
     
     <div id="about-panel" class="mh-panel">
       <button class="mh-close">×</button>
@@ -501,7 +496,7 @@ td.col-journal{font-size:11px}
       </div>
     </button>
     <div class="total-pill">
-      <span class="total-pill-lbl">Total Publications</span>
+
       <span class="total-pill-num" id="total-pub-count">248</span>
     </div>
   </div>
