@@ -37,11 +37,11 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 /* MASTHEAD NAVIGATION — sits at the top-right corner of the masthead on
    wider screens so it reads as a quiet utility nav beside the title rather
    than competing with it for center stage; collapses back to a centered
-   row beneath the subtitle once the screen is too narrow for a corner. */
-.masthead-nav{display:flex;justify-content:center;gap:16px;margin-top:16px;flex-wrap:wrap}
+   row beneath the subtitle once the screen is too narrow for a corner.
+   About and Help stay side-by-side (row) at all widths. */
+.masthead-nav{display:flex;justify-content:center;align-items:center;gap:16px;margin-top:16px;flex-wrap:wrap}
 @media(min-width:761px){
-  .masthead-nav{position:absolute;top:50%;right:24px;transform:translateY(-50%);
-    flex-direction:column;align-items:flex-end;gap:6px;margin-top:0}
+  .masthead-nav{position:absolute;top:50%;right:24px;transform:translateY(-50%);margin-top:0}
 }
 .mh-btn{background:none;border:none;color:var(--ink3);font-family:var(--sans);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:6px;transition:all .18s;text-decoration:none;font-weight:500;letter-spacing:.01em}
 .mh-btn:hover{color:var(--ink);background:var(--paper3)}
@@ -688,10 +688,10 @@ footer{border-top:1px solid var(--border);padding:18px 0}
 // ─────────────────────────────────────────────────────────────────────────────
 const CSV_FILE = 'Explorer.csv';
 const FILTER_REPUTATION = 'Acceptable'; // only rows matching this are shown
-// Update this date whenever Explorer.csv is replaced with new/revised data —
+// Update this date whenever Explorer.csv OR this HTML file is changed —
 // it drives the "Last updated" note in the footer. This is a manual flag
 // (not a file-system timestamp), since static hosting can't read file mtimes.
-const DATA_LAST_UPDATED = 'June 27, 2026';
+const DATA_LAST_UPDATED = 'June 28, 2026';
 const PER_PAGE = 10;
 
 // ─────────────────────────────────────────────────────────────────────────────
