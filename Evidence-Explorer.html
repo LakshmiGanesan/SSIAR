@@ -110,6 +110,11 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 /* Right-anchored variant for tips that sit near the right edge of their container */
 .tip--left::after{left:auto;right:-6px;transform:none}
 .tip--left + .tip-arrow{left:auto;right:6px;transform:none}
+/* Left-anchored variant for tips that sit near the left edge of their
+   container — the bubble opens to the right of the icon instead of being
+   centered on it, so it can't run off the left edge of the screen. */
+.tip--right::after{left:-6px;transform:none}
+.tip--right + .tip-arrow{left:6px;transform:none}
 /* Downward-opening variant — used for the explorer-card headings that sit
    right beneath the sticky search bar, so the bubble opens away from it
    instead of upward into it. */
@@ -932,7 +937,7 @@ function designField(design) {
   const safe = d.replace(/</g, '&lt;');
   if (!desc) return safe;
   const tipText = desc.replace(/"/g, '&quot;');
-  return `${safe} <span class="tip" tabindex="0" data-tip="${tipText}"></span><span class="tip-arrow"></span>`;
+  return `${safe} <span class="tip tip--right" tabindex="0" data-tip="${tipText}"></span><span class="tip-arrow"></span>`;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
