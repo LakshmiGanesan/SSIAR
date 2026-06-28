@@ -105,7 +105,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 .reset-btn:hover{border-color:var(--teal-m);color:var(--teal)}
 .adv-footer .btn-cancel{display:none}
 .reset-btn:hover{border-color:var(--teal-m);color:var(--teal)}
-.view-toggle{display:none;background:var(--paper2);border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0}
+.view-toggle{display:flex;background:var(--paper2);border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0}
 .vt-btn{height:35px;padding:0 1rem;background:transparent;border:none;color:var(--ink3);font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;transition:all .14s;white-space:nowrap;letter-spacing:.02em}
 .vt-btn.active{background:var(--teal);color:#fff;font-weight:700}
 .filters-row{display:none;align-items:center;gap:6px;flex-wrap:wrap}
@@ -207,7 +207,20 @@ td.col-title{color:var(--ink);font-weight:500}
 td.col-citation{white-space:nowrap;font-size:11px}
 td.col-journal{font-size:11px}
 .no-results{text-align:center;padding:40px 20px;color:var(--ink3);font-style:italic}
-/* Clickable title link in table rows */
+/* Database Views */
+#table-scroll{display:block}
+#card-view{display:none}
+.db-card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;padding:16px 0}
+.db-card-item{background:var(--paper);border:1px solid var(--border);border-radius:13px;padding:16px;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;gap:12px}
+.db-card-item:hover{box-shadow:0 4px 16px rgba(15,14,23,.10);border-color:var(--teal-m);transform:translateY(-2px)}
+.db-card-number{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3)}
+.db-card-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.5}
+.db-card-meta{font-size:12px;color:var(--ink2);line-height:1.4}
+.db-card-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px;border-top:1px solid var(--border)}
+.db-card-tag{display:inline-block;padding:4px 8px;background:var(--paper2);border:1px solid var(--border);border-radius:4px;font-size:10px;color:var(--ink3)}
+/* Toggle between views */
+#table-scroll.hidden{display:none}
+#card-view.hidden{display:none}
 .row-title-link{color:var(--ink);text-decoration:none;display:inline-flex;align-items:baseline;gap:4px;transition:color .18s}
 .row-title-link:hover{color:var(--teal)}
 .row-title-link:hover .row-link-icon{opacity:1;color:var(--teal)}
@@ -559,8 +572,8 @@ td.col-journal{font-size:11px}
           Clear All
         </button>
         <div class="view-toggle">
-          <button class="vt-btn active" id="vt-all" onclick="setView('all')">Macro View</button>
-          <button class="vt-btn" id="vt-db" onclick="setView('database')">Research View</button>
+          <button class="vt-btn active" id="vt-line" onclick="setDBView('line')">☰ Line View</button>
+          <button class="vt-btn" id="vt-card" onclick="setDBView('card')">▦▦ Card View</button>
         </div>
       </div>
       <div class="filters-row" id="filters-row">
@@ -702,6 +715,14 @@ td.col-journal{font-size:11px}
         </div>
         <span id="showing-footer">Showing 1–10 of 248</span>
         <div class="pager" id="pager"></div>
+      </div>
+    </div>
+
+    <!-- Card View -->
+    <div id="card-view" class="hidden">
+      <div id="card-grid" class="db-card-grid"></div>
+      <div class="db-footer">
+        <span id="showing-footer-card">Showing 1–10 of 248</span>
       </div>
     </div>
 
@@ -898,7 +919,7 @@ function uniq(arr){ return [...new Set(arr.filter(Boolean))].sort(); }
 
 function initializeFilterOptions() {
   F_TOPICS    = uniq(RAW.flatMap(d=>d.topics));
-  F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics));
+  F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics)).filter(s=>!['At','Women','Youth'].includes(s));
   F_POPS      = uniq(RAW.flatMap(d=>d.populations));
   F_INTS      = uniq(RAW.flatMap(d=>d.interventions));
   F_PARTNERS  = uniq(RAW.map(d=>d.partnership));
@@ -1084,6 +1105,7 @@ const S = {
   rpp: 10,
   selId: null,
   view: 'all',          // 'all' | 'database'
+  dbView: 'line',       // 'line' | 'card'
   mobTab: 'macro',
 };
 
@@ -1272,6 +1294,32 @@ function renderPagination(total){
 }
 
 function goPage(p){ const t=Math.ceil(S.filtered.length/S.rpp); if(p<1||p>t)return; S.page=p; renderTable(); }
+
+function renderCardView(){
+  const sorted=sortedData(S.filtered);
+  const cardGrid=$('#card-grid');
+  
+  if(!sorted.length){
+    cardGrid.innerHTML=`<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--ink3)">No publications match the current filters.</div>`;
+  } else {
+    cardGrid.innerHTML=sorted.map((p,i)=>`
+      <div class="db-card-item" onclick="selectStudy(${p.id})">
+        <div class="db-card-number">NO. ${p.id}</div>
+        <div class="db-card-title">${p.title}</div>
+        <div class="db-card-meta">
+          <strong>${p.population||'—'}</strong> · ${p.intervention||'—'} · ${p.duration||'—'}
+        </div>
+        <div class="db-card-tags">
+          ${(p.subtopics||[]).map(t=>`<span class="db-card-tag">${t}</span>`).join('')}
+        </div>
+      </div>
+    `).join('');
+  }
+  
+  $('#showing-footer-card').textContent=sorted.length
+    ? `Showing 1–${Math.min(20,sorted.length)} of ${sorted.length.toLocaleString()}`
+    : 'No results';
+}
 function onRPP(v){ S.rpp=parseInt(v); S.page=1; renderTable(); }
 
 /* ─────────────────────────────────────────
@@ -1661,6 +1709,24 @@ function setView(v){
     if(macroSec) macroSec.style.display = (v==='all') ? '' : 'none';
   }
   renderTable();
+}
+
+function setDBView(v){
+  S.dbView = v;
+  document.getElementById('vt-line').classList.toggle('active', v==='line');
+  document.getElementById('vt-card').classList.toggle('active', v==='card');
+  
+  const tableScroll = document.getElementById('table-scroll');
+  const cardView = document.getElementById('card-view');
+  
+  if(v === 'line'){
+    tableScroll.classList.remove('hidden');
+    cardView.classList.add('hidden');
+  } else {
+    tableScroll.classList.add('hidden');
+    cardView.classList.remove('hidden');
+    renderCardView();
+  }
 }
 
 /* ─────────────────────────────────────────
