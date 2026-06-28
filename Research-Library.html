@@ -90,18 +90,18 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
 .adv-panel-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3)}
 .adv-close{background:none;border:none;width:24px;height:24px;border-radius:50%;cursor:pointer;color:var(--ink3);font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .18s}
 .adv-close:hover{background:var(--paper2);color:var(--ink)}
-.adv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 16px;padding:12px 16px;margin-bottom:12px;background:var(--paper2);border-radius:6px}
-.fg{display:flex;flex-direction:column;gap:6px}
-.fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink3);margin-bottom:2px}
-select.fsel{padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;appearance:auto;transition:all .18s;font-weight:500}
-select.fsel:hover{border-color:var(--ink3);background:var(--paper3)}
-select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1);background:var(--paper)}
+.adv-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 16px;padding:12px 16px;margin-bottom:12px;background:var(--paper2);border-radius:6px;overflow:visible}
+select.fsel{padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;appearance:none;-webkit-appearance:none;-moz-appearance:none;transition:all .18s;font-weight:500;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233a3830' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 8px center;background-size:20px;padding-right:32px}
+select.fsel:hover{border-color:var(--ink3);background-color:var(--paper3)}
+select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1);background-color:var(--paper)}
 .adv-footer{display:flex;gap:12px;padding:12px 16px;border-top:1px solid var(--border);background:var(--paper)}
 .btn-cancel{flex:1;padding:12px 14px;background:transparent;border:1px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;transition:all .18s}
 .btn-cancel:hover{background:var(--paper3);border-color:var(--teal-m);color:var(--ink)}
 .btn-apply{flex:2;padding:12px 14px;background:var(--teal);border:none;border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:600;color:#fff;cursor:pointer;transition:all .18s;letter-spacing:.02em}
 .btn-apply:hover{background:var(--teal-m);box-shadow:0 2px 8px rgba(10,120,101,.2)}
-.reset-btn{padding:8px 14px;background:var(--paper2);border:1px solid var(--border2);border-radius:8px;color:var(--ink3);font-family:var(--sans);font-size:12.5px;cursor:pointer;display:none;align-items:center;gap:5px;white-space:nowrap;transition:all .14s;flex-shrink:0}
+.reset-btn{padding:8px 14px;background:var(--paper2);border:1px solid var(--border);border-radius:8px;color:var(--ink3);font-family:var(--sans);font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;transition:all .14s;flex-shrink:0}
+.reset-btn:hover{border-color:var(--teal-m);color:var(--teal)}
+.adv-footer .btn-cancel{display:none}
 .reset-btn:hover{border-color:var(--teal-m);color:var(--teal)}
 .view-toggle{display:none;background:var(--paper2);border:1px solid var(--border);border-radius:8px;overflow:hidden;flex-shrink:0}
 .vt-btn{height:35px;padding:0 1rem;background:transparent;border:none;color:var(--ink3);font-family:var(--sans);font-size:12px;font-weight:500;cursor:pointer;transition:all .14s;white-space:nowrap;letter-spacing:.02em}
@@ -471,7 +471,7 @@ td.col-journal{font-size:11px}
       <button class="mh-close">×</button>
       <div class="mh-content">
         <h3>About Timeless Compass Research Library</h3>
-        <p>Curated by the Sri Sri Institute for Advanced Research (SSIAR), this research library explores 248 published studies on ancient systems of knowledge — connecting scientific inquiry with wisdom traditions.</p>
+        <p>Curated by the Sri Sri Institute for Advanced Research (SSIAR), this research library is a growing collection of peer-reviewed studies on ancient systems of knowledge — connecting scientific inquiry with wisdom traditions.</p>
         <p><strong>Exploration Flow</strong></p>
         <p>📊 <strong>Macro View</strong> — Strategic overview: scorecards, charts, map & trends.<br>
         📋 <strong>Meso View</strong> — Browse & compare studies in the database.<br>
@@ -727,9 +727,9 @@ td.col-journal{font-size:11px}
 <!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
 <footer id="footer">
   <div class="container">
-    <div class="footer-left">© 2026 SSIAR &nbsp;|&nbsp; <a href="http://research.artofliving.org/" target="_blank" rel="noopener">research.artofliving.org</a> &nbsp;|&nbsp; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
+    <div class="footer-left">Last updated: June 28, 2026</div>
     <div class="footer-center"><a href="https://heyzine.com/flip-book/e74c1a53ca.html#page/1" target="_blank" rel="noopener">Timeless Compass eBook</a></div>
-    <div class="footer-right"><span id="last-updated">Last updated: <span id="footer-date"></span></span></div>
+    <div class="footer-right">© 2026 SSIAR &nbsp;|&nbsp; <a href="http://research.artofliving.org/" target="_blank" rel="noopener">research.artofliving.org</a> &nbsp;|&nbsp; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
   </div>
 </footer>
 
@@ -1241,10 +1241,7 @@ function renderTable(){
     tbody.innerHTML=rows.map((p,i)=>{
       const sel=S.selId===p.id?'row-selected':'';
       const titleTrunc=p.title.length>80?p.title.slice(0,80)+'…':p.title;
-      const hasUrl=p.url&&p.url.startsWith('http');
-      const titleCell=hasUrl
-        ?`<a class="row-title-link" href="${p.url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${titleTrunc}<svg class="row-link-icon" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 2H2a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7"/><path d="M8 1h3v3"/><line x1="11" y1="1" x2="5.5" y2="6.5"/></svg></a>`
-        :`${titleTrunc}`;
+      const titleCell=`${titleTrunc}`;
       return `<tr class="${sel}" onclick="selectStudy(${p.id})">
         <td class="col-num">${start+i+1}</td>
         <td class="col-type">${p.type||'—'}</td>
