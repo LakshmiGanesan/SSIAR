@@ -894,6 +894,48 @@ function tagLabel(tag) { return tag.replace(/^(PH|MH|SH):\s*/, ''); }
 function popCount(p)   { return STUDIES.filter(s=>s.populations.includes(p)).length; }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// STUDY DESIGN GUIDE — plain-language descriptions for the flashcard's "Study
+// Design" field, shown via a tap/hover .tip icon so a lay reader doesn't need
+// to already know what e.g. a "Quasi-Experimental Study" is. Keyed on the
+// exact design strings as they appear in the source CSV.
+// ─────────────────────────────────────────────────────────────────────────────
+const DESIGN_GUIDE = {
+  'Randomised Controlled Trial': 'Participants are randomly placed into intervention and control groups to test whether an intervention works.',
+  'Double-Blind Randomized Controlled Trial': 'Participants and researchers are both unaware of who receives the real treatment, reducing bias.',
+  'Non-Randomised Controlled Trial': 'Two or more groups are compared, but participants aren\u2019t randomly assigned.',
+  'Controlled Crossover Study': 'Participants receive both the treatment and the comparison at different times, acting as their own control.',
+  'Quasi-Experimental Study': 'Tests whether an intervention works but doesn\u2019t use randomisation.',
+  'Single-Arm Pre-Post Study': 'Only one group is studied before and after an intervention to check for changes.',
+  'Two-Arm Pre-Post Study': 'Two groups are measured before and after an intervention to see how each changes over time.',
+  'Two-Arm Non-Randomised Pre-Post Study': 'Same as a two-arm pre-post study, but without random group assignment.',
+  'Pilot Study': 'A small-scale version of a study done before a full trial to test feasibility.',
+  'Observational Study': 'Looks at what happens without interference, to explore possible links and relationships between factors.',
+  'Single Arm Observational Study': 'A group is observed after receiving an intervention, but there\u2019s no comparison or before measure.',
+  'Cross-Sectional Study': 'A snapshot of a group at a single point in time \u2014 good for identifying trends, associations and linkages.',
+  'Single-Case Study': 'A deep dive into one person or case \u2014 often used for rare or unique examples.',
+  'Single Case Study': 'A deep dive into one person or case \u2014 often used for rare or unique examples.',
+  'Case-Series': 'A descriptive account of several individuals with the same condition or treatment, used to highlight possible trends, patterns, or outcomes.',
+  'Qualitative Study': 'Uses interviews or open-ended questions to explore how people think, feel, or experience something.',
+  'Meta-Analysis': 'Combines results from multiple studies to get a bigger, clearer picture of an effect or trend.',
+  'Review': 'Summarises existing studies to show what\u2019s known and identifies knowledge gaps.',
+  'Narrative / Systematic Review': 'Summarises existing studies to show what\u2019s known and identifies knowledge gaps.',
+  'Systematic Review and Meta Analysis': 'Summarises existing studies to show what\u2019s known, then combines their results statistically for a bigger, clearer picture of an effect or trend.',
+  'In vitro Study': 'Lab-based experiments on cells or tissues (outside the human body) to test effects before trying in humans.',
+  'In vivo Study': 'Lab-based experiments carried out inside a living organism (like animals or humans) to test effects before trying in humans.',
+};
+// Renders the Study Design value with an info tooltip when a description is
+// available; falls back to the plain value (or "\u2014") otherwise.
+function designField(design) {
+  const d = (design || '').trim();
+  if (!d) return '\u2014';
+  const desc = DESIGN_GUIDE[d];
+  const safe = d.replace(/</g, '&lt;');
+  if (!desc) return safe;
+  const tipText = desc.replace(/"/g, '&quot;');
+  return `${safe} <span class="tip" tabindex="0" data-tip="${tipText}"></span><span class="tip-arrow"></span>`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // FILTER ENGINE
 // ─────────────────────────────────────────────────────────────────────────────
 function applyFilters() {
@@ -1375,7 +1417,7 @@ function openDrawer(s) {
     <div class="drw-meta-grid">
       <div class="drw-mc"><div class="drw-ml">Intervention</div><div class="drw-mv">${s.intervention||'SKY'}</div></div>
       <div class="drw-mc"><div class="drw-ml">Duration</div><div class="drw-mv">${s.duration||'—'}</div></div>
-      <div class="drw-mc"><div class="drw-ml">Study Design</div><div class="drw-mv">${s.design||'—'}</div></div>
+      <div class="drw-mc"><div class="drw-ml">Study Design</div><div class="drw-mv">${designField(s.design)}</div></div>
       <div class="drw-mc"><div class="drw-ml">Follow-up</div><div class="drw-mv">${s.followup||'Not reported'}</div></div>
       <div class="drw-mc"><div class="drw-ml">Participant Type</div><div class="drw-mv">${s.participant_type||s.population}</div></div>
       <div class="drw-mc"><div class="drw-ml">Year</div><div class="drw-mv">${s.year||'—'}</div></div>
