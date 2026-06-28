@@ -28,13 +28,21 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 
 /* ── MASTHEAD ── */
 .masthead{padding:44px 0 30px;text-align:center;background:var(--paper);border-bottom:1px solid var(--border)}
+.masthead .container{position:relative}
 .masthead h1{font-family:var(--serif);font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:-.015em;color:var(--ink);line-height:1.08;margin-bottom:9px;font-weight:500}
 .masthead-sub{font-size:.95rem;color:var(--ink3);font-weight:300;letter-spacing:.01em;max-width:640px;margin:0 auto;text-align:center}
 .masthead-sub .ms-line1{display:block;font-style:italic}
 .masthead-sub .ms-line2{display:block;margin-top:5px;font-size:.84em;font-style:normal;color:var(--ink4);letter-spacing:.03em}
 
-/* MASTHEAD NAVIGATION */
+/* MASTHEAD NAVIGATION — sits at the top-right corner of the masthead on
+   wider screens so it reads as a quiet utility nav beside the title rather
+   than competing with it for center stage; collapses back to a centered
+   row beneath the subtitle once the screen is too narrow for a corner. */
 .masthead-nav{display:flex;justify-content:center;gap:16px;margin-top:16px;flex-wrap:wrap}
+@media(min-width:761px){
+  .masthead-nav{position:absolute;top:50%;right:24px;transform:translateY(-50%);
+    flex-direction:column;align-items:flex-end;gap:6px;margin-top:0}
+}
 .mh-btn{background:none;border:none;color:var(--ink3);font-family:var(--sans);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:6px;transition:all .18s;text-decoration:none;font-weight:500;letter-spacing:.01em}
 .mh-btn:hover{color:var(--ink);background:var(--paper3)}
 .mh-panel{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
@@ -399,7 +407,7 @@ tr:last-child td{border-bottom:none}
 .drw-body{padding:22px 20px 32px}
 .drw-title{font-family:var(--serif);font-size:1.42rem;color:var(--ink);line-height:1.28;margin-bottom:6px;font-weight:500}
 .drw-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px}
-.drw-meta-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:9px;overflow:hidden;margin-bottom:20px}
+.drw-meta-grid{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:9px;margin-bottom:20px}
 .drw-mc{padding:10px 13px;border-bottom:1px solid var(--border)}
 .drw-mc:nth-child(odd){border-right:1px solid var(--border)}
 .drw-mc:nth-last-child(-n+2){border-bottom:none}
