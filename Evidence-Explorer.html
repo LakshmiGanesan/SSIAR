@@ -29,9 +29,29 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 /* ── MASTHEAD ── */
 .masthead{padding:44px 0 30px;text-align:center;background:var(--paper);border-bottom:1px solid var(--border)}
 .masthead h1{font-family:var(--serif);font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:-.015em;color:var(--ink);line-height:1.08;margin-bottom:9px;font-weight:500}
-.masthead-sub{font-size:.95rem;color:var(--ink3);font-weight:300;letter-spacing:.01em;max-width:640px;margin:0 auto}
+.masthead-sub{font-size:.95rem;color:var(--ink3);font-weight:300;letter-spacing:.01em;max-width:640px;margin:0 auto;text-align:center}
 .masthead-sub .ms-line1{display:block;font-style:italic}
 .masthead-sub .ms-line2{display:block;margin-top:5px;font-size:.84em;font-style:normal;color:var(--ink4);letter-spacing:.03em}
+
+/* MASTHEAD NAVIGATION */
+.masthead-nav{display:flex;justify-content:center;gap:16px;margin-top:16px;flex-wrap:wrap}
+.mh-btn{background:none;border:none;color:var(--ink3);font-family:var(--sans);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:6px;transition:all .18s;text-decoration:none;font-weight:500;letter-spacing:.01em}
+.mh-btn:hover{color:var(--ink);background:var(--paper3)}
+.mh-panel{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.mh-panel.open{display:flex}
+.mh-content{background:var(--paper);border-radius:12px;padding:32px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.18);position:relative;font-size:14px;line-height:1.6;text-align:left}
+.mh-content h3{font-family:var(--serif);font-size:1.3rem;margin-bottom:12px;color:var(--ink);font-weight:500;text-align:left}
+.mh-content p{margin-bottom:12px;color:var(--ink2);text-align:justify}
+.mh-content ul{color:var(--ink2)}
+.mh-content li{margin-bottom:6px}
+.mh-close{position:absolute;top:16px;right:16px;background:none;border:none;font-size:24px;color:var(--ink3);cursor:pointer;padding:4px;line-height:1;transition:color .18s}
+.mh-close:hover{color:var(--ink)}
+@media(max-width:600px){
+  .mh-panel{padding:10px}
+  .mh-content{padding:24px}
+  .mh-content h3{font-size:1.1rem}
+  .mh-content{font-size:13px}
+}
 
 /* ── STICKY SEARCH BAR ── */
 .searchbar-wrap{background:rgba(248,246,241,.96);border-bottom:1px solid var(--border);padding:12px 0;position:sticky;top:0;z-index:300;backdrop-filter:blur(10px)}
@@ -409,8 +429,40 @@ footer{border-top:1px solid var(--border);padding:18px 0}
 
 <header class="masthead">
   <div class="container">
-    <h1>Timeless Compass: Interactive Evidence Explorer</h1>
-    <p class="masthead-sub"><span class="ms-line1">Search and explore research-backed findings across breathwork, meditation, yoga and allied interventions</span><span class="ms-line2">Inspired by ancient systems of knowledge, adapted to contemporary times</span></p>
+    <h1>Timeless Compass: Evidence Explorer</h1>
+    <p class="masthead-sub"><span class="ms-line1">Research-backed findings on breathwork, meditation, yoga and allied practices</span></p>
+    
+    <div class="masthead-nav">
+      <button class="mh-btn" data-toggle="about-panel">ⓘ About</button>
+      <button class="mh-btn" data-toggle="help-panel">? Help</button>
+    </div>
+    
+    <div id="about-panel" class="mh-panel">
+      <button class="mh-close">×</button>
+      <div class="mh-content">
+        <h3>Welcome to Timeless Compass</h3>
+        <p>This Evidence Explorer is curated by the Sri Sri Institute for Advanced Research (SSIAR) and presents research-backed findings on breathwork, meditation, yoga, and other practices rooted in ancient systems of knowledge but adapted to contemporary times.</p>
+        <p>You'll find here accessible summaries of peer-reviewed research: studies conducted in labs and clinics, with rigorous methods, on real people. The findings span physical health, mental wellbeing, different populations, and intervention durations — giving you a comprehensive view of what science has learned about these practices.</p>
+        <p><strong>How it's organized:</strong></p>
+        <p>🫁 <strong>Physical Health Explorer</strong> — start here to browse findings by body system and health condition.<br>
+        🧠 <strong>Mental Health Explorer</strong> — explore research on stress, resilience, emotional wellbeing, and more.<br>
+        👥 <strong>Study Population</strong> — filter by who participated (patients, students, athletes, etc.).<br>
+        ⏱️ <strong>Intervention Duration</strong> — see how practice length affects outcomes.<br>
+        🌍 <strong>Geographic View</strong> — discover which regions have contributed research.</p>
+        <p>Combine any filters to answer your own questions about these practices and their effects.</p>
+      </div>
+    </div>
+    
+    <div id="help-panel" class="mh-panel">
+      <button class="mh-close">×</button>
+      <div class="mh-content">
+        <h3>Finding Your Way Around</h3>
+        <p><strong>Start with search or explore.</strong> Use the search box for keywords — find studies by outcome, population, institution, location, or any detail that interests you. Or browse directly in the Physical Health and Mental Health explorers.</p>
+        <p><strong>Click to filter.</strong> See a health condition you're curious about? Click it. Interested in a particular population or practice? Click that tag, and the database below filters to match. You can click multiple items — studies matching <em>any</em> of your selections appear. Active filters show as removable chips below the search bar.</p>
+        <p><strong>View results in your preferred way.</strong> Switch between line view (compact, table format) and card view (visual overview) using the buttons above the results. Each study shows its key details — click the row or card to open a full preview with findings, methodology, and a direct link to the published source.</p>
+        <p><strong>Combine filters to explore.</strong> Want to know which studies on anxiety involved students? Filter by "Mental Health → Anxiety" and "Population → Youth & Students." Curious how three-month practices compare to year-long ones? Use the Duration explorer alongside your other filters.</p>
+      </div>
+    </div>
   </div>
 </header>
 
@@ -583,6 +635,7 @@ footer{border-top:1px solid var(--border);padding:18px 0}
   <div class="container">
     <div class="footer-row">
       <span>Last updated: <span id="data-updated"></span></span>
+      <span><a href="https://heyzine.com/flip-book/e74c1a53ca.html#page/1" target="_blank" rel="noopener">Timeless Compass Ebook</a></span>
       <span>© 2026 SSIAR &nbsp;|&nbsp; <a href="http://research.artofliving.org/" target="_blank" rel="noopener">research.artofliving.org</a> &nbsp;|&nbsp; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span>
     </div>
   </div>
@@ -1327,7 +1380,7 @@ function openDrawer(s) {
       <div class="drw-mc"><div class="drw-ml">Participant Type</div><div class="drw-mv">${s.participant_type||s.population}</div></div>
       <div class="drw-mc"><div class="drw-ml">Year</div><div class="drw-mv">${s.year||'—'}</div></div>
     </div>
-    <div class="drw-section-lbl">Proven Benefits</div>
+    <div class="drw-section-lbl">Key Findings</div>
     <div class="drw-benefits">${benefits}</div>
     <div class="drw-citation">
       <div class="drw-cite1">${s.citation}</div>
@@ -1433,6 +1486,29 @@ document.addEventListener('keydown', (e) => {
     document.querySelectorAll('.tip.show').forEach(t => { if (t !== e.target) t.classList.remove('show'); });
     e.target.classList.toggle('show');
   }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MASTHEAD PANELS — About and Help
+// ─────────────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.mh-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const panelId = btn.getAttribute('data-toggle');
+    const panel = document.getElementById(panelId);
+    panel.classList.add('open');
+  });
+});
+document.querySelectorAll('.mh-close').forEach(closeBtn => {
+  closeBtn.addEventListener('click', () => {
+    closeBtn.closest('.mh-panel').classList.remove('open');
+  });
+});
+document.querySelectorAll('.mh-panel').forEach(panel => {
+  panel.addEventListener('click', (e) => {
+    if (e.target === panel) {
+      panel.classList.remove('open');
+    }
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────────────
