@@ -9,8 +9,25 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
+/* ════════════════════════════════════════════════════════════════════════════
+   TIMELESS COMPASS — EVIDENCE EXPLORER — STYLESHEET
+   ────────────────────────────────────────────────────────────────────────────
+   Organised top-to-bottom in the same order the page reads:
+     1. Reset + design tokens (CSS variables for color/type/radius)
+     2. Masthead (title, About/Help nav, panels)
+     3. Sticky search bar + intervention filter + info tooltips
+     4. Page layout shell
+     5. The four "Explorer" widgets (Body, Mind, Population, Duration, Map)
+     6. Evidence Database (table view, flashcard/card view, pagination)
+     7. Flashcard drawer (the slide-out detail panel)
+     8. Footer
+   Each section is marked with a ── SECTION ── banner comment below.
+   ════════════════════════════════════════════════════════════════════════════ */
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+/* Design tokens: ink = text colors (darkest→lightest), paper = backgrounds,
+   teal/rose/blue/amber = category accent colors (each with -l light/-m mid/
+   -d dark variants for backgrounds, borders, and emphasis respectively). */
 :root{
   --ink:#1c1b18;--ink2:#3a3830;--ink3:#78746b;--ink4:#aaa69e;
   --paper:#f8f6f1;--paper2:#f1ede5;--paper3:#e5dfd2;--paper4:#d2ccbe;
@@ -32,7 +49,6 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .masthead h1{font-family:var(--serif);font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:-.015em;color:var(--ink);line-height:1.08;margin-bottom:9px;font-weight:500}
 .masthead-sub{font-size:.95rem;color:var(--ink3);font-weight:300;letter-spacing:.01em;max-width:640px;margin:0 auto;text-align:center}
 .masthead-sub .ms-line1{display:block;font-style:italic}
-.masthead-sub .ms-line2{display:block;margin-top:5px;font-size:.84em;font-style:normal;color:var(--ink4);letter-spacing:.03em}
 
 /* MASTHEAD NAVIGATION — sits at the top-right corner of the masthead on
    wider screens so it reads as a quiet utility nav beside the title rather
@@ -144,12 +160,13 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 @media(max-width:480px){
   .masthead{padding:32px 0 22px}
   .masthead-sub{padding:0 16px}
-  .masthead-sub .ms-line2{font-size:.8em}
   .iv-filter,.clear-all-btn{flex:1 1 100%}
   .iv-filter-btn{padding:10px 12px}
   .search-field input{padding:10px 36px 10px 38px;font-size:13.5px}
   .iv-filter-panel{left:0;right:0;max-width:none;width:100%}
 }
+/* ACTIVE-FILTER CHIPS — the row of removable chips shown beneath the search
+   bar once any filter is applied (e.g. "Diabetes ×", "Patients ×") */
 .filters-row{display:none;align-items:center;gap:6px;flex-wrap:wrap}
 .filters-row.show{display:flex}
 .filter-row-lbl{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);font-weight:500;flex-shrink:0}
@@ -177,14 +194,11 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .exp-card-head{border-radius:var(--card-r) var(--card-r) 0 0}
 .exp-card-body,.exp-card-body--explorer{border-radius:0 0 var(--card-r) var(--card-r);overflow:hidden}
 .exp-card-head{padding:14px 20px 12px;border-bottom:1px solid var(--border)}
-.exp-eyebrow{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);font-weight:500;margin-bottom:2px}
-.exp-title{font-family:var(--serif);font-size:1.05rem;color:var(--ink);font-weight:500}
 .exp-heading{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-d);font-weight:700;font-family:var(--sans);display:inline-flex;align-items:center;gap:6px}
 .tip{margin-left:0}
 .db-header .exp-heading{font-size:13px;letter-spacing:.2em}
 .exp-card-body{padding:18px 18px 14px}
 .exp-card-body--explorer{padding:4px 8px 6px}
-.exp-hint{font-size:10.5px;color:var(--ink4);margin-top:12px;font-style:italic;text-align:center}
 
 /* ── BODY EXPLORER ── */
 .body-layout{display:grid;grid-template-columns:1fr 152px 1fr;align-items:center;min-height:248px;gap:4px}
@@ -209,9 +223,6 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .mnode{display:flex;align-items:center;gap:5px;padding:6px 10px 6px 8px;border-radius:20px;font-size:11.5px;cursor:pointer;transition:all .15s;border:1px solid var(--border2);user-select:none;background:var(--paper);margin:3px 0}
 .mnode:hover{border-color:var(--rose-m);background:rgba(173,43,85,.13)}
 .mnode.on{background:var(--rose-m);color:#fff;border-color:var(--rose-m)}
-.mnode-ico{font-size:14px;flex-shrink:0}
-.mnode-n{font-size:9.5px;opacity:.65;margin-left:1px}
-.mnode.on .mnode-n{opacity:.85}
 
 /* ── POPULATION BARS ── */
 .pop-list{display:flex;flex-direction:column;gap:6px}
@@ -250,7 +261,6 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 
 /* ── GEO MAP ── */
 .geo-wrap{width:100%;border-radius:var(--r);overflow:hidden;background:#e0d9ce;line-height:0}
-.geo-note{font-size:10px;color:var(--ink4);margin-top:7px;font-style:italic;text-align:center}
 #geo-tt{position:fixed;background:rgba(28,27,24,.9);color:#fff;font-family:var(--sans);font-size:12px;padding:8px 12px;border-radius:7px;pointer-events:none;z-index:999;display:none;max-width:220px;line-height:1.5}
 #geo-tt strong{display:block;font-weight:500;font-size:13px;margin-bottom:2px}
 

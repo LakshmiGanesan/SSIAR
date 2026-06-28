@@ -16,6 +16,34 @@ Open via a local server, not `file://` — CSV fetches are blocked under the
 
 ---
 
+## Code structure (for anyone editing the HTML file)
+
+`Evidence-Explorer.html` is organized top-to-bottom in the order the page
+reads, with a `── SECTION ──` banner comment marking each part:
+
+**`<style>` block:**
+1. Reset + design tokens (CSS variables for color, type, radius)
+2. Masthead (title, About/Help nav, panels)
+3. Sticky search bar + intervention filter + info tooltips
+4. Page layout shell
+5. The four "Explorer" widgets (Body, Mind, Population, Duration, Map)
+6. Evidence Database (table view, flashcard/card view, pagination)
+7. Flashcard drawer (the slide-out detail panel)
+8. Footer
+
+**`<script>` block:** CSV parsing → data loading → taxonomy/filter logic →
+each Explorer widget's render function → table/card rendering → drawer →
+search/filter event handlers → tooltips → masthead panels → master
+refresh/init. Every function and handler sits under its own banner comment.
+
+A cleanup pass (June 2026) removed a handful of CSS rules that were defined
+but never actually used by any element on the page (`.exp-eyebrow`,
+`.exp-title`, `.exp-hint`, `.geo-note`, `.mnode-ico`, `.mnode-n`,
+`.ms-line2`) — confirmed unused by checking the full file, not just
+guessed. No visual or functional change resulted from removing them.
+
+---
+
 ## Updating the "Last updated" date in the footer
 
 The footer shows a **"Last updated: [date]"** note. Because this is a static
