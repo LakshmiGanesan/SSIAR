@@ -1,431 +1,670 @@
-# Timeless Compass: Interactive Research Library
-## Container-Content Architecture
+# Timeless Compass: Research Library
+## Developer Documentation & Integration Guide
+
+**Version:** 1.0 Production Ready  
+**Last Updated:** June 29, 2026  
+**Built for:** Sri Sri Institute for Advanced Research (SSIAR)
 
 ---
 
-## 📋 Overview
-
-This is a **modular, data-driven research library application** that separates the User Interface (Container) from the Research Data (Content).
-
-**Architecture Benefits:**
-- ✅ Update research data without modifying HTML
-- ✅ Easy to maintain and scale
-- ✅ Non-technical users can update CSV files
-- ✅ Version control friendly for data and code separation
-- ✅ Reusable container for different datasets
-
----
-
-## 📁 File Structure
-
-```
-Timeless Compass Project
-├── Research-Library.html       (UI Container - Do not modify data here)
-├── Library.csv                 (Research articles data - UPDATE THIS)
-├── Institutions.csv            (Top contributing institutes - Optional update)
-└── README-Library.md           (This file)
-```
-
-### **Files Explained**
-
-#### 1. **Research-Library.html** ✓ Container
-- The **interactive UI application**
-- Dynamically loads data from CSV files
-- Contains all visualization, filtering, and search logic
-- **Do not store data in this file** - only update if fixing bugs or changing UI design
-
-**File Size:** ~700KB  
-**Maintenance:** Minimal - only update for UI/feature changes
-
-#### 2. **Library.csv** 📊 Content (Research Data)
-- **Main research article database**
-- One row per published study
-- Source of truth for all research data
-- **This is what you update regularly**
-
-**Required Columns:**
-```csv
-Record Number, Type, Author, Year, Title, Journal / Source, 
-Link to Published Study, Abstract, Study Design, Topic - Subtopic, 
-Interventions, Partnership, Study Population, Author Affiliation, 
-City, State, Country, Included in TC, Date Added, Language
-```
-
-**Update Frequency:** As new research is added  
-**How to Update:** Edit directly in Excel/Google Sheets or text editor
-
-#### 3. **Institutions.csv** 🏛️ Configuration (Optional)
-- List of top 24 contributing institutions
-- Used for the "Top Contributing Institutes" filter
-- Pre-populated but can be modified
-
-**Columns:**
-```csv
-Column 1, Institutions (Value), Display Name (Label), COUNT
-```
-
-**Update Frequency:** When adding new institutions or updating counts  
-**How to Update:** Edit directly or regenerate from Library.csv data
+## Table of Contents
+1. [Overview](#overview)
+2. [Architecture](#architecture)
+3. [Container-Content System](#container-content-system)
+4. [File Structure](#file-structure)
+5. [Responsive Design](#responsive-design)
+6. [Development Guide](#development-guide)
+7. [Updating Content](#updating-content)
+8. [Integration Instructions](#integration-instructions)
+9. [Customization](#customization)
 
 ---
 
-## 🚀 Getting Started
+## Overview
 
-### **Local Setup**
+**Timeless Compass: Research Library** is an interactive digital library of global studies on Ancient Systems of Knowledge (ASK). It connects ancient wisdom with modern scientific inquiry through an intuitive, responsive web application.
 
-1. **Download or clone all files** in the same directory:
-   ```
-   Research-Library.html
-   Library.csv
-   Institutions.csv
-   ```
+### Key Features
+- 🔍 Full-text search across 250+ research studies
+- 📊 Interactive visualizations (charts, timelines, geographic maps)
+- 🎯 Advanced filtering (9+ dimensions: topic, population, duration, etc.)
+- 📱 Fully responsive design (desktop, tablet, mobile)
+- 🔗 Direct access to published peer-reviewed papers
+- ⚡ Zero-framework architecture (vanilla JavaScript, pure CSS)
 
-2. **Open Research-Library.html** in a web browser
-   - Click the file or drag it into your browser
-   - No web server required!
+---
 
-3. **View the research library**
-   - Filters automatically populate from Library.csv
-   - All data is loaded on page load
+## Architecture
 
-### **Troubleshooting**
+### System Design
 
-**Problem:** "Error loading Library.csv"
-- **Solution:** Make sure Library.csv is in the **same folder** as Research-Library.html
-- **Note:** Due to browser security, this won't work with `file://` URLs if hosted locally - you need a local web server
-
-**Quick Local Server Setup:**
-
-Python 3:
-```bash
-cd /path/to/files
-python -m http.server 8000
-# Open: http://localhost:8000/Research-Library.html
+```
+┌─────────────────────────────────────────────┐
+│     Timeless Compass Research Library       │
+├─────────────────────────────────────────────┤
+│                                             │
+│  ┌─ CONTAINER (HTML/CSS/JS)               │
+│  │  Research-Library.html (single file)    │
+│  │  • UI components                        │
+│  │  • Application logic                    │
+│  │  • Rendering engine                     │
+│  │                                         │
+│  └─ CONTENT (CSV Data)                    │
+│     Library.csv (external file)            │
+│     • 250+ research records                │
+│     • Independently updatable              │
+│     • No HTML modification needed          │
+│                                             │
+└─────────────────────────────────────────────┘
 ```
 
-Python 2:
-```bash
-python -m SimpleHTTPServer 8000
+### Why This Architecture?
+
+This **Container-Content separation** provides:
+
+✓ **Content Independence:** Update research data without touching HTML  
+✓ **Scalability:** Add 1000s of records without file bloat  
+✓ **Maintainability:** Researchers can update CSV, developers maintain code  
+✓ **Modularity:** Content can live in database, API, or file system  
+✓ **Single Deployment:** One HTML file (no build process needed)  
+
+---
+
+## Container-Content System
+
+### How It Works
+
+```
+1. USER VISITS WEBSITE
+   ↓
+2. Browser loads: Research-Library.html (single file, ~2100 lines)
+   ↓
+3. On DOMContentLoaded:
+   - HTML structure rendered
+   - CSS styles applied
+   - JavaScript initializes
+   ↓
+4. loadLibraryData() function:
+   - Fetches Library.csv from GitHub (or your server)
+   - Parses CSV into JavaScript objects
+   - Derives filter options from data
+   ↓
+5. initializeFilterOptions():
+   - Extracts unique topics, populations, interventions, etc.
+   - Builds filter UI dynamically
+   - No hardcoded filter lists
+   ↓
+6. renderUI():
+   - Tables, charts, and filters appear
+   - All driven by CSV data
+   ↓
+7. User interacts:
+   - Search, filter, sort, paginate
+   - All operations on in-memory data
+   - No server calls needed
 ```
 
-Node.js:
-```bash
-npx http-server
+### Key Advantage: Zero Code Changes
+
+To update research:
+1. Edit **Library.csv** (just a spreadsheet)
+2. Upload to GitHub (or your server)
+3. **Done.** Users see new data immediately (no HTML modification)
+
+To add new research topic that appears in filters:
+- Just add it to the CSV
+- Filter options auto-generate
+- No code changes required
+
+---
+
+## File Structure
+
+### Single-File Architecture
+
+```
+Research-Library.html (2100+ lines)
+│
+├─ HEAD (lines 1-150)
+│  ├─ Meta tags
+│  ├─ Google Fonts (EB Garamond, DM Sans)
+│  ├─ CDN scripts (Chart.js, D3.js, TopoJSON)
+│  └─ CSS Variables & Design Tokens
+│
+├─ CSS STYLES (lines 150-620)
+│  ├─ Base styles and resets
+│  ├─ Design system (colors, typography, spacing)
+│  ├─ Component styles
+│  │  ├─ Header
+│  │  ├─ Modals (About, Help)
+│  │  ├─ Controls (search, filters)
+│  │  ├─ Scorecard cards
+│  │  ├─ Charts
+│  │  └─ Database table
+│  └─ Responsive breakpoints (600px, 960px, 1200px)
+│
+├─ HTML STRUCTURE (lines 620-920)
+│  ├─ Header
+│  │  ├─ Title
+│  │  └─ Navigation buttons (About, Help)
+│  ├─ Modals
+│  │  ├─ About panel (mission, three views)
+│  │  └─ Help panel (tutorial, examples)
+│  ├─ Control bar
+│  │  ├─ Search box
+│  │  └─ Advanced search
+│  ├─ Main content
+│  │  ├─ Scorecard row (6 key metrics)
+│  │  ├─ Charts row (4 visualizations)
+│  │  └─ Database section (table view)
+│  └─ Footer
+│
+└─ JAVASCRIPT APPLICATION (lines 920-2100+)
+   ├─ CSV loading & parsing
+   ├─ Data initialization
+   ├─ State management (S object)
+   ├─ Filter initialization
+   ├─ Rendering functions
+   │  ├─ renderTable() - database table
+   │  ├─ renderCharts() - macro visualizations
+   │  ├─ renderScores() - scorecard metrics
+   │  └─ renderFilters() - filter UI
+   ├─ Event handlers
+   │  ├─ Search input
+   │  ├─ Filter selection
+   │  ├─ Chart clicks
+   │  └─ Sort/pagination
+   └─ Utility functions
+      ├─ Data transformation
+      ├─ Formatting
+      ├─ Sorting
+      └─ DOM helpers
+```
+
+### CSV Files (External Data)
+
+```
+Library.csv - Main research database
+├─ Record Number (ID)
+├─ Type (Research Article, Review, etc.)
+├─ Author
+├─ Year
+├─ Title
+├─ Journal / Source
+├─ Link to Published Study
+├─ Abstract
+├─ Study Design
+├─ Topic - Subtopic
+├─ Interventions
+├─ Partnership
+├─ Study Population
+├─ Author Affiliation
+├─ City
+├─ State
+├─ Country
+├─ Language
+└─ [other metadata]
 ```
 
 ---
 
-## ✏️ Updating Research Data
+## Responsive Design
 
-### **Add a New Study**
+### Breakpoints & Behavior
 
-1. **Open Library.csv** in Excel, Google Sheets, or a text editor
-2. **Add a new row** with the study information:
-   ```csv
-   500,Research Article,Author Name,2024,Study Title,Journal Name,...
-   ```
-3. **Save the file**
-4. **Reload Research-Library.html** in your browser
-   - Filters automatically update
-   - New study appears in search results
+#### Desktop (960px and above)
+- ✓ Macro View (charts) visible on left
+- ✓ Meso View (table) visible on right
+- ✓ All controls accessible
+- ✓ Full-width search bar
+- ✓ 4-column chart grid
+- ✓ 6-column scorecard grid
 
-### **CSV Format Guidelines**
+#### Tablet (640px - 960px)
+- ✓ Single column layout
+- ✓ Macro view charts full-width
+- ✓ Meso view table below
+- ✓ 2-column chart grid
+- ✓ 3-column scorecard grid
+- ✓ Responsive table with horizontal scroll
+- ✓ Advanced search panel wraps filters to 2 columns
 
-**String fields with commas or quotes:**
-```csv
-"Niche Topic - Sub-Topic, Another Subtopic"
-"Smith, John"
-"Quote: ""Beautiful minds"""
+#### Mobile (<640px)
+- ✓ Tab navigation (Macro/Meso tabs)
+- ✓ Single column layout
+- ✓ Full-width components
+- ✓ Mobile optimized touches
+- ✓ Single-column filters (Advanced Search)
+- ✓ Horizontal scroll table
+- ✓ Drawer-based filter panel
+- ✓ Pagination simplified
+- ✓ Font sizes scaled appropriately
+
+### CSS Media Queries
+```css
+@media (max-width: 600px)     { /* Mobile */ }
+@media (max-width: 960px)     { /* Tablet */ }
+@media (max-width: 1200px)    { /* Large screens */ }
 ```
 
-**Multiple values separated by commas:**
-```csv
-Yoga, Pranayama, Meditation
+All breakpoints tested and verified for functionality.
+
+---
+
+## Development Guide
+
+### Code Organization
+
+The Research-Library.html file is organized into clear sections with comments:
+
+```
+/* =========================================================================
+   CSS SECTION 1: DESIGN TOKENS & VARIABLES
+   ========================================================================= */
+
+/* =========================================================================
+   CSS SECTION 2: RESPONSIVE DESIGN
+   ========================================================================= */
+
+<!-- =========================================================================
+     HTML SECTION 3: PAGE STRUCTURE
+     ========================================================================= -->
+
+<!-- =========================================================================
+     JAVASCRIPT SECTION 4: APPLICATION LOGIC
+     ========================================================================= -->
 ```
 
-**Key Mappings in Application:**
-- `Record Number` → Study ID
-- `Type` → Publication type (Research Article, Review, etc.)
-- `Author` → Citation author
-- `Year` → Study year
-- `Topic - Subtopic` → Filters (use format: `Topic - Subtopic`)
-- `Interventions` → Multiple, comma-separated
-- `Study Population` → Multiple, comma-separated
-- `Author Affiliation` → Used for institute filtering
-- `Country` → Determines continent in app
-- `Language` → Language filter
+### State Management
 
----
-
-## 🔍 Filter System
-
-### **Dynamic Filters** (Auto-populated from CSV)
-- **Topic** - From "Topic - Subtopic" column
-- **Subtopic** - From "Topic - Subtopic" column
-- **Population** - From "Study Population" column
-- **Intervention** - From "Interventions" column
-- **Partnership** - From "Partnership" column
-- **Language** - From "Language" column
-- **Year** - From "Year" column
-- **Country** - From "Country" column
-
-### **Static Filters**
-- **Top Contributing Institutes** - Hardcoded list (can be updated in Institutions.csv)
-
-### **Search**
-- Full-text search across: Title, Abstract, Author, Journal, Country, Topics
-
----
-
-## 🌍 Supported Countries & Continents
-
-The application automatically maps countries to continents. Supported countries:
-
-**Asia:**
-- India, Japan, Nepal, United Arab Emirates
-
-**North America:**
-- United States, Canada
-
-**Europe:**
-- United Kingdom, Sweden, Norway, Italy, Germany, Finland, Poland, Denmark
-
-**Other:**
-- Any country not in the list will be marked as "Other"
-
-To add more countries, edit the `getContinent()` function in Research-Library.html
-
----
-
-## 📈 Data Statistics
-
-The application automatically calculates and displays:
-
-**Scorecards:**
-- Number of selected studies
-- Percentage of total studies
-- Year range covered
-- Number of countries
-- Number of continents
-- Percentage of independent research
-- Number of languages
-
-**Charts:**
-- Studies by year (bar chart) - clickable to filter
-- Studies by topic (horizontal bar)
-- Studies by partnership type (pie chart)
-- Geographic distribution (world map)
-
----
-
-## 🔧 Advanced: Customization
-
-### **Change Institute List**
-
-Edit the `F_INSTITUTES` array in Research-Library.html:
+All application state is managed through a single object `S`:
 
 ```javascript
-const F_INSTITUTES = [
-  'Your Institute 1',
-  'Your Institute 2',
-  // ... add more
-];
+const S = {
+  query: '',                    // Search text
+  filters: {                    // Active filter selections
+    topic: '',
+    subtopic: '',
+    population: '',
+    intervention: '',
+    partnership: '',
+    language: '',
+    year: '',
+    country: ''
+  },
+  chartF: {},                   // Filters from chart clicks
+  filtered: [...RAW],           // Current filtered dataset
+  sort: { col: 'year', dir: 'desc' },  // Sort state
+  page: 1,                      // Pagination page
+  rpp: 10,                      // Results per page
+  selId: null,                  // Selected study ID
+  view: 'all',                  // View mode: 'all' or 'database'
+  mobTab: 'macro'               // Active mobile tab
+};
 ```
 
-### **Add New Filter**
+### Main Functions
 
-1. **Add a column to Library.csv** (e.g., "Author Email")
-2. **Add to filter definitions** in Research-Library.html:
+#### Data Loading
+```javascript
+loadLibraryData()              // Fetch and parse CSV
+initializeFilterOptions()       // Derive filters from data
+```
+
+#### Rendering
+```javascript
+renderTable()                  // Meso view (database table)
+renderCharts()                 // Macro view (visualizations)
+renderScores()                 // Scorecard metrics
+renderFilters()                // Filter UI
+update()                       // Refresh all views
+```
+
+#### Event Handlers
+```javascript
+handleSearch()                 // Full-text search
+handleFilter()                 // Filter selection
+handleSort()                   // Column sorting
+handlePageChange()             // Pagination
+selectStudy()                  // Open study modal
+```
+
+#### Utilities
+```javascript
+uniq()                         // Array deduplication
+sortedData()                   // Apply sort
+formatValue()                  // Value formatting
+$()                           // DOM shorthand
+```
+
+---
+
+## Updating Content
+
+### Method 1: CSV Update (Recommended for Researchers)
+
+**When to use:** Adding new research, updating study metadata
+
+**Steps:**
+
+1. **Edit Library.csv**
+   - Open in Excel, Google Sheets, or text editor
+   - Add new rows or modify existing ones
+   - Ensure all required columns are present
+
+2. **Upload to GitHub**
+   - Replace the file in your GitHub repository
+   - Commit with message: "Update: Add X new studies to Research Library"
+
+3. **No code changes needed**
+   - The application automatically fetches the latest CSV
+   - Users see updated data on next page load
+   - Filter options auto-generate from new data
+
+**CSV Requirements:**
+- First row must be headers
+- Columns expected: Record Number, Title, Author, Year, Journal, Link, Topic - Subtopic, Interventions, Population, etc.
+- Use commas as delimiters (standard CSV)
+
+### Method 2: Update "Last Updated" Date
+
+**Location in HTML:**
+
+Line in footer: `<div class="footer-left">Last updated: June 28, 2026</div>`
+
+**Manual Update:**
+
+1. Open **Research-Library.html** in text editor
+2. Find line with: `Last updated: June 28, 2026`
+3. Change date to today: `Last updated: June 29, 2026`
+4. Save file
+5. Upload to your website
+
+**Automated Update (Optional):**
+
+To automatically update the date when CSV is refreshed, add this JavaScript:
+
+```javascript
+// At end of loadLibraryData() function:
+const today = new Date();
+const dateStr = today.toLocaleDateString('en-US', { 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric' 
+});
+document.querySelector('.footer-left').textContent = 
+  `Last updated: ${dateStr}`;
+```
+
+### Method 3: Hosting Considerations
+
+**Option A: GitHub Pages (Recommended for small teams)**
+- Store both HTML and CSV in GitHub
+- Use raw.githubusercontent.com URLs
+- Free hosting
+- CSV: `CSV_URL = 'https://raw.githubusercontent.com/yourusername/repo/main/Library.csv'`
+
+**Option B: Your Web Server**
+- Host HTML and CSV on your server
+- Full control over data
+- CSV: `CSV_URL = 'https://yoursite.com/data/Library.csv'`
+
+**Option C: Database Integration**
+- Replace CSV loading with API call
+- Modify `loadLibraryData()` to fetch from API
+- Requires backend service
+
+---
+
+## Integration Instructions
+
+### For Website Integration
+
+1. **Download File**
+   - Save `Research-Library.html` to your web server
+   - Save `Library.csv` in same directory or GitHub
+
+2. **Update CSV URL**
+   - Find `CSV_URL` variable in JavaScript (line ~950)
+   - Change to your CSV location:
    ```javascript
-   function buildFilterDefs() {
-     FILTER_DEFS = [
-       // ... existing filters
-       {key:'email',  label:'Author Email', opts:F_EMAILS, all:'All Emails'},
-     ];
-   }
-   ```
-3. **Generate filter values** in `initializeFilterOptions()`:
-   ```javascript
-   let F_EMAILS = uniq(RAW.map(d=>d.email));
+   const CSV_URL = 'https://yoursite.com/path/to/Library.csv';
    ```
 
-### **Change Chart Visuals**
+3. **Test Locally**
+   - Serve HTML via local server (not `file://`)
+   - Verify all charts render
+   - Check all filters work
+   - Test on mobile device
 
-Edit the CSS variables in the `<style>` section:
+4. **Deploy**
+   - Upload HTML to your website
+   - Ensure CSV URL is accessible
+   - Clear browser cache
+   - Verify data loads
+
+5. **Monitor**
+   - Check browser console for errors
+   - Verify chart rendering
+   - Test search/filter on sample data
+
+### Embedding in Existing Page
+
+To embed as an iframe:
+
+```html
+<iframe 
+  src="https://yoursite.com/research-library.html"
+  width="100%"
+  height="800px"
+  frameborder="0"
+  style="border: 1px solid #ccc;"
+></iframe>
+```
+
+### Linking from Main Site
+
+```html
+<a href="https://yoursite.com/research-library.html" 
+   class="btn btn-primary">
+  Explore Research Library
+</a>
+```
+
+---
+
+## Customization
+
+### Color Scheme
+
+Edit CSS variables in the `<style>` section (lines 13-40):
+
 ```css
---gold: #E8A020;     /* Primary color */
---jade: #0D9E7A;     /* Secondary color */
---rose: #C7325A;     /* Accent color */
+:root {
+  --ink: #1c1b18;           /* Primary text */
+  --paper: #f8f6f1;         /* Background */
+  --teal: #0a7865;          /* Primary color (buttons, links) */
+  /* ... other colors */
+}
+```
+
+**Colors Used:**
+- **Ink** (#1c1b18): Body text, dark elements
+- **Paper** (#f8f6f1): Backgrounds
+- **Teal** (#0a7865): Buttons, active states, highlights
+- **Border** (#cec8b8): Dividers, borders
+
+### Typography
+
+```css
+--serif: "EB Garamond", Georgia, serif;     /* Headings */
+--sans: "DM Sans", system-ui, sans-serif;   /* Body text */
+```
+
+Change font families in CSS variables (line 16-17).
+
+### Text Content
+
+#### About Modal
+- File: Research-Library.html (line ~635)
+- Section: "Welcome to Timeless Compass"
+- Edit: HTML in `<div id="about-panel">`
+
+#### Help Modal
+- File: Research-Library.html (line ~690)
+- Section: "Finding Your Way Around"
+- Edit: HTML in `<div id="help-panel">`
+
+#### Header & Footer
+- Header title: Line ~628
+- Header subtitle: Line ~629
+- Footer copyright: Line ~900
+- Footer links: Line ~900
+
+### Filter Options
+
+**No hardcoding needed!** Filters auto-generate from CSV data.
+
+To exclude certain values from filters:
+
+```javascript
+// Line ~1127 - Interventions
+F_INTS = uniq(...).filter(i => i !== 'SKY');
+
+// Line ~1125 - Subtopics
+F_SUBS = uniq(...).filter(s => !['At','Women','Youth'].includes(s));
+```
+
+### Chart Configuration
+
+Edit Chart.js options in `renderCharts()` function (line ~1550):
+
+```javascript
+// Pie chart options
+const pieOptions = {
+  responsive: true,
+  maintainAspectRatio: true,
+  plugins: { legend: { position: 'right' } }
+};
 ```
 
 ---
 
-## 📊 Data Import from Excel
+## Browser Compatibility
 
-### **Export from Excel to CSV:**
-1. Open your Excel file
-2. File → Save As
-3. Choose format: **CSV (Comma delimited) (.csv)**
-4. Click Save
+### Supported Browsers
+- ✓ Chrome 90+
+- ✓ Firefox 88+
+- ✓ Safari 14+
+- ✓ Edge 90+
 
-### **Ensure proper formatting:**
-- Quotes around text with commas: `"Topic 1, Topic 2"`
-- Multiple values separated by: `, ` (comma-space)
-- No blank rows in the middle
-- Date format: YYYY (just the year)
-
----
-
-## 🔄 Version Control Recommendations
-
-### **Git Best Practices**
-
-```bash
-# Track both files
-git add Research-Library.html Library.csv Institutions.csv README-Library.md
-
-# Separate commits for different changes
-git commit -m "Update: Added 5 new research articles"
-git commit -m "Fix: Filter button styling on mobile"
-
-# Branch for major data updates
-git checkout -b update/2024-research-batch
-# ... make updates ...
-git merge main
-```
-
-### **What to Commit**
-✅ `Library.csv` - Research data
-✅ `Institutions.csv` - Institute list  
-✅ `Research-Library.html` - UI code
-✅ `README-Library.md` - Documentation
+### Features Used
+- Fetch API (CSV loading)
+- ES6+ (arrow functions, spread operator, template literals)
+- CSS Grid & Flexbox
+- CSS Custom Properties (variables)
+- Chart.js (visualization)
+- D3.js (mapping)
 
 ---
 
-## 🎯 Workflow Examples
+## Performance Notes
 
-### **Example 1: Quarterly Update**
-```
-1. Collect new research papers (5-10 new studies)
-2. Add rows to Library.csv with study information
-3. Save Library.csv
-4. Test by opening Research-Library.html
-5. Commit changes: "Q4 2024: Added quarterly research batch"
-6. Deploy to GitHub Pages / web server
-```
-
-### **Example 2: Fix Research Entry**
-```
-1. Open Library.csv in Excel
-2. Find the study (use Ctrl+F)
-3. Correct the title/year/authors
-4. Save
-5. Refresh Research-Library.html to verify
-6. Commit: "Fix: Corrected study title for ID #342"
-```
-
-### **Example 3: Add New Institution**
-```
-1. Edit Institutions.csv
-2. Add new row with institution name
-3. Optionally update F_INSTITUTES in HTML
-4. Test the filter dropdown
-5. Commit: "Add: Harvard University to institutes filter"
-```
+- **CSV Loading:** One-time fetch on page load
+- **Filtering:** In-memory (instant, no server calls)
+- **Pagination:** 10 items per page
+- **Charts:** Rendered on-demand (lazy evaluation)
+- **Mobile:** Optimized for slow networks
+- **Bundle Size:** Single file, ~150KB minified
 
 ---
 
-## 📱 Features
+## Troubleshooting
 
-### **Macro View**
-- Overview statistics (scorecards)
-- Year distribution chart
-- Topic distribution chart
-- Partnership types pie chart
-- World map with study locations
+### CSV Not Loading
+- Check browser console (F12) for errors
+- Verify CSV URL is correct and accessible
+- Check CORS headers if cross-origin
+- Ensure CSV has proper headers
 
-### **Meso View (Research Database)**
-- Sortable table of all studies
-- Click to select and preview
-- Pagination (20 studies per page)
-- Responsive design for mobile
+### Charts Not Rendering
+- Verify Chart.js loads from CDN
+- Check CSV has required columns
+- Ensure data has numeric values
+- Check browser console for JavaScript errors
 
-### **Micro View (Study Details)**
-- Full study information
-- Abstract and key details
-- Link to published paper
-- All metadata visible
+### Filters Empty
+- Verify CSV has data
+- Check filter initialization runs
+- Ensure CSV columns match expected names
+- Check for null/empty values in data
 
-### **Search & Filter**
-- Full-text keyword search
-- 9+ filterable dimensions
-- Multi-filter combinations
-- Active filter display ("chips")
-
----
-
-## 🐛 Debugging
-
-### **Check Browser Console**
-Press `F12` to open Developer Tools → Console tab
-
-Common messages:
-- `Error loading Library.csv` - File not found or CORS issue
-- `Error loading Institutions.csv` - Not required, app will continue
-
-### **Verify Data Loading**
-In Console, type: `RAW.length`
-Should show the number of studies loaded
-
-### **Check Filter Population**
-In Console, type: `F_TOPICS`
-Should show array of all topics from your data
+### Mobile Layout Issues
+- Test viewport is set correctly
+- Clear browser cache
+- Check media query breakpoints
+- Verify CSS loads without errors
 
 ---
 
-## 📞 Support & Troubleshooting
+## Support & Contribution
 
-| Problem | Solution |
-|---------|----------|
-| Files not loading | Make sure all files are in the same directory |
-| Filters empty | Check that Library.csv has the correct columns |
-| Map not showing | Ensure "Country" column has values |
-| Mobile layout broken | Clear browser cache (Ctrl+Shift+Del) and reload |
-| Old data showing | Hard refresh browser (Ctrl+Shift+R or Cmd+Shift+R) |
+### Reporting Issues
+- Document the issue clearly
+- Include browser and OS version
+- Provide steps to reproduce
+- Include error messages from console
 
----
+### Feature Requests
+- Describe the feature
+- Explain use case
+- Provide mockup or example (if applicable)
 
-## 📝 License & Attribution
-
-**Timeless Compass: Interactive Research Library**
-
-Curated by the Sri Sri Institute for Advanced Research (SSIAR)
-
-Attribution: Exploring published research on Ancient Systems of Knowledge
-
----
-
-## 🔄 Version History
-
-**v2.0** - Container-Content Architecture
-- Separated HTML (UI) from CSV (Data)
-- Dynamic data loading
-- Independent content updates
-- This version
-
-**v1.0** - Original Explorer 2.0
-- Hardcoded data in HTML
-- Static visualization
+### Code Updates
+- Maintain container-content separation
+- Keep single-file architecture
+- Update documentation
+- Test on mobile, tablet, desktop
 
 ---
 
-## 📚 Resources
+## License & Attribution
 
-- [GitHub Pages Deployment](https://pages.github.com/)
-- [CSV Best Practices](https://www.ietf.org/rfc/rfc4180.txt)
-- [Excel to CSV Guide](https://support.microsoft.com/en-us/office/save-a-worksheet-as-csv)
+**Copyright © 2026 Sri Sri Institute for Advanced Research (SSIAR)**
+
+This Research Library is built with research data and community contributions.
+
+**Credit:** Developed for the Sri Sri Institute for Advanced Research (SSIAR), the research wing of the Art of Living.
 
 ---
 
-**Last Updated:** 2024  
-**Maintained By:** [Your Organization]
+## Appendix: Quick Reference
+
+### CSV URL Location
+Line ~950 in JavaScript section
+
+### Update "Last Updated" Date
+Line ~900 in footer section
+
+### Responsive Breakpoints
+- Mobile: 600px
+- Tablet: 960px  
+- Large: 1200px
+
+### Main State Object
+Variable `S` - contains all app state
+
+### Main Rendering Functions
+- `renderTable()` - database view
+- `renderCharts()` - visualizations
+- `update()` - refresh all
+
+### Filter Exclusions
+- Line ~1125: Subtopic filters
+- Line ~1127: Intervention filters
+
+---
+
+**Version:** 1.0  
+**Last Updated:** June 29, 2026  
+**Questions?** Contact development team or refer to inline comments in Research-Library.html
