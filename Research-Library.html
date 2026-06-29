@@ -973,8 +973,6 @@ td.col-journal{font-size:11px}
  * 
  * ═════════════════════════════════════════════════════════════════════════════
  */
- * ═══════════════════════════════════════════════════════════════════════════════
- */
 
 let RAW = []; // Research data - loaded from CSV
 let CSV_LAST_UPDATED = ''; // Set from Library.csv's HTTP Last-Modified header, if available
@@ -1249,9 +1247,6 @@ async function loadLibraryData() {
         cursor: pointer;
         font-weight: bold;
       ">Retry Loading</button>
-    `;
-    
-    document.body.appendChild(errorMsg);
     `;
     
     document.body.appendChild(errorMsg);
