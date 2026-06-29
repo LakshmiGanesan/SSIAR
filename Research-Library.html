@@ -493,17 +493,17 @@ td.col-journal{font-size:11px}
       <div class="mh-content">
         <h3>Finding Your Way Around</h3>
         
-        <p><strong>Start with what you want to know.</strong> Are you curious about what science has discovered? Or looking for evidence on a specific question? Here's how to find it.</p>
+        <p><strong>Start with what you want to know.</strong> Curious about what science has discovered? Looking for evidence on a specific question? Here's how to find it.</p>
         
-        <p><strong>Explore by curiosity (the scenic route):</strong> Begin with the Macro View charts. Click "Mental Health" in the topics pie chart to see how many studies examine stress, anxiety, or depression. Hover over the timeline to spot research peaks. Click a geographic bubble to explore studies from a particular region. Each click filters the database below, revealing patterns you didn't expect. This approach works best when you're browsing to discover what's been studied.</p>
+        <p><strong>Explore by curiosity (the scenic route):</strong> Browse the Macro View charts. Click "Mental Health" in the topics pie chart to see studies on stress, anxiety, or depression. Hover over the timeline to spot research peaks. Click geographic bubbles to explore studies from specific regions. Each click filters the database below. This works best when discovering what's been studied.</p>
         
-        <p><strong>Search by specifics (the direct route):</strong> Know what you're looking for? Use the search box for keywords: "anxiety in nurses," "heart disease," "brain imaging," or even an author's name. Results appear instantly. Or open Advanced Search to narrow by topic, population (patients vs. practitioners), intervention type, study duration, year, or country. Example: looking for short-term studies on stress in healthcare workers? Filter by "Mental Health → Stress," "Professionals," and "Duration: < 1 month." The database updates live as you adjust filters.</p>
+        <p><strong>Search by specifics (the direct route):</strong> Use the search box for keywords: "anxiety in nurses," "heart disease," "brain imaging," or author names. Or open Advanced Search to filter by topic, population, intervention, duration, year, or country. Example: short-term studies on stress in healthcare workers? Filter by "Mental Health → Stress," "Professionals," and "Duration: < 1 month." The database updates live.</p>
         
-        <p><strong>Combine filters to answer real questions:</strong> Filters work together—select multiple options to refine. Want research on anxiety or depression in young people from the past 5 years? Click "Anxiety," then "Depression," then "Youth & Students," then "2021–2026." The database shows all matching studies. Filters appear as removable tags below—click the ✕ to remove any.</p>
+        <p><strong>Combine filters to answer real questions:</strong> Select multiple options to refine. Want research on anxiety or depression in young people from the past 5 years? Click "Anxiety," "Depression," "Youth & Students," and "2021–2026." Filters appear as removable tags below—click ✕ to remove any.</p>
         
-        <p><strong>Dive into individual studies:</strong> Once you've narrowed to studies of interest, click any row in the database table to open the detailed study card (Micro View). You'll see the findings, population size, intervention duration, study design, author affiliation, and a link to the published paper. Read the preview to decide if it's worth diving into the full peer-reviewed work. Click "View Published Study" to access the original paper.</p>
+        <p><strong>Dive into individual studies:</strong> Click any database row to open the detailed study card. You'll see findings, population size, intervention duration, study design, author affiliation, and a link to the published paper. Click "View Published Study" to access the original peer-reviewed work.</p>
         
-        <p><strong>Pro tip:</strong> Start broad in the Macro View to understand the landscape, then use Advanced Search to target specific questions. The combination of visual exploration and precise filtering is most powerful.</p>
+        <p><strong>Pro tip:</strong> Start broad in Macro View to understand the landscape, then use Advanced Search to target specific questions. Visual exploration plus precise filtering is most powerful.</p>
       </div>
     </div>
   </div>
@@ -914,7 +914,7 @@ function initializeFilterOptions() {
   F_TOPICS    = uniq(RAW.flatMap(d=>d.topics));
   F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics)).filter(s=>!['At','Women','Youth'].includes(s));
   F_POPS      = uniq(RAW.flatMap(d=>d.populations));
-  F_INTS      = uniq(RAW.flatMap(d=>d.interventions));
+  F_INTS      = uniq(RAW.flatMap(d=>d.interventions)).filter(i=>i!=='SKY');
   F_PARTNERS  = uniq(RAW.map(d=>d.partnership));
   F_LANGS     = uniq(RAW.map(d=>d.language));
   F_YEARS     = uniq(RAW.map(d=>d.year?String(d.year):'')).filter(Boolean).reverse();
