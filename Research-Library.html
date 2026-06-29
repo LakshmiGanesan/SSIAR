@@ -979,6 +979,37 @@ td.col-journal{font-size:11px}
 let RAW = []; // Research data - loaded from CSV
 let CSV_LAST_UPDATED = ''; // Set from Library.csv's HTTP Last-Modified header, if available
 
+/* ═════════════════════════════════════════════════════════════════════════════
+   🔧 CONFIGURATION: CSV DATA SOURCE
+   
+   GitHub Pages Configuration for: https://lakshmiganesan.github.io/SSIAR/
+   ═════════════════════════════════════════════════════════════════════════════ */
+
+let CSV_URL = 'https://raw.githubusercontent.com/lakshmiganesan/SSIAR/main/Library.csv';
+
+/* ═════════════════════════════════════════════════════════════════════════════
+   
+   DEPLOYMENT CHECKLIST:
+   
+   ✓ Step 1: Upload Library.csv to GitHub
+      - Go to: https://github.com/lakshmiganesan/SSIAR
+      - Upload Library.csv to the main branch (same level as Research-Library.html)
+   
+   ✓ Step 2: Upload Research-Library.html to GitHub
+      - Upload this file to: https://github.com/lakshmiganesan/SSIAR
+      - Same location as Library.csv
+   
+   ✓ Step 3: Access the app
+      - Visit: https://lakshmiganesan.github.io/SSIAR/Research-Library.html
+      - Data should load automatically from CSV
+   
+   ✓ Step 4: Verify it works
+      - Open browser console (F12)
+      - Look for: "✅ Successfully loaded and transformed X research articles"
+      - Charts and filters should populate with data
+   
+   ═════════════════════════════════════════════════════════════════════════════ */
+
 // ─────────────────────────────────────────────────────────────────────────────
 // CSV PARSING & DATA TRANSFORMATION
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1147,35 +1178,11 @@ function initializeFilterOptions() {
 
 async function loadLibraryData() {
   try {
-    // More robust path detection for GitHub Pages
-    const getCSVPath = () => {
-      const fullURL = window.location.href;
-      console.log('Full URL:', fullURL);
-      
-      // Check if running on GitHub Pages
-      if (fullURL.includes('.github.io')) {
-        // Extract the path from GitHub Pages URL
-        // https://lakshmiganesan.github.io/SSIAR/Research-Library.html
-        // Should load: https://lakshmiganesan.github.io/SSIAR/Library.csv
-        
-        const urlParts = fullURL.split('/');
-        // Find the repo name (between username and filename)
-        const csvPath = fullURL.substring(0, fullURL.lastIndexOf('/')) + '/Library.csv';
-        console.log('GitHub Pages CSV path:', csvPath);
-        return csvPath;
-      }
-      
-      // Local file or local server
-      console.log('Using local/relative CSV path');
-      return 'Library.csv';
-    };
+    console.log('📥 Attempting to load CSV from:', CSV_URL);
     
-    const csvPath = getCSVPath();
-    console.log('📥 Attempting to load CSV from:', csvPath);
-    
-    const response = await fetch(csvPath);
+    const response = await fetch(CSV_URL);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(`HTTP error! status: ${response.status}. Check CSV_URL is correct.`);
     }
 
     // Capture when the data file was last updated (for footer display)
@@ -1226,15 +1233,10 @@ async function loadLibraryData() {
     
     errorMsg.innerHTML = `
       <h3 style="margin-top: 0; color: #c00;">⚠️ CSV Data Not Loading</h3>
-      <p><strong>Problem:</strong> Library.csv could not be loaded</p>
+      <p><strong>Problem:</strong> Library.csv could not be loaded from: <code style="background: #f0f0f0; padding: 2px 4px;">${CSV_URL}</code></p>
       <p><strong>Error:</strong> ${error.message}</p>
-      <p><strong>Loaded from:</strong> ${window.location.href}</p>
-      <p style="font-size: 12px; color: #666; margin: 10px 0 0 0;">
-        <strong>Fix:</strong><br>
-        1. Verify Library.csv is in the same GitHub folder as Research-Library.html<br>
-        2. Hard refresh your browser (Ctrl+Shift+R or Cmd+Shift+R)<br>
-        3. Check browser console (F12) for more details
-      </p>
+      <p><strong>Solution:</strong> Check that CSV_URL is set correctly at the top of the JavaScript section (around line 982)</p>
+      <p style="font-size: 12px; color: #666;"><strong>Debug info:</strong> Open browser console (F12) to see detailed error messages</p>
       <button onclick="location.reload()" style="
         margin-top: 10px;
         padding: 8px 16px;
@@ -1245,6 +1247,9 @@ async function loadLibraryData() {
         cursor: pointer;
         font-weight: bold;
       ">Retry Loading</button>
+    `;
+    
+    document.body.appendChild(errorMsg);
     `;
     
     document.body.appendChild(errorMsg);
