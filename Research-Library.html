@@ -901,7 +901,7 @@ td.col-journal{font-size:11px}
 <!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
 <footer id="footer">
   <div class="container">
-    <div class="footer-left">Last updated: June 29, 2026</div>
+    <div class="footer-left">Last updated: June 28, 2026</div>
     <div class="footer-center"><a href="https://heyzine.com/flip-book/e74c1a53ca.html#page/1" target="_blank" rel="noopener">Timeless Compass eBook</a></div>
     <div class="footer-right">© 2026 SSIAR &nbsp;|&nbsp; <a href="http://research.artofliving.org/" target="_blank" rel="noopener">research.artofliving.org</a> &nbsp;|&nbsp; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
   </div>
@@ -1111,30 +1111,30 @@ function transformLibraryData(csvData) {
 // TOP CONTRIBUTING INSTITUTES (Static List)
 // ─────────────────────────────────────────────────────────────────────────────
 const F_INSTITUTES = [
-  'Sri Sri Institute for Advanced Research',
-  'All India Institute of Medical Sciences, New Delhi',
-  'NIMHANS',
-  'Stanford University',
-  'AIIMS Rishikesh',
-  'Western University',
-  'Columbia University',
-  'Yale University',
-  'University of Toronto',
-  'Harvard Medical School',
-  'Kagoshima University',
-  'Tata Institute of Social Sciences',
-  'University of Oslo',
-  'International Association for Human Values',
-  'Central Jail Hospital',
-  'Institute of Nuclear Medicine and Allied Sciences',
-  'Rzeszow University',
-  'START Clinic',
-  'University of Helsinki',
-  'Baylor College of Medicine',
-  'BITS Pilani',
-  'Boston University',
-  'Brown University',
-  'Indian Institute of Technology, Chennai'
+  {value:'Sri Sri Institute for Advanced Research',               label:'Sri Sri Institute for Advanced Research (SSIAR), India'},
+  {value:'All India Institute of Medical Sciences, New Delhi',    label:'AIIMS, New Delhi, India'},
+  {value:'NIMHANS',                                                label:'NIMHANS, India'},
+  {value:'Stanford University',                                    label:'Stanford University, USA'},
+  {value:'AIIMS Rishikesh',                                        label:'AIIMS, Rishikesh, India'},
+  {value:'Western University',                                     label:'Western University, Canada'},
+  {value:'Columbia University',                                    label:'Columbia University, USA'},
+  {value:'Yale University',                                        label:'Yale University, USA'},
+  {value:'University of Toronto',                                  label:'University of Toronto, Canada'},
+  {value:'Harvard Medical School',                                 label:'Harvard Medical School, USA'},
+  {value:'Kagoshima University',                                   label:'Kagoshima University, Japan'},
+  {value:'Tata Institute of Social Sciences',                      label:'Tata Institute of Social Sciences (TISS), India'},
+  {value:'University of Oslo',                                     label:'University of Oslo, Norway'},
+  {value:'International Association for Human Values',             label:'International Association for Human Values (IAHV)'},
+  {value:'Central Jail Hospital',                                  label:'Central Jail Hospital (CJH), India'},
+  {value:'Institute of Nuclear Medicine and Allied Sciences',      label:'Institute of Nuclear Medicine and Allied Sciences (INMAS), India'},
+  {value:'Rzeszow University',                                     label:'Rzeszow University, Poland'},
+  {value:'START Clinic',                                           label:'START Clinic for the Mood and Anxiety Disorders, Canada'},
+  {value:'University of Helsinki',                                 label:'University of Helsinki, Finland'},
+  {value:'Baylor College of Medicine',                             label:'Baylor College of Medicine (BCM), USA'},
+  {value:'BITS Pilani',                                            label:'BITS Pilani, India'},
+  {value:'Boston University',                                      label:'Boston University, USA'},
+  {value:'Brown University',                                       label:'Brown University, USA'},
+  {value:'Indian Institute of Technology, Chennai',                label:'Indian Institute of Technology (IIT) Madras, India'}
 ];
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1344,7 +1344,7 @@ function buildFilterHTML(prefix){
       <label for="${prefix}-${key}">${label}</label>
       <select class="fsel" id="${prefix}-${key}" onchange="onFilter('${key}',this.value)">
         <option value="">${all}</option>
-        ${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
+        ${opts.map(o=> (o && typeof o === 'object') ? `<option value="${o.value}">${o.label}</option>` : `<option value="${o}">${o}</option>`).join('')}
       </select>
     </div>`).join('');
 }
@@ -1662,8 +1662,11 @@ function buildMicroHTML(p){
 function renderActivePills(){
   const pills=[];
   if(S.query) pills.push(`<span class="fpill">Search: "${S.query.slice(0,25)}${S.query.length>25?'…':''}" <button class="pill-x" onclick="removeSearchFilter()">×</button></span>`);
-  FILTER_DEFS.forEach(({key,label})=>{
-    const v=S.filters[key]; if(v) pills.push(`<span class="fpill">${label}: ${v} <button class="pill-x" onclick="removeFilter('f','${key}')">×</button></span>`);
+  FILTER_DEFS.forEach(({key,label,opts})=>{
+    const v=S.filters[key]; if(!v) return;
+    const match = Array.isArray(opts) ? opts.find(o=>o&&typeof o==='object'&&o.value===v) : null;
+    const displayV = match ? match.label : v;
+    pills.push(`<span class="fpill">${label}: ${displayV} <button class="pill-x" onclick="removeFilter('f','${key}')">×</button></span>`);
   });
   const CF_LABELS={year:'Year',topic:'Topic',subtopic:'Subtopic',partnership:'Partnership',country:'Country'};
   Object.entries(S.chartF).forEach(([k,v])=>{
