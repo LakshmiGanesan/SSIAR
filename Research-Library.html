@@ -1561,9 +1561,8 @@ function openStudyModal(p){
   modalBody.innerHTML = `
     <div class="modal-section">
       <div class="modal-section-title">Authors & Publication</div>
-      <div class="modal-field"><strong>${p.author || '—'}</strong></div>
-      <div class="modal-field" style="font-size:12px;color:var(--text-faint);">${p.year || '—'} · ${p.journal || '—'}</div>
-      <div class="modal-field" style="font-style:italic;margin-top:2px;">${p.citation || '—'}</div>
+      <div class="modal-field"><strong>${p.citation || '—'}</strong></div>
+      <div class="modal-field" style="font-size:12px;color:var(--text-faint);">${p.journal || '—'}</div>
     </div>
 
     <div class="modal-section">
