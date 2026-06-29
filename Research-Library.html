@@ -196,7 +196,7 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
 /* HEADER */
 #header{background:var(--paper);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:500}
 #header .container{max-width:1280px;margin:0 auto;text-align:center}
-#header h1{font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);letter-spacing:-.02em;color:var(--ink);line-height:1.08;margin-bottom:6px;font-weight:500}
+#header h1{font-family:var(--serif);font-size:clamp(2rem,4vw,2.8rem);letter-spacing:-.02em;color:var(--ink);line-height:1.08;margin-bottom:6px;font-weight:700}
 #header .hdr-sub{font-size:.95rem;color:var(--ink3);font-weight:300;letter-spacing:.01em;margin:0;font-style:italic}
 .hdr-nav{display:flex;justify-content:center;gap:16px;margin-top:16px;flex-wrap:wrap}
 .hdr-nav-btn{background:none;border:none;color:var(--ink3);font-family:var(--sans);font-size:13px;cursor:pointer;padding:6px 12px;border-radius:6px;transition:all .18s;font-weight:500;letter-spacing:.01em}
@@ -359,8 +359,8 @@ tbody tr.row-selected{background:var(--teal-l);border-left:3px solid var(--teal)
 tbody td{padding:10px 12px;color:var(--ink2);vertical-align:top;line-height:1.4}
 td.col-num{color:var(--ink4);font-size:11px;width:36px;text-align:center}
 td.col-type{font-size:12px;color:var(--ink2);white-space:nowrap}
-td.col-title{color:var(--ink);font-weight:500}
-td.col-citation{white-space:nowrap;font-size:11px}
+td.col-title{color:var(--ink);font-weight:500;white-space:normal;word-break:break-word;min-width:240px}
+td.col-citation{white-space:normal;font-size:11px;font-style:italic}
 td.col-journal{font-size:11px}
 .no-results{text-align:center;padding:40px 20px;color:var(--ink3);font-style:italic}
 /* Database Views */
@@ -1491,8 +1491,7 @@ function renderTable(){
   } else {
     tbody.innerHTML=rows.map((p,i)=>{
       const sel=S.selId===p.id?'row-selected':'';
-      const titleTrunc=p.title.length>80?p.title.slice(0,80)+'…':p.title;
-      const titleCell=`${titleTrunc}`;
+      const titleCell=p.title;
       return `<tr class="${sel}" onclick="selectStudy(${p.id})">
         <td class="col-num">${start+i+1}</td>
         <td class="col-type">${p.type||'—'}</td>
@@ -1564,6 +1563,7 @@ function openStudyModal(p){
       <div class="modal-section-title">Authors & Publication</div>
       <div class="modal-field"><strong>${p.author || '—'}</strong></div>
       <div class="modal-field" style="font-size:12px;color:var(--text-faint);">${p.year || '—'} · ${p.journal || '—'}</div>
+      <div class="modal-field" style="font-style:italic;margin-top:2px;">${p.citation || '—'}</div>
     </div>
 
     <div class="modal-section">
