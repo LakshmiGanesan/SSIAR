@@ -672,7 +672,7 @@ td.col-journal{font-size:11px}
     </button>
     <div class="total-pill">
 
-      <span class="total-pill-num" id="total-pub-count">248</span>
+      <span class="total-pill-num" id="total-pub-count">…</span>
     </div>
   </div>
 </header>
@@ -754,7 +754,7 @@ td.col-journal{font-size:11px}
 
     <!-- Scorecards -->
     <div class="scorecard-row">
-      <div class="scard"><div class="scard-icon">👥</div><div class="scard-lbl">Selected Studies</div><div class="scard-val" id="sc-sel">248</div></div>
+      <div class="scard"><div class="scard-icon">👥</div><div class="scard-lbl">Selected Studies</div><div class="scard-val" id="sc-sel">…</div></div>
       <div class="scard"><div class="scard-icon">%</div><div class="scard-lbl">Selected Studies (%)</div><div class="scard-val" id="sc-pct">100%</div></div>
       <div class="scard"><div class="scard-icon">📅</div><div class="scard-lbl">Range of Years Covered</div><div class="scard-val" id="sc-yrs">—</div></div>
       <div class="scard"><div class="scard-icon">🌍</div><div class="scard-lbl">Countries</div><div class="scard-val" id="sc-cty">—</div></div>
@@ -846,7 +846,7 @@ td.col-journal{font-size:11px}
           <span class="chart-hint-icon" style="margin-left:.4rem" data-tip="Every study in the library, in one sortable table. Click a row to preview its details, or use search and filters above to narrow it down."></span>
         </div>
         <div class="db-showing">
-          Showing <strong id="showing-label">0 of 248</strong> records
+          Showing <strong id="showing-label">Loading…</strong> records
           <svg class="db-sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
         </div>
       </div>
@@ -874,7 +874,7 @@ td.col-journal{font-size:11px}
             <option value="50">50</option>
           </select>
         </div>
-        <span id="showing-footer">Showing 1–10 of 248</span>
+        <span id="showing-footer">Loading records…</span>
         <div class="pager" id="pager"></div>
       </div>
     </div>
@@ -901,7 +901,7 @@ td.col-journal{font-size:11px}
 <!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
 <footer id="footer">
   <div class="container">
-    <div class="footer-left">Last updated: June 28, 2026</div>
+    <div class="footer-left" id="footer-last-updated">Last updated: —</div>
     <div class="footer-center"><a href="https://heyzine.com/flip-book/e74c1a53ca.html#page/1" target="_blank" rel="noopener">Timeless Compass eBook</a></div>
     <div class="footer-right">© 2026 SSIAR &nbsp;|&nbsp; <a href="http://research.artofliving.org/" target="_blank" rel="noopener">research.artofliving.org</a> &nbsp;|&nbsp; <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></div>
   </div>
@@ -1178,9 +1178,12 @@ function initializeFilterOptions() {
 
 async function loadLibraryData() {
   try {
-    console.log('📥 Attempting to load CSV from:', CSV_URL);
+    // Cache-busting: append a timestamp so browsers/CDN never serve a stale
+    // cached copy of Library.csv after it's been updated on GitHub.
+    const cacheBustedUrl = CSV_URL + (CSV_URL.includes('?') ? '&' : '?') + 'v=' + Date.now();
+    console.log('📥 Attempting to load CSV from:', cacheBustedUrl);
     
-    const response = await fetch(CSV_URL);
+    const response = await fetch(cacheBustedUrl, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}. Check CSV_URL is correct.`);
     }
@@ -2099,8 +2102,10 @@ function initializeApplication() {
 
   // Reflect the data file's last-updated date in the footer, if known
   const footerLU = document.getElementById('footer-last-updated');
-  if (footerLU && CSV_LAST_UPDATED) {
-    footerLU.textContent = ` · Last updated on ${CSV_LAST_UPDATED}`;
+  if (footerLU) {
+    footerLU.textContent = CSV_LAST_UPDATED
+      ? `Last updated: ${CSV_LAST_UPDATED}`
+      : 'Last updated: recently';
   }
 
   // Mobile init — start on Macro tab
