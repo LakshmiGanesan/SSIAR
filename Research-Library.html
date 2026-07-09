@@ -1054,12 +1054,29 @@ function parseCSV(text) {
   return data;
 }
 
+// Fallback only: used if a row's CSV "Continent" column is blank.
+// The CSV's own Continent column is now the primary source of truth (see loadData()).
 function getContinent(country) {
   const continents = {
-    'India': 'Asia', 'United States': 'North America', 'United Kingdom': 'Europe',
-    'Canada': 'North America', 'Sweden': 'Europe', 'Norway': 'Europe', 'Italy': 'Europe',
-    'Germany': 'Europe', 'Finland': 'Europe', 'Poland': 'Europe', 'Japan': 'Asia',
-    'Nepal': 'Asia', 'United Arab Emirates': 'Asia', 'Denmark': 'Europe'
+    // Asia
+    'India': 'Asia', 'Japan': 'Asia', 'Nepal': 'Asia', 'United Arab Emirates': 'Asia',
+    'Thailand': 'Asia', 'China': 'Asia', 'South Korea': 'Asia', 'Singapore': 'Asia',
+    'Israel': 'Asia', 'Sri Lanka': 'Asia', 'Malaysia': 'Asia', 'Indonesia': 'Asia',
+    // North America
+    'United States': 'North America', 'USA': 'North America', 'Canada': 'North America',
+    'Mexico': 'North America',
+    // Europe
+    'United Kingdom': 'Europe', 'Sweden': 'Europe', 'Norway': 'Europe', 'Italy': 'Europe',
+    'Germany': 'Europe', 'Finland': 'Europe', 'Poland': 'Europe', 'Denmark': 'Europe',
+    'Ireland': 'Europe', 'Portugal': 'Europe', 'Netherlands': 'Europe', 'Hungary': 'Europe',
+    'Ukraine': 'Europe', 'France': 'Europe', 'Spain': 'Europe', 'Switzerland': 'Europe',
+    'Turkey': 'Europe',
+    // Africa
+    'South Africa': 'Africa', 'Nigeria': 'Africa', 'Egypt': 'Africa', 'Kenya': 'Africa',
+    // Oceania
+    'Australia': 'Oceania', 'New Zealand': 'Oceania',
+    // South America
+    'Colombia': 'South America', 'Brazil': 'South America', 'Argentina': 'South America',
   };
   return continents[country] || 'Other';
 }
@@ -1102,7 +1119,7 @@ function transformLibraryData(csvData) {
     city: row['City'] || '',
     state: row['State'] || '',
     country: row['Country'] || '',
-    continent: getContinent(row['Country'] || ''),
+    continent: (row['Continent'] || '').trim() || getContinent(row['Country'] || ''),
     language: row['Language'] || 'English'
   }));
 }
