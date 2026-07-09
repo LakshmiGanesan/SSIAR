@@ -315,7 +315,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 #map-wrap{position:relative;width:100%;height:115px;overflow:hidden;border-radius:var(--r8);background:var(--paper2)}
 #world-svg{width:100%;height:100%;display:block}
 .map-tooltip{position:absolute;background:var(--indigo);color:#fff;padding:.28rem .6rem;border-radius:var(--r5);font-size:11px;font-weight:500;pointer-events:none;display:none;z-index:10;white-space:nowrap;box-shadow:var(--sh-md);border:1px solid rgba(232,160,32,.25)}
-.map-legend{display:flex;align-items:center;gap:.85rem;margin-top:.4rem;justify-content:center}
+.map-legend{display:flex;align-items:center;gap:.85rem;margin-top:.4rem;justify-content:center;flex-wrap:wrap}
 .map-legend-item{display:flex;align-items:center;gap:.28rem;font-size:9px;color:var(--text-faint);letter-spacing:.02em}
 .map-bubble{border-radius:50%;background:rgba(13,158,122,.55);border:1px solid rgba(13,158,122,.8);display:inline-block}
 
@@ -798,15 +798,16 @@ td.col-journal{font-size:11px}
         <div class="chart-card-hdr">
           <span class="chart-num">3</span>
           <span class="chart-title">Geo-distribution of Authors</span>
-          <span class="chart-hint-icon" data-tip="Bubble size reflects how many studies came from each country. Click a bubble to filter by that country."></span>
+          <span class="chart-hint-icon" data-tip="Bubble size reflects how many studies came from each country; color reflects continent. Click a bubble to filter by that country."></span>
         </div>
         <div id="map-wrap">
           <svg id="world-svg"></svg>
           <div class="map-tooltip" id="map-tooltip"></div>
         </div>
+        <div class="map-legend" id="map-continent-legend"></div>
         <div class="map-legend">
-          <div class="map-legend-item"><span class="map-bubble" style="width:14px;height:14px"></span> More publications</div>
-          <div class="map-legend-item"><span class="map-bubble" style="width:7px;height:7px"></span> Fewer publications</div>
+          <div class="map-legend-item"><span class="map-bubble" style="width:14px;height:14px;background:rgba(120,120,120,.5);border-color:rgba(120,120,120,.7)"></span> More publications</div>
+          <div class="map-legend-item"><span class="map-bubble" style="width:7px;height:7px;background:rgba(120,120,120,.5);border-color:rgba(120,120,120,.7)"></span> Fewer publications</div>
         </div>
         <div class="chart-caption">Click a country bubble to filter.</div>
       </div>
@@ -1053,6 +1054,17 @@ function parseCSV(text) {
   }
   return data;
 }
+
+// Color palette used to distinguish continents on the bubble map & its legend.
+const CONTINENT_COLORS = {
+  'Asia':            '#0D9E7A', // teal
+  'North America':   '#3B5FC0', // indigo blue
+  'Europe':          '#8B5CF6', // violet
+  'Africa':          '#D97706', // amber
+  'Oceania':         '#0EA5E9', // sky blue
+  'South America':   '#DC2626', // terracotta red
+  'Other':           '#9CA3AF'  // neutral gray fallback
+};
 
 // Fallback only: used if a row's CSV "Continent" column is blank.
 // The CSV's own Continent column is now the primary source of truth (see loadData()).
@@ -1838,7 +1850,12 @@ function renderMap(){
   svgEl.setAttribute('viewBox',`0 0 ${W} ${H}`);
 
   const countryCounts={};
-  S.filtered.forEach(p=>{ if(p.country) countryCounts[p.country]=(countryCounts[p.country]||0)+1; });
+  const countryContinent={};
+  S.filtered.forEach(p=>{
+    if(!p.country) return;
+    countryCounts[p.country]=(countryCounts[p.country]||0)+1;
+    if(!countryContinent[p.country]) countryContinent[p.country]=p.continent||'Other';
+  });
   const maxC=Math.max(...Object.values(countryCounts),1);
 
   const proj=d3.geoNaturalEarth1().fitSize([W,H],{type:'Sphere'});
@@ -1856,7 +1873,7 @@ function renderMap(){
     .attr('class','country').attr('d',path)
     .attr('fill','#CDD8ED').attr('stroke','#fff').attr('stroke-width',.35);
 
-  // Bubbles only — no country fill
+  // Bubbles colored by continent, sized by publication count
   const activeCountry=S.chartF.country;
   const tip=document.getElementById('map-tooltip');
   Object.entries(countryCounts).forEach(([cname,count])=>{
@@ -1867,14 +1884,17 @@ function renderMap(){
       if(!c||isNaN(c[0])||isNaN(c[1])) return;
       const r=4+Math.sqrt(count/maxC)*14;
       const isActive=activeCountry===cname;
+      const contName=countryContinent[cname]||'Other';
+      const baseColor=CONTINENT_COLORS[contName]||CONTINENT_COLORS['Other'];
       svg.append('circle')
         .attr('cx',c[0]).attr('cy',c[1]).attr('r',r)
-        .attr('fill',isActive?'rgba(232,160,32,.85)':'rgba(13,158,122,.6)')
-        .attr('stroke',isActive?'#E8A020':'rgba(13,158,122,.9)')
-        .attr('stroke-width',isActive?1.5:1)
+        .attr('fill',baseColor)
+        .attr('fill-opacity',isActive?0.9:0.62)
+        .attr('stroke',isActive?'#1F2937':baseColor)
+        .attr('stroke-width',isActive?2:1)
         .style('cursor','pointer')
         .on('mouseover',function(ev){
-          tip.textContent=`${cname}: ${count} publication${count>1?'s':''}`;
+          tip.textContent=`${cname} (${contName}): ${count} publication${count>1?'s':''}`;
           tip.style.display='block';
           const r=wrap.getBoundingClientRect();
           tip.style.left=(ev.clientX-r.left+10)+'px';
@@ -1889,6 +1909,21 @@ function renderMap(){
         .on('click',()=>setChartFilter('country',cname));
     } catch(e){}
   });
+
+  renderContinentLegend(countryContinent);
+}
+
+// Builds the continent color-key legend, showing only continents actually present in the current filtered data.
+function renderContinentLegend(countryContinent){
+  const el=document.getElementById('map-continent-legend');
+  if(!el) return;
+  const present=new Set(Object.values(countryContinent));
+  const order=['Asia','North America','Europe','Africa','Oceania','South America','Other'];
+  const items=order.filter(c=>present.has(c));
+  el.innerHTML=items.map(c=>{
+    const color=CONTINENT_COLORS[c]||CONTINENT_COLORS['Other'];
+    return `<div class="map-legend-item"><span class="map-bubble" style="width:10px;height:10px;background:${color};border-color:${color}"></span> ${c}</div>`;
+  }).join('');
 }
 
 /* ─────────────────────────────────────────
