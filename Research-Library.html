@@ -798,16 +798,15 @@ td.col-journal{font-size:11px}
         <div class="chart-card-hdr">
           <span class="chart-num">3</span>
           <span class="chart-title">Geo-distribution of Authors</span>
-          <span class="chart-hint-icon" data-tip="Bubble size reflects how many studies came from each country; color reflects continent. Click a bubble to filter by that country."></span>
+          <span class="chart-hint-icon" data-tip="Bubble size reflects how many studies came from each country; the light map tint shows continent regions. Click a bubble to filter by that country."></span>
         </div>
         <div id="map-wrap">
           <svg id="world-svg"></svg>
           <div class="map-tooltip" id="map-tooltip"></div>
         </div>
-        <div class="map-legend" id="map-continent-legend"></div>
         <div class="map-legend">
-          <div class="map-legend-item"><span class="map-bubble" style="width:14px;height:14px;background:rgba(120,120,120,.5);border-color:rgba(120,120,120,.7)"></span> More publications</div>
-          <div class="map-legend-item"><span class="map-bubble" style="width:7px;height:7px;background:rgba(120,120,120,.5);border-color:rgba(120,120,120,.7)"></span> Fewer publications</div>
+          <div class="map-legend-item"><span class="map-bubble" style="width:14px;height:14px"></span> More publications</div>
+          <div class="map-legend-item"><span class="map-bubble" style="width:7px;height:7px"></span> Fewer publications</div>
         </div>
         <div class="chart-caption">Click a country bubble to filter.</div>
       </div>
@@ -1339,6 +1338,11 @@ const COUNTRY_ISO = {
   'Australia':'36','Japan':'392','Hungary':'348','Colombia':'170',
 };
 
+// World-wide ISO numeric code -> continent, used only to give the map's landmasses
+// a light decorative continent tint (no labels). Not tied to which countries are
+// actually in the dataset — this just colors the whole map background.
+const ISO_CONTINENT = {"533":"North America","4":"Asia","24":"Africa","660":"North America","248":"Europe","8":"Europe","20":"Europe","784":"Asia","32":"South America","51":"Asia","16":"Oceania","28":"North America","36":"Oceania","40":"Europe","31":"Asia","108":"Africa","56":"Europe","204":"Africa","535":"North America","854":"Africa","50":"Asia","100":"Europe","48":"Asia","44":"North America","70":"Europe","652":"North America","112":"Europe","84":"North America","60":"North America","68":"South America","76":"South America","52":"North America","96":"Asia","64":"Asia","72":"Africa","140":"Africa","124":"North America","166":"Asia","756":"Europe","152":"South America","156":"Asia","384":"Africa","120":"Africa","180":"Africa","178":"Africa","184":"Oceania","170":"South America","174":"Africa","132":"Africa","188":"North America","192":"North America","531":"North America","162":"Asia","136":"North America","196":"Asia","203":"Europe","276":"Europe","262":"Africa","212":"North America","208":"Europe","214":"North America","12":"Africa","218":"South America","818":"Africa","232":"Africa","724":"Europe","233":"Europe","231":"Africa","246":"Europe","242":"Oceania","238":"South America","250":"Europe","234":"Europe","583":"Oceania","266":"Africa","826":"Europe","268":"Asia","831":"Europe","288":"Africa","292":"Europe","324":"Africa","312":"North America","270":"Africa","624":"Africa","226":"Africa","300":"Europe","308":"North America","304":"North America","320":"North America","254":"South America","316":"Oceania","328":"South America","344":"Asia","340":"North America","191":"Europe","332":"North America","348":"Europe","360":"Asia","833":"Europe","356":"Asia","86":"Asia","372":"Europe","364":"Asia","368":"Asia","352":"Europe","376":"Asia","380":"Europe","388":"North America","832":"Europe","400":"Asia","392":"Asia","398":"Asia","404":"Africa","417":"Asia","116":"Asia","296":"Oceania","659":"North America","410":"Asia","414":"Asia","418":"Asia","422":"Asia","430":"Africa","434":"Africa","662":"North America","438":"Europe","144":"Asia","426":"Africa","440":"Europe","442":"Europe","428":"Europe","446":"Asia","663":"North America","504":"Africa","492":"Europe","498":"Europe","450":"Africa","462":"Asia","484":"North America","584":"Oceania","807":"Europe","466":"Africa","470":"Europe","104":"Asia","499":"Europe","496":"Asia","580":"Oceania","508":"Africa","478":"Africa","500":"North America","474":"North America","480":"Africa","454":"Africa","458":"Asia","175":"Africa","516":"Africa","540":"Oceania","562":"Africa","574":"Oceania","566":"Africa","558":"North America","570":"Oceania","528":"Europe","578":"Europe","524":"Asia","520":"Oceania","554":"Oceania","512":"Asia","586":"Asia","591":"North America","604":"South America","608":"Asia","585":"Oceania","598":"Oceania","616":"Europe","630":"North America","408":"Asia","620":"Europe","600":"South America","275":"Asia","258":"Oceania","634":"Asia","638":"Africa","642":"Europe","643":"Europe","646":"Africa","682":"Asia","729":"Africa","686":"Africa","702":"Asia","239":"South America","654":"Africa","744":"Europe","90":"Oceania","694":"Africa","222":"North America","674":"Europe","706":"Africa","666":"North America","688":"Europe","728":"Africa","678":"Africa","740":"South America","703":"Europe","705":"Europe","752":"Europe","748":"Africa","690":"Africa","760":"Asia","796":"North America","148":"Africa","768":"Africa","764":"Asia","762":"Asia","772":"Oceania","795":"Asia","776":"Oceania","780":"North America","788":"Africa","792":"Asia","798":"Oceania","158":"Asia","834":"Africa","800":"Africa","804":"Europe","858":"South America","840":"North America","860":"Asia","670":"North America","862":"South America","92":"North America","850":"North America","704":"Asia","548":"Oceania","876":"Oceania","882":"Oceania","887":"Asia","710":"Africa","894":"Africa","716":"Africa"};
+
 /* ─────────────────────────────────────────
    SUBSECTION 2: STATE MANAGEMENT (S Object)
    ───────────────────────────────────────── 
@@ -1850,12 +1854,7 @@ function renderMap(){
   svgEl.setAttribute('viewBox',`0 0 ${W} ${H}`);
 
   const countryCounts={};
-  const countryContinent={};
-  S.filtered.forEach(p=>{
-    if(!p.country) return;
-    countryCounts[p.country]=(countryCounts[p.country]||0)+1;
-    if(!countryContinent[p.country]) countryContinent[p.country]=p.continent||'Other';
-  });
+  S.filtered.forEach(p=>{ if(p.country) countryCounts[p.country]=(countryCounts[p.country]||0)+1; });
   const maxC=Math.max(...Object.values(countryCounts),1);
 
   const proj=d3.geoNaturalEarth1().fitSize([W,H],{type:'Sphere'});
@@ -1866,14 +1865,20 @@ function renderMap(){
   // Background
   svg.append('path').datum({type:'Sphere'}).attr('d',path).attr('fill','#EEF2F9').attr('stroke','none');
 
-  // Countries (light base, no choropleth)
+  // Countries — light decorative fill by continent (whole world, no labels).
+  // This is purely visual context; it doesn't depend on which countries are in the dataset.
   const countries=topojson.feature(worldTopo,worldTopo.objects.countries);
   svg.selectAll('path.country')
     .data(countries.features).join('path')
     .attr('class','country').attr('d',path)
-    .attr('fill','#CDD8ED').attr('stroke','#fff').attr('stroke-width',.35);
+    .attr('fill',f=>{
+      const cont=ISO_CONTINENT[String(f.id)];
+      return cont?CONTINENT_COLORS[cont]:'#CDD8ED';
+    })
+    .attr('fill-opacity',f=>ISO_CONTINENT[String(f.id)]?0.22:1)
+    .attr('stroke','#fff').attr('stroke-width',.35);
 
-  // Bubbles colored by continent, sized by publication count
+  // Bubbles — monochrome, sized only by publication count (color no longer encodes continent).
   const activeCountry=S.chartF.country;
   const tip=document.getElementById('map-tooltip');
   Object.entries(countryCounts).forEach(([cname,count])=>{
@@ -1884,46 +1889,38 @@ function renderMap(){
       if(!c||isNaN(c[0])||isNaN(c[1])) return;
       const r=4+Math.sqrt(count/maxC)*14;
       const isActive=activeCountry===cname;
-      const contName=countryContinent[cname]||'Other';
-      const baseColor=CONTINENT_COLORS[contName]||CONTINENT_COLORS['Other'];
+      const contName=ISO_CONTINENT[String(iso)]||'';
       svg.append('circle')
         .attr('cx',c[0]).attr('cy',c[1]).attr('r',r)
-        .attr('fill',baseColor)
-        .attr('fill-opacity',isActive?0.9:0.62)
-        .attr('stroke',isActive?'#1F2937':baseColor)
-        .attr('stroke-width',isActive?2:1)
+        .attr('fill',isActive?'rgba(232,160,32,.85)':'rgba(13,158,122,.6)')
+        .attr('stroke',isActive?'#E8A020':'rgba(13,158,122,.9)')
+        .attr('stroke-width',isActive?1.5:1)
         .style('cursor','pointer')
         .on('mouseover',function(ev){
-          tip.textContent=`${cname} (${contName}): ${count} publication${count>1?'s':''}`;
+          tip.textContent=contName?`${cname} (${contName}): ${count} publication${count>1?'s':''}`:`${cname}: ${count} publication${count>1?'s':''}`;
           tip.style.display='block';
-          const r=wrap.getBoundingClientRect();
-          tip.style.left=(ev.clientX-r.left+10)+'px';
-          tip.style.top=(ev.clientY-r.top-32)+'px';
+          positionTooltip(tip,wrap,ev);
         })
-        .on('mousemove',function(ev){
-          const r=wrap.getBoundingClientRect();
-          tip.style.left=(ev.clientX-r.left+10)+'px';
-          tip.style.top=(ev.clientY-r.top-32)+'px';
-        })
+        .on('mousemove',function(ev){ positionTooltip(tip,wrap,ev); })
         .on('mouseout',()=>{ tip.style.display='none'; })
         .on('click',()=>setChartFilter('country',cname));
     } catch(e){}
   });
-
-  renderContinentLegend(countryContinent);
 }
 
-// Builds the continent color-key legend, showing only continents actually present in the current filtered data.
-function renderContinentLegend(countryContinent){
-  const el=document.getElementById('map-continent-legend');
-  if(!el) return;
-  const present=new Set(Object.values(countryContinent));
-  const order=['Asia','North America','Europe','Africa','Oceania','South America','Other'];
-  const items=order.filter(c=>present.has(c));
-  el.innerHTML=items.map(c=>{
-    const color=CONTINENT_COLORS[c]||CONTINENT_COLORS['Other'];
-    return `<div class="map-legend-item"><span class="map-bubble" style="width:10px;height:10px;background:${color};border-color:${color}"></span> ${c}</div>`;
-  }).join('');
+// Keeps the map tooltip fully inside #map-wrap so long labels (e.g. "India (Asia): 163 publications")
+// never get clipped by the wrap's overflow:hidden edge.
+function positionTooltip(tip,wrap,ev){
+  const r=wrap.getBoundingClientRect();
+  const tw=tip.offsetWidth||120, th=tip.offsetHeight||20;
+  let left=ev.clientX-r.left+10;
+  let top=ev.clientY-r.top-32;
+  if(left+tw>r.width-4) left=ev.clientX-r.left-tw-10;
+  if(left<4) left=4;
+  if(top<4) top=ev.clientY-r.top+14;
+  if(top+th>r.height-4) top=r.height-th-4;
+  tip.style.left=left+'px';
+  tip.style.top=top+'px';
 }
 
 /* ─────────────────────────────────────────
