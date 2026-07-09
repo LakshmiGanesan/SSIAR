@@ -39,6 +39,16 @@
   --serif:"EB Garamond",Georgia,serif;
   --sans:"DM Sans",system-ui,sans-serif;
   --card-r:13px;--r:8px;
+  /* Shared design tokens (radius + shadow + transition scale) — kept identical
+     to Research-Library.html so both tools in the Timeless Compass suite draw
+     from the same design vocabulary. */
+  --r3:3px;--r5:5px;--r8:8px;--r10:10px;--r12:12px;--r13:13px;--r14:13px;--r16:16px;--r20:20px;
+  --sh-xs:0 1px 3px rgba(15,14,23,.06);
+  --sh-sm:0 2px 8px rgba(15,14,23,.08),0 1px 2px rgba(15,14,23,.05);
+  --sh:0 4px 16px rgba(15,14,23,.10),0 1px 4px rgba(15,14,23,.07);
+  --sh-md:0 8px 28px rgba(15,14,23,.14),0 2px 8px rgba(15,14,23,.08);
+  --sh-lg:0 16px 48px rgba(15,14,23,.20),0 4px 12px rgba(15,14,23,.10);
+  --t:.18s cubic-bezier(.4,0,.2,1);
 }
 html{scroll-behavior:smooth}
 body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;font-size:14px;overflow-x:hidden;min-height:100vh}
@@ -473,6 +483,7 @@ footer{border-top:1px solid var(--border);padding:18px 0}
         ⏱️ <strong>Intervention Duration</strong> — see how practice length affects outcomes.<br>
         🌍 <strong>Geographic View</strong> — discover which regions have contributed research.</p>
         <p>Combine any filters to answer your own questions about these practices and their effects.</p>
+        <p style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.92em;color:var(--ink4)"><strong>A note on AI use:</strong> AI tools were used to assist with synthesizing, analyzing, classifying, and summarizing the research evidence presented in this explorer. All AI-assisted content has been reviewed and validated by the SSIAR team for accuracy and fidelity to the original studies.</p>
       </div>
     </div>
     
