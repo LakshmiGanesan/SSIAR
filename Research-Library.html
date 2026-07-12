@@ -141,6 +141,52 @@
      • Fonts: Update font-family in variables
      • Data: Update CSV_URL to point to your data source
      • Text: About/Help modals (lines 478-520)
+
+  ================== TAGGING TAXONOMY (cross-app convention) ==================
+
+  This dashboard shares a controlled tagging vocabulary with Evidence-Explorer.html
+  and with the rest of the SSIAR site (Research/Reflections/Resources sections),
+  so that "Related Content" links can be built later by matching on shared tags.
+
+  THREE cross-cutting facets only — nothing else is meant to be shared site-wide:
+    • Topic - Subtopic  (e.g. "Mental Health - Stress") — stored as ONE hyphenated
+      string per tag, never split into separate Topic/Subtopic columns. This is
+      deliberate: it keeps the tag atomic for matching and avoids the parsing
+      ambiguity that caused the old "SKY" stray-dropdown-entry bug (see below).
+    • Study Population   (e.g. "Meditators / Practitioners")
+    • Intervention       (e.g. "Sudarshan Kriya Yoga (SKY)")
+
+  Geography, Partnership, Contributing Institution, and Language stay LOCAL to
+  this dashboard (and Evidence-Explorer) — they describe a study's provenance,
+  not its subject matter, and have no equivalent for a Reflections essay or a
+  Resources video. Content Format is not a tag at all; the section a piece of
+  content lives in (Research vs. Reflections vs. Resources) already tells any
+  future "Related Content" widget what kind of card to render.
+
+  SOURCE OF TRUTH: the canonical list of every allowed tag value lives in
+  taxonomy.csv (maintained alongside Explorer.csv / Library.csv). If you add a
+  new subtopic, population, or intervention, add it there first, then use the
+  exact same string in the CSV data — this dashboard's filter dropdowns are
+  built dynamically from whatever appears in the CSV (see
+  initializeFilterOptions()), so no code change is needed here to support a
+  new tag value, only a taxonomy.csv + data update.
+
+  PARSING NOTE: transformLibraryData() splits each "Topic - Subtopic" tag on
+  the FIRST " - " only (not every hyphen), specifically so that subtopic names
+  could safely contain a hyphen in future without breaking the parser.
+
+  KNOWN, DELIBERATE GAPS (not bugs — do not "fix" without checking with the
+  content owner first):
+    • Social Health has live tagged data (18 rows as of the last taxonomy sync)
+      but Evidence-Explorer.html's Body/Mind widgets do not visualize it yet —
+      those widgets are fixed hexagonal layouts and adding a domain is a layout
+      decision, not a data fix. This dashboard's topic pie/donut chart DOES
+      already include Social Health automatically, since it derives topics
+      from the data rather than a hardcoded list.
+    • "Mental Health - Intuition" is excluded from Evidence-Explorer's Mind
+      widget for the same reason (fixed 6-node layout); it is not excluded
+      here.
+    • Planetary Health exists in the taxonomy but has 0 tagged rows so far.
   
   ===============================================================================
 -->
@@ -661,7 +707,7 @@ td.col-journal{font-size:11px}
         
         <p><strong>Search by specifics (the direct route):</strong> Use the search box for keywords: "anxiety in nurses," "heart disease," "brain imaging," or author names. Or open Advanced Search to filter by topic, population, intervention, duration, year, or country. Example: short-term studies on stress in healthcare workers? Filter by "Mental Health → Stress," "Professionals," and "Duration: < 1 month." The database updates live.</p>
         
-        <p><strong>Combine filters to answer real questions:</strong> Select multiple options to refine. Want research on anxiety or depression in young people from the past 5 years? Click "Anxiety," "Depression," "Youth & Students," and "2021–2026." Filters appear as removable tags below—click ✕ to remove any.</p>
+        <p><strong>Combine filters to answer real questions:</strong> Select multiple options to refine. Want research on anxiety or depression in young people from the past 5 years? Click "Anxiety," "Depression," "Youth / Students," and "2021–2026." Filters appear as removable tags below—click ✕ to remove any.</p>
         
         <p><strong>Dive into individual studies:</strong> Click any database row to open the detailed study card. You'll see findings, population size, intervention duration, study design, author affiliation, and a link to the published paper. Click "View Published Study" to access the original peer-reviewed work.</p>
         
@@ -1107,22 +1153,27 @@ function transformLibraryData(csvData) {
     abstract: row['Abstract'] || '',
     study_design: row['Study Design'] || '',
     topic_subtopic_raw: row['Topic - Subtopic'] || '',
+    // Taxonomy values are stored as full "Topic - Subtopic" strings (see
+    // taxonomy.csv) — split on the first " - " only, so this keeps working
+    // even if a subtopic name ever itself contains a hyphen.
     topics: (row['Topic - Subtopic'] || '').split(',').map(t => {
-      const parts = t.trim().split('-');
-      const pMap = {'MH':'Mental Health','PH':'Physical Health','SH':'Social Health'};
-      const prefix = parts[0].trim();
-      return pMap[prefix] || prefix;
+      const i = t.indexOf(' - ');
+      return (i === -1 ? t : t.slice(0, i)).trim();
     }).filter(Boolean),
     subtopics: (row['Topic - Subtopic'] || '').split(',').map(t => {
-      const parts = t.trim().split('-');
-      return parts[1]?.trim() || '';
+      const i = t.indexOf(' - ');
+      return i === -1 ? '' : t.slice(i + 3).trim();
     }).filter(Boolean),
     topic: (() => {
-      const first = (row['Topic - Subtopic'] || '').split(',')[0].split('-')[0].trim() || '';
-      const pMap = {'MH':'Mental Health','PH':'Physical Health','SH':'Social Health'};
-      return pMap[first] || first;
+      const first = (row['Topic - Subtopic'] || '').split(',')[0] || '';
+      const i = first.indexOf(' - ');
+      return (i === -1 ? first : first.slice(0, i)).trim();
     })(),
-    subtopic: (row['Topic - Subtopic'] || '').split(',')[0].split('-')[1]?.trim() || '',
+    subtopic: (() => {
+      const first = (row['Topic - Subtopic'] || '').split(',')[0] || '';
+      const i = first.indexOf(' - ');
+      return i === -1 ? '' : first.slice(i + 3).trim();
+    })(),
     interventions_raw: row['Interventions'] || '',
     interventions: (row['Interventions'] || '').split(',').map(i => i.trim()).filter(Boolean),
     partnership: row['Partnership'] || 'Independent',
@@ -1193,9 +1244,9 @@ function uniq(arr){ return [...new Set(arr.filter(Boolean))].sort(); }
 
 function initializeFilterOptions() {
   F_TOPICS    = uniq(RAW.flatMap(d=>d.topics));
-  F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics)).filter(s=>!['At','Women','Youth'].includes(s));
+  F_SUBS      = uniq(RAW.flatMap(d=>d.subtopics));
   F_POPS      = uniq(RAW.flatMap(d=>d.populations));
-  F_INTS      = uniq(RAW.flatMap(d=>d.interventions)).filter(i=>i!=='SKY');
+  F_INTS      = uniq(RAW.flatMap(d=>d.interventions));
   F_PARTNERS  = uniq(RAW.map(d=>d.partnership));
   F_LANGS     = uniq(RAW.map(d=>d.language));
   F_YEARS     = uniq(RAW.map(d=>d.year?String(d.year):'')).filter(Boolean).reverse();
@@ -1312,6 +1363,7 @@ const TOPIC_COLORS = {
   'Mental Health':'#1A1840',
   'Physical Health':'#0D9E7A',
   'Social Health':'#E8A020',
+  'Planetary Health':'#2B6CB0',
 };
 const SUBTOPIC_PALETTE = [
   '#2979FF','#00B0FF','#00E5FF','#1DE9B6','#69F0AE','#B2FF59',
@@ -1774,12 +1826,12 @@ function renderTopicChart(){
     if(!p.topics||!p.subtopics) return;
     p.topic_subtopic_raw.split(',').forEach(chunk=>{
       chunk=chunk.trim();
-      if(!chunk||!chunk.includes(' - ')) return;
-      const [pre,sub]=chunk.split(' - ',2);
-      const pMap={'MH':'Mental Health','PH':'Physical Health','SH':'Social Health'};
-      const t=pMap[pre.trim()]||pre.trim();
+      const i=chunk.indexOf(' - ');
+      if(!chunk||i===-1) return;
+      const t=chunk.slice(0,i).trim();
+      const sub=chunk.slice(i+3).trim();
       if(!subByTopic[t]) subByTopic[t]={};
-      subByTopic[t][sub.trim()]=(subByTopic[t][sub.trim()]||0)+1;
+      subByTopic[t][sub]=(subByTopic[t][sub]||0)+1;
     });
   });
 

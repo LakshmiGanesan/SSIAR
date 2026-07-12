@@ -1,3 +1,74 @@
+<!--
+===============================================================================
+  TIMELESS COMPASS: EVIDENCE EXPLORER
+  Interactive Evidence Dashboard for Ancient Systems of Knowledge (ASK) Research
+
+  BUILT FOR: Sri Sri Institute for Advanced Research (SSIAR)
+  SISTER APP: Research-Library.html (shares design tokens + tagging taxonomy)
+
+  ================== ARCHITECTURE & STRUCTURE ==================
+
+  TYPE: Single-file HTML5 application (responsive web app)
+  DATA SOURCE: Explorer.csv (fetched at runtime; see CSV_FILE constant)
+  DEPENDENCIES: D3.js, TopoJSON (CDN)
+  NO FRAMEWORK: Pure vanilla JavaScript (ES6)
+
+  FILE ORGANIZATION:
+    <style>  — CSS design tokens + component styles (see the banner comment
+               immediately below this one for the full CSS section map).
+    <body>   — Masthead, sticky search/filter bar, the four "Explorer"
+               widgets (Body, Mind, Population, Duration + Map), the evidence
+               database table/card views, and the flashcard detail drawer.
+    <script> — Config → taxonomy constants → CSV parser → data loading →
+               filter engine → one build*() function per widget → search/
+               filter event wiring → master refresh/init. Every subsection is
+               marked with a banner comment ("// ─── SECTION ───").
+
+  ================== TAGGING TAXONOMY (cross-app convention) ==================
+
+  This dashboard shares a controlled tagging vocabulary with Research-Library.html
+  and with the rest of the SSIAR site (Research/Reflections/Resources sections),
+  so that "Related Content" links can be built later by matching on shared tags.
+
+  THREE cross-cutting facets only — nothing else is meant to be shared site-wide:
+    • Topic - Subtopic  (e.g. "Mental Health - Stress") — stored in the CSV's
+      Subtopic column as full hyphenated strings, comma-separated when a study
+      has more than one. Never abbreviate to "MH:"/"PH:" prefixes — that colon
+      shorthand was retired; every subtopic constant below (PH_LEFT, PH_RIGHT,
+      MH_ORDER, PH_ICONS, MH_ICONS, MH_POS) uses the full "Topic - Subtopic"
+      string as its key, and tagLabel() strips the topic prefix generically
+      (splits on the first " - ") for display, rather than hardcoding prefixes.
+    • Study Population   (e.g. "Meditators / Practitioners") — see POP_ORDER /
+      POP_ICONS.
+    • Intervention       (e.g. "Sudarshan Kriya Yoga (SKY)") — built dynamically
+      from whatever values appear in the CSV (see INTERVENTIONS in loadData()),
+      never hardcoded, so a new intervention value needs no code change here.
+
+  Geography, Journal Reputation, Study Design, etc. stay LOCAL to this
+  dashboard — they describe a study's provenance, not its subject matter, and
+  have no equivalent for a Reflections essay or a Resources video.
+
+  SOURCE OF TRUTH: the canonical list of every allowed tag value lives in
+  taxonomy.csv (maintained alongside Explorer.csv / Library.csv). Add a new
+  value there first, then use the identical string in Explorer.csv.
+
+  KNOWN, DELIBERATE GAPS (not bugs — do not "fix" without checking with the
+  content owner first):
+    • Social Health has live tagged data (18 rows as of the last taxonomy
+      sync) but is intentionally NOT shown in the Body/Mind widgets below —
+      PH_LEFT/PH_RIGHT/MH_ORDER are fixed hexagonal layouts (11 body nodes,
+      6 mind nodes) and adding a domain is a layout redesign, not a data fix.
+      Social-Health-tagged studies remain fully searchable and still appear
+      in the results table/cards — only the two graphic widgets omit them.
+    • "Mental Health - Intuition" is likewise tagged in the data (4 rows) but
+      deliberately excluded from MH_ORDER for the same fixed-layout reason.
+    • Planetary Health exists in the taxonomy but has 0 tagged rows so far.
+    • Research-Library.html's topic chart is NOT subject to these exclusions
+      — it derives its topic list dynamically from the data, so Social Health
+      already appears there automatically.
+
+===============================================================================
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -494,7 +565,7 @@ footer{border-top:1px solid var(--border);padding:18px 0}
         <p><strong>Start with search or explore.</strong> Use the search box for keywords — find studies by outcome, population, institution, location, or any detail that interests you. Or browse directly in the Physical Health and Mental Health explorers.</p>
         <p><strong>Click to filter.</strong> See a health condition you're curious about? Click it. Interested in a particular population or practice? Click that tag, and the database below filters to match. You can click multiple items — studies matching <em>any</em> of your selections appear. Active filters show as removable chips below the search bar.</p>
         <p><strong>View results in your preferred way.</strong> Switch between line view (compact, table format) and card view (visual overview) using the buttons above the results. Each study shows its key details — click the row or card to open a full preview with findings, methodology, and a direct link to the published source.</p>
-        <p><strong>Combine filters to explore.</strong> Want to know which studies on anxiety involved students? Filter by "Mental Health → Anxiety" and "Population → Youth & Students." Curious how three-month practices compare to year-long ones? Use the Duration explorer alongside your other filters.</p>
+        <p><strong>Combine filters to explore.</strong> Want to know which studies on anxiety involved students? Filter by "Mental Health → Anxiety" and "Population → Youth / Students." Curious how three-month practices compare to year-long ones? Use the Duration explorer alongside your other filters.</p>
       </div>
     </div>
   </div>
@@ -568,7 +639,7 @@ footer{border-top:1px solid var(--border);padding:18px 0}
       <div class="exp-row row-2">
         <div class="exp-card">
           <div class="exp-card-head">
-            <div class="exp-heading" style="color:#2460b5">Study Population Explorer<span class="tip" tabindex="0" data-tip="Click one or more population groups (Patients, Women, Youth & Students, etc.) to filter. A study belonging to any selected group will show."></span><span class="tip-arrow"></span></div>
+            <div class="exp-heading" style="color:#2460b5">Study Population Explorer<span class="tip" tabindex="0" data-tip="Click one or more population groups (Patients, Women, Youth / Students, etc.) to filter. A study belonging to any selected group will show."></span><span class="tip-arrow"></span></div>
           </div>
           <div class="exp-card-body">
             <div class="pop-list" id="pop-list"></div>
@@ -719,31 +790,35 @@ const PER_PAGE = 10;
 // ─────────────────────────────────────────────────────────────────────────────
 // TAXONOMY CONFIG — derived from dataset, update if schema changes
 // ─────────────────────────────────────────────────────────────────────────────
-const PH_LEFT  = ['PH: Eye','PH: Brain','PH: Heart','PH: Breath / Lungs','PH: Vagus Nerve','PH: Gut Health'];
-const PH_RIGHT = ['PH: Genes','PH: Biomarkers','PH: Immunity','PH: Diabetes','PH: Cancer'];
-const MH_ORDER = ['MH: Stress','MH: Anxiety','MH: Depression','MH: Sleep','MH: Cognition','MH: Happiness'];
-const POP_ORDER= ['General Population','Patients','Youth & Students','At-risk Communities','Professionals','Practitioners / Meditators','Women'];
+// Taxonomy values below use the full "Topic - Subtopic" form (canonical
+// taxonomy.csv) rather than the retired "PH:"/"MH:" colon-prefix shorthand.
+const PH_LEFT  = ['Physical Health - Eye','Physical Health - Brain','Physical Health - Heart','Physical Health - Breath / Lungs','Physical Health - Vagus Nerve','Physical Health - Gut Health'];
+const PH_RIGHT = ['Physical Health - Genes','Physical Health - Biomarkers','Physical Health - Immunity','Physical Health - Diabetes','Physical Health - Cancer','Physical Health - Endocrine Health'];
+const MH_ORDER = ['Mental Health - Stress','Mental Health - Anxiety','Mental Health - Depression','Mental Health - Sleep','Mental Health - Cognition','Mental Health - Happiness'];
+const POP_ORDER= ['General Population','Patients','Youth / Students','At-Risk Communities','Professionals','Meditators / Practitioners','Women','Transgender Population','Preclinical Research','Others'];
 const POP_ICONS= {
-  'General Population':'🧑','Patients':'🏥','Youth & Students':'🎓',
-  'At-risk Communities':'🛡️','Professionals':'💼','Practitioners / Meditators':'🧘','Women':'♀️'
+  'General Population':'🧑','Patients':'🏥','Youth / Students':'🎓',
+  'At-Risk Communities':'🛡️','Professionals':'💼','Meditators / Practitioners':'🧘','Women':'♀️',
+  'Transgender Population':'⚧️','Preclinical Research':'🧪','Others':'➕'
 };
 const PH_ICONS = {
-  'PH: Brain':'🧠','PH: Heart':'❤️','PH: Breath / Lungs':'🫁',
-  'PH: Vagus Nerve':'⚡','PH: Biomarkers':'🔬','PH: Immunity':'🛡️',
-  'PH: Genes':'🧬','PH: Diabetes':'💉','PH: Cancer':'🎗️','PH: Gut Health':'🫄','PH: Eye':'👁️'
+  'Physical Health - Brain':'🧠','Physical Health - Heart':'❤️','Physical Health - Breath / Lungs':'🫁',
+  'Physical Health - Vagus Nerve':'⚡','Physical Health - Biomarkers':'🔬','Physical Health - Immunity':'🛡️',
+  'Physical Health - Genes':'🧬','Physical Health - Diabetes':'💉','Physical Health - Cancer':'🎗️',
+  'Physical Health - Gut Health':'🫄','Physical Health - Eye':'👁️','Physical Health - Endocrine Health':'⚖️'
 };
 const MH_ICONS = {
-  'MH: Stress':'🌊','MH: Anxiety':'💭','MH: Depression':'🌧️',
-  'MH: Sleep':'🌙','MH: Cognition':'💡','MH: Happiness':'☀️'
+  'Mental Health - Stress':'🌊','Mental Health - Anxiety':'💭','Mental Health - Depression':'🌧️',
+  'Mental Health - Sleep':'🌙','Mental Health - Cognition':'💡','Mental Health - Happiness':'☀️'
 };
 // Positions for mental health nodes (% left, % top) around the head centre
 const MH_POS = {
-  'MH: Anxiety':    [50, 1],   /* 12 o'clock */
-  'MH: Depression': [80, 14],  /* 2 o'clock  */
-  'MH: Sleep':      [80, 60],  /* 4 o'clock  */
-  'MH: Happiness':  [50, 76],  /* 6 o'clock  */
-  'MH: Cognition':  [20, 60],  /* 8 o'clock  */
-  'MH: Stress':     [20, 14],  /* 10 o'clock */
+  'Mental Health - Anxiety':    [50, 1],   /* 12 o'clock */
+  'Mental Health - Depression': [80, 14],  /* 2 o'clock  */
+  'Mental Health - Sleep':      [80, 60],  /* 4 o'clock  */
+  'Mental Health - Happiness':  [50, 76],  /* 6 o'clock  */
+  'Mental Health - Cognition':  [20, 60],  /* 8 o'clock  */
+  'Mental Health - Stress':     [20, 14],  /* 10 o'clock */
 };
 const DUR_BUCKETS = [
   {
@@ -856,7 +931,11 @@ async function loadData() {
     STUDIES = raw
       .filter(r => r['Journal Reputation'] === FILTER_REPUTATION)
       .map((r, idx) => {
-        const subtopics = r['Subtopic'].split(',').map(s=>s.trim()).filter(Boolean);
+        // CSV column was renamed from "Subtopic" to "Topic - Subtopic" to match
+        // Library.csv's header naming (both hold the same "Topic - Subtopic"
+        // tag format — see taxonomy.csv). Support both header spellings so an
+        // older Explorer.csv export doesn't silently break this parse.
+        const subtopics = (r['Topic - Subtopic'] || r['Subtopic'] || '').split(',').map(s=>s.trim()).filter(Boolean);
         const benefits  = r['Proven Benefits Statement'].split('|').map(s=>s.trim()).filter(Boolean);
         const aff = (r['Corresponding Author Affiliation']||'').replace(/\s+/g,' ').trim();
         // Rating is retained in the data model (used only for default sort order
@@ -875,7 +954,11 @@ async function loadData() {
         const populations = populationRaw.split(',').map(s=>s.trim()).filter(Boolean);
         return {
           idx,
-          id:       r['Flashcard ID'],
+          // Internal DOM handle only (data-id attribute + row/card lookup on
+          // click) — never displayed, never used for external linking. Uses
+          // Serial No rather than the CSV's Flashcard ID column, which has
+          // historically had duplicate values across distinct studies.
+          id:       r['Serial No'],
           serial:   r['Serial No'],
           year:     r['Year'],
           highlight:r['Highlight'] || benefits[0] || '',
@@ -920,12 +1003,19 @@ async function loadData() {
 // TAXONOMY (computed from loaded data)
 // ─────────────────────────────────────────────────────────────────────────────
 function tagCount(tag) { return STUDIES.filter(s=>s.subtopics.includes(tag)).length; }
-// Display-only label cleaner: strips the "PH: " / "MH: " category prefix so
-// inline tag chips read naturally to a non-specialist (e.g. "Heart" instead
-// of "PH: Heart"). Filtering logic always uses the raw tag string above —
-// only the rendered text is stripped. The colour of the chip (teal/rose/blue)
-// still encodes the category, so the grouping isn't lost, just the jargon.
-function tagLabel(tag) { return tag.replace(/^(PH|MH|SH):\s*/, ''); }
+// Display-only label cleaner: strips the "Physical Health - " / "Mental
+// Health - " / etc. topic prefix so inline tag chips read naturally to a
+// non-specialist (e.g. "Heart" instead of "Physical Health - Heart").
+// Filtering logic always uses the raw "Topic - Subtopic" tag string above —
+// only the rendered text is stripped. Splitting on the first " - " (rather
+// than hardcoding topic names) keeps this working automatically as the
+// taxonomy evolves (e.g. if Social/Planetary Health subtopics are added).
+// The colour of the chip (teal/rose/blue) still encodes the category, so
+// the grouping isn't lost, just the jargon.
+function tagLabel(tag) {
+  const i = tag.indexOf(' - ');
+  return i === -1 ? tag : tag.slice(i + 3);
+}
 function popCount(p)   { return STUDIES.filter(s=>s.populations.includes(p)).length; }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1021,7 +1111,7 @@ function buildBodyExplorer() {
   let h = `<div class="body-col body-col-l">`;
   leftData.forEach(t => {
     const on = state.phFilter.includes(t) ? ' on' : '';
-    const label = t.replace('PH: ','');
+    const label = tagLabel(t);
     const ico = PH_ICONS[t] || '●';
     h += `<span class="bnode${on}" data-tag="${t}"><span class="bnode-ico">${ico}</span><span class="bnode-label">${label}<span class="bnode-n"> ${tagCount(t)}</span></span></span>`;
   });
@@ -1037,7 +1127,7 @@ function buildBodyExplorer() {
   h += `<div class="body-col body-col-r">`;
   rightData.forEach(t => {
     const on = state.phFilter.includes(t) ? ' on' : '';
-    const label = t.replace('PH: ','');
+    const label = tagLabel(t);
     const ico = PH_ICONS[t] || '●';
     h += `<span class="bnode${on}" data-tag="${t}"><span class="bnode-ico">${ico}</span><span class="bnode-label">${label}<span class="bnode-n"> ${tagCount(t)}</span></span></span>`;
   });
@@ -1061,17 +1151,17 @@ function buildMindExplorer() {
   const wrap = document.getElementById('mind-explorer');
   // Left column: Stress, Happiness, Cognition
   // Right column: Anxiety, Depression, Sleep
-  const LEFT  = ['MH: Stress','MH: Happiness','MH: Cognition'];
-  const RIGHT = ['MH: Anxiety','MH: Depression','MH: Sleep'];
+  const LEFT  = ['Mental Health - Stress','Mental Health - Happiness','Mental Health - Cognition'];
+  const RIGHT = ['Mental Health - Anxiety','Mental Health - Depression','Mental Health - Sleep'];
   const EMOJI = {
-    'MH: Stress':'😮‍💨','MH: Anxiety':'🧠','MH: Depression':'🌧️',
-    'MH: Sleep':'🌙','MH: Cognition':'💡','MH: Happiness':'☀️'
+    'Mental Health - Stress':'😮‍💨','Mental Health - Anxiety':'🧠','Mental Health - Depression':'🌧️',
+    'Mental Health - Sleep':'🌙','Mental Health - Cognition':'💡','Mental Health - Happiness':'☀️'
   };
   function colHTML(keys) {
     return keys.map(k => {
       const count = STUDIES.filter(s=>s.subtopics.includes(k)).length;
       const on = state.mhFilter.includes(k) ? ' on' : '';
-      const label = k.replace('MH: ','');
+      const label = tagLabel(k);
       return `<div class="mnode${on}" data-key="${k}">
         <span class="mnode-em">${EMOJI[k]||'◉'}</span>
         <span class="mnode-lbl">${label}</span>
@@ -1361,8 +1451,8 @@ window.setView = v => {
 // ─────────────────────────────────────────────────────────────────────────────
 function renderFilterStrip() {
   const chips = [];
-  state.phFilter.forEach(t => chips.push({ label:'Body: '+t.replace('PH: ',''), clear:()=>{ state.phFilter=state.phFilter.filter(x=>x!==t); } }));
-  state.mhFilter.forEach(t => chips.push({ label:'Mind: '+t.replace('MH: ',''), clear:()=>{ state.mhFilter=state.mhFilter.filter(x=>x!==t); } }));
+  state.phFilter.forEach(t => chips.push({ label:'Body: '+tagLabel(t), clear:()=>{ state.phFilter=state.phFilter.filter(x=>x!==t); } }));
+  state.mhFilter.forEach(t => chips.push({ label:'Mind: '+tagLabel(t), clear:()=>{ state.mhFilter=state.mhFilter.filter(x=>x!==t); } }));
   state.popFilter.forEach(p => chips.push({ label:p, clear:()=>{
     state.popFilter = state.popFilter.filter(x=>x!==p);
   } }));

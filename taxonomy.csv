@@ -1,0 +1,44 @@
+Facet,Canonical Value,Status,Used In,Notes
+Topic - Subtopic,Mental Health - Stress,Active,Explorer + Library,
+Topic - Subtopic,Mental Health - Anxiety,Active,Explorer + Library,Kept separate from Depression
+Topic - Subtopic,Mental Health - Depression,Active,Explorer + Library,Kept separate from Anxiety
+Topic - Subtopic,Mental Health - Sleep,Active,Explorer + Library,
+Topic - Subtopic,Mental Health - Cognition,Active,Explorer + Library,
+Topic - Subtopic,Mental Health - Happiness,Active,Explorer + Library,
+Topic - Subtopic,Mental Health - Intuition,Active,Explorer + Library,Tagged in data; intentionally excluded from Evidence Explorer's Mind widget (fixed 6-node layout) - still searchable and shown in Research Library
+Topic - Subtopic,Physical Health - Heart,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Breath / Lungs,Active,Explorer + Library,Canonical form (retires earlier "Breath & Lungs" typo)
+Topic - Subtopic,Physical Health - Immunity,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Brain,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Vagus Nerve,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Genes,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Gut Health,Active,Explorer + Library,Topic tag only - distinct from the "Gut Health Meditation" Intervention value
+Topic - Subtopic,Physical Health - Diabetes,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Cancer,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Eye,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Biomarkers,Active,Explorer + Library,
+Topic - Subtopic,Physical Health - Endocrine Health,Active,Explorer + Library,Added since initial taxonomy draft; confirmed live in both files (4 rows each)
+Topic - Subtopic,Social Health - Community,Active,Library,Now tagged with real content - promoted from Seed
+Topic - Subtopic,Social Health - Communication,Active,Library,Now tagged with real content - promoted from Seed
+Topic - Subtopic,Social Health - Social Reintegration & Rehabilitation,Active,Explorer + Library,Intentionally excluded from Evidence Explorer's Body/Mind widgets (fixed hexagonal layout, not yet visualized) - still searchable and shown in Research Library's topic chart
+Topic - Subtopic,Social Health - Conflict Resolution & Peacebuilding,Active,Library,Now tagged with real content - promoted from Seed
+Topic - Subtopic,Planetary Health - Environment,Active,Library only,Re-domained from Library's earlier mislabeled "SH - Environment"; 0 rows in Explorer so far
+Study Population,General Population,Active,Explorer + Library,
+Study Population,Meditators / Practitioners,Active,Explorer + Library,Canonical word order (Library's original form)
+Study Population,Patients,Active,Explorer + Library,
+Study Population,Professionals,Active,Explorer + Library,
+Study Population,Women,Active,Explorer + Library,
+Study Population,Youth / Students,Active,Explorer + Library,Canonical form (Library's original form)
+Study Population,At-Risk Communities,Active,Explorer + Library,Canonical casing (Library's original form)
+Study Population,Transgender Population,Active,Explorer + Library,
+Study Population,Preclinical Research,Active,Explorer + Library,Merged from Explorer's earlier internal duplicate "Preclinical" / "Preclinical Research"
+Study Population,Others,Active,Explorer + Library,Catch-all
+Intervention,Sudarshan Kriya Yoga (SKY),Active,Explorer + Library,
+Intervention,Sahaj Samadhi Meditation (SSM),Active,Explorer + Library,
+Intervention,Advanced Meditation Programme (AMP),Active,Explorer + Library,Fixed earlier "Meditaton" typo
+Intervention,Prajñā Yoga / Intuition Programme (IP),Active,Explorer + Library,Unified name - replaces earlier "Intuition Process (IP)" / "The Intuition Programme (IP)"
+Intervention,Yoga,Active,Explorer + Library,
+Intervention,Ayurveda,Active,Explorer + Library,
+Intervention,Indian Knowledge Systems (IKS),Active,Library only,Retained per mentor guidance; currently unused in Explorer
+Intervention,Gut Health Meditation,Active,Library only,Replaces earlier data-entry error where "Gut Health" (a topic) was entered as an Intervention
+Intervention,Other,Active,Library only,Catch-all
