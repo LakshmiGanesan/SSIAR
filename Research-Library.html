@@ -1184,7 +1184,12 @@ function transformLibraryData(csvData) {
     state: row['State'] || '',
     country: row['Country'] || '',
     continent: (row['Continent'] || '').trim() || getContinent(row['Country'] || ''),
-    language: row['Language'] || 'English'
+    language: row['Language'] || 'English',
+    // Rating is retained in the data model purely to drive the default sort
+    // order (higher-rated studies first) — intentionally never rendered in
+    // the UI. rating_sort is the star count (0 if unrated), so ties within
+    // the same rating fall back to the sortedData() secondary key below.
+    rating_sort: (row['Rating'] || '').trim().length
   }));
 }
 
@@ -1414,7 +1419,11 @@ const S = {
   filters: {topic:'',subtopic:'',population:'',intervention:'',partnership:'',language:'',year:'',country:''},
   chartF: {},           // chart-click filters
   filtered: [...RAW],
-  sort: {col:'year', dir:'desc'},
+  // Default sort silently prioritizes higher-rated studies first (internal
+  // rule, not exposed as a visible/sortable column — same pattern as the
+  // 'year' default it replaces). The user only ever sees results and can
+  // still re-sort via the Type/Title/Citation/Journal column headers.
+  sort: {col:'rating_sort', dir:'desc'},
   page: 1,
   rpp: 10,
   selId: null,
@@ -1525,8 +1534,15 @@ function sortedData(d){
   const {col,dir}=S.sort;
   return [...d].sort((a,b)=>{
     let av=a[col]??'', bv=b[col]??'';
-    if(typeof av==='number') return dir==='asc'?av-bv:bv-av;
-    return dir==='asc'?String(av).localeCompare(String(bv)):String(bv).localeCompare(String(av));
+    let cmp;
+    if(typeof av==='number') cmp = av-bv;
+    else cmp = String(av).localeCompare(String(bv));
+    if(dir==='desc') cmp = -cmp;
+    if(cmp !== 0) return cmp;
+    // Tie-break: when sorting by the hidden rating default, fall back to
+    // most-recent year first rather than leaving ties in arbitrary order.
+    if(col === 'rating_sort') return (b.year||0) - (a.year||0);
+    return 0;
   });
 }
 function updateSortHeaders(){
