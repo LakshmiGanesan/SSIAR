@@ -1,96 +1,70 @@
-# Timeless Compass: Evidence Explorer — Maintenance Guide
+# Timeless Compass: Evidence Finder
 
-This app is two files that must always sit in the same folder:
+Interactive evidence dashboard for Ancient Systems of Knowledge (ASK) research, built for the **Sri Sri Institute for Advanced Research (SSIAR)**.
 
+Live: `https://lakshmiganesan.github.io/SSIAR/Evidence-Explorer.html`
+
+Part of the **Timeless Compass Suite**, alongside its sister app `Research-Library.html` (shares the same design tokens and tagging taxonomy; not included in this package).
+
+---
+
+## Files in this package
+
+| File | Purpose |
+|---|---|
+| `Evidence-Explorer.html` | The dashboard itself — a single-file HTML5 app (vanilla JS, D3.js, TopoJSON via CDN). Fetches `Explorer.csv` at runtime. |
+| `Explorer.csv` | The evidence database. Every row is one study. |
+| `README.md` | This file. |
+
+**Deployment:** drop both files in the same folder on GitHub Pages (or any static host). Must be served over `http://`/`https://` — opening via `file://` will block the CSV fetch in most browsers.
+
+---
+
+## What changed in this update (July 22, 2026)
+
+1. **Renamed** the dashboard from *"Timeless Compass: Evidence Explorer"* to **"Timeless Compass: Evidence Finder"** — updated in the page title, the visible heading, the About panel copy, and internal code comments.
+2. **Removed the "Acceptable"-only Journal Reputation filter.** The dashboard previously loaded only rows where `Journal Reputation == "Acceptable"` (128 of 162 rows). That filter has been deleted from the code (`loadData()`), so all 162 rows now load and display regardless of Journal Reputation (Acceptable / Mixed Reputation / Predatory). The `Journal Reputation` column itself is untouched and still visible in the data model.
+3. **Interventions expanded, no code change needed.** The Intervention filter dropdown (and the "N Interventions Selected" chip logic) has always built its list dynamically from whatever values appear in the CSV's `Intervention` column — it's never hardcoded. Once the Acceptable-only filter was removed, the dropdown automatically surfaced all interventions now present in the data, including the newer additions: *Ayurveda, Advanced Meditation Programme (AMP), Sahaj Samadhi Meditation (SSM), Prajñā Yoga / Intuition Programme (IP), Youth Empowerment and Skills (YES!+), Youth Empowement Seminar (YES!), Youth Leadership Training Programme (YLTP), Utkarsha Yoga,* and *Gut Health Meditation*.
+4. **Added a "Meditation" catch-all tag.** Several specific meditation techniques (AMP, SSM, Gut Health Meditation) are now *also* comma-tagged with the generic value `Meditation` in the CSV, so selecting "Meditation" in the filter surfaces all meditation-type studies together, in addition to each technique remaining separately selectable. (By design, *Prajñā Yoga / Intuition Programme (IP)* was **not** included in this catch-all.)
+5. **Data correction:** the `Gut Health Meditation` tag had been mistakenly attached to Serial No. 139 (a high-altitude acclimatisation study). It has been moved to Serial Nos. 162 and 163 — the two Vaishvanara Agni Meditation studies that are actually about gut health.
+
+### Current Intervention tag counts (Explorer.csv, 162 rows)
+
+| Intervention | Rows |
+|---|---|
+| Sudarshan Kriya Yoga (SKY) | 130 |
+| Meditation *(catch-all)* | 16 |
+| Yoga | 9 |
+| Youth Empowerment and Skills (YES!+) | 9 |
+| Advanced Meditation Programme (AMP) | 8 |
+| Ayurveda | 8 |
+| Youth Empowement Seminar (YES!) | 8 |
+| Sahaj Samadhi Meditation (SSM) | 7 |
+| Prajñā Yoga / Intuition Programme (IP) | 4 |
+| Gut Health Meditation | 2 |
+| Utkarsha Yoga | 1 |
+| Youth Leadership Training Programme (YLTP) | 1 |
+
+*(Rows can carry more than one Intervention tag, so these counts don't sum to 162.)*
+
+---
+
+## Data model notes (for whoever maintains Explorer.csv next)
+
+- **Three cross-cutting facets** are shared site-wide with the rest of SSIAR's content (Research-Library.html, Reflections essays, Resources): `Topic - Subtopic`, `Study Population`, and `Intervention`. Everything else in the CSV (Geography, Journal Reputation, Study Design, etc.) is local to this dashboard only.
+- **Multi-value fields** (Topic - Subtopic, Study Population, Intervention) are comma-separated within a single CSV cell when a study spans more than one category.
+- **Intervention** needs no code change to add a new value — just use the new string in the CSV and it will appear in the filter dropdown automatically. (The `Intervention ` CSV header has a trailing space; the code matches either form.)
+- **Known, deliberate layout gaps** (not bugs): "Social Health" and "Mental Health - Intuition" are tagged in the data but intentionally excluded from the Body/Mind hexagon widgets, which use fixed 11-node/6-node layouts. Social-Health- and Intuition-tagged studies remain fully searchable and appear in the results table/cards regardless.
+- **Default sort** is by the `Rating` column (starred rows first), though `Rating` itself is never rendered in the UI.
+
+---
+
+## Local development
+
+Serve the folder with any static server, e.g.:
+
+```bash
+python3 -m http.server 8000
 ```
-Evidence-Explorer.html   ← app shell, styles, logic
-Explorer.csv             ← the data (one row per study)
-```
 
-Published together at:
-- https://lakshmiganesan.github.io/SSIAR/Evidence-Explorer.html
-- https://lakshmiganesan.github.io/SSIAR/Explorer.csv
-
-Open via a local server, not `file://` — CSV fetches are blocked under the
-`file://` protocol by most browsers.
-
----
-
-## Code structure (for anyone editing the HTML file)
-
-`Evidence-Explorer.html` is organized top-to-bottom in the order the page
-reads, with a `── SECTION ──` banner comment marking each part:
-
-**`<style>` block:**
-1. Reset + design tokens (CSS variables for color, type, radius)
-2. Masthead (title, About/Help nav, panels)
-3. Sticky search bar + intervention filter + info tooltips
-4. Page layout shell
-5. The four "Explorer" widgets (Body, Mind, Population, Duration, Map)
-6. Evidence Database (table view, flashcard/card view, pagination)
-7. Flashcard drawer (the slide-out detail panel)
-8. Footer
-
-**`<script>` block:** CSV parsing → data loading → taxonomy/filter logic →
-each Explorer widget's render function → table/card rendering → drawer →
-search/filter event handlers → tooltips → masthead panels → master
-refresh/init. Every function and handler sits under its own banner comment.
-
-A cleanup pass (June 2026) removed a handful of CSS rules that were defined
-but never actually used by any element on the page (`.exp-eyebrow`,
-`.exp-title`, `.exp-hint`, `.geo-note`, `.mnode-ico`, `.mnode-n`,
-`.ms-line2`) — confirmed unused by checking the full file, not just
-guessed. No visual or functional change resulted from removing them.
-
----
-
-## Updating the "Last updated" date in the footer
-
-The footer shows a **"Last updated: [date]"** note. Because this is a static
-HTML file (no server, no database), it has no way to automatically detect
-when a file changed — there's no file-system timestamp it can read. So this
-date is a **manual flag** you update by hand, any time you:
-
-- replace or edit `Explorer.csv` with new/revised study data, **or**
-- edit `Evidence-Explorer.html` itself (new features, fixes, design changes)
-
-### How to update it
-
-1. Open `Evidence-Explorer.html` in a text editor.
-2. Find this line near the top of the `<script>` block (search for
-   `DATA_LAST_UPDATED`):
-
-   ```js
-   const DATA_LAST_UPDATED = 'June 28, 2026';
-   ```
-
-3. Change the date string to today's date, in the same `Month DD, YYYY`
-   format, e.g.:
-
-   ```js
-   const DATA_LAST_UPDATED = 'July 3, 2026';
-   ```
-
-4. Save the file. The footer updates automatically from this one constant —
-   no other edits needed.
-
-**Rule of thumb:** if you touched `Explorer.csv` or `Evidence-Explorer.html`
-today, update this line today. It's the only step required.
-
----
-
-## Other things to remember when editing
-
-- **Renaming files:** if you rename `Explorer.csv`, update the `CSV_FILE`
-  constant right above `DATA_LAST_UPDATED` in the same script block.
-- **Journal Reputation filter:** only rows where `Journal Reputation` equals
-  the value in `FILTER_REPUTATION` (currently `"Acceptable"`) are shown in
-  the app. Rows with other reputations are silently excluded — if a study
-  isn't appearing, check this column first.
-- **Study Design tooltips:** the flashcard drawer shows a plain-language
-  description next to each study's "Study Design" value (e.g. what a
-  "Quasi-Experimental Study" actually is). These descriptions live in the
-  `DESIGN_GUIDE` object in the script block. If `Explorer.csv` ever
-  introduces a new Study Design value that isn't in `DESIGN_GUIDE`, the
-  value will still display correctly — it just won't have a tooltip until
-  you add an entry for it.
+Then open `http://localhost:8000/Evidence-Explorer.html`.

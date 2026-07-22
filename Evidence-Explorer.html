@@ -1,6 +1,6 @@
 <!--
 ===============================================================================
-  TIMELESS COMPASS: EVIDENCE EXPLORER
+  TIMELESS COMPASS: EVIDENCE FINDER
   Interactive Evidence Dashboard for Ancient Systems of Knowledge (ASK) Research
 
   BUILT FOR: Sri Sri Institute for Advanced Research (SSIAR)
@@ -74,14 +74,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Timeless Compass: Interactive Evidence Explorer</title>
+<title>Timeless Compass: Interactive Evidence Finder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
 <style>
 /* ════════════════════════════════════════════════════════════════════════════
-   TIMELESS COMPASS — EVIDENCE EXPLORER — STYLESHEET
+   TIMELESS COMPASS — EVIDENCE FINDER — STYLESHEET
    ────────────────────────────────────────────────────────────────────────────
    Organised top-to-bottom in the same order the page reads:
      1. Reset + design tokens (CSS variables for color/type/radius)
@@ -533,7 +533,7 @@ footer{border-top:1px solid var(--border);padding:18px 0}
 
 <header class="masthead">
   <div class="container">
-    <h1>Timeless Compass: Evidence Explorer</h1>
+    <h1>Timeless Compass: Evidence Finder</h1>
     <p class="masthead-sub"><span class="ms-line1">Research-backed findings on breathwork, meditation, yoga and allied practices</span></p>
     
     <div class="masthead-nav">
@@ -545,7 +545,7 @@ footer{border-top:1px solid var(--border);padding:18px 0}
       <button class="mh-close">×</button>
       <div class="mh-content">
         <h3>Welcome to Timeless Compass</h3>
-        <p>This Evidence Explorer is curated by the Sri Sri Institute for Advanced Research (SSIAR) and presents research-backed findings on breathwork, meditation, yoga, and other practices rooted in ancient systems of knowledge but adapted to contemporary times.</p>
+        <p>This Evidence Finder is curated by the Sri Sri Institute for Advanced Research (SSIAR) and presents research-backed findings on breathwork, meditation, yoga, and other practices rooted in ancient systems of knowledge but adapted to contemporary times.</p>
         <p>You'll find here accessible summaries of peer-reviewed research: studies conducted in labs and clinics, with rigorous methods, on real people. The findings span physical health, mental wellbeing, different populations, and intervention durations — giving you a comprehensive view of what science has learned about these practices.</p>
         <p><strong>How it's organized:</strong></p>
         <p>🫁 <strong>Physical Health Explorer</strong> — start here to browse findings by body system and health condition.<br>
@@ -758,7 +758,7 @@ footer{border-top:1px solid var(--border);padding:18px 0}
 
 <script>
 /* ════════════════════════════════════════════════════════════════════════════
-   TIMELESS COMPASS — EVIDENCE EXPLORER
+   TIMELESS COMPASS — EVIDENCE FINDER
    ────────────────────────────────────────────────────────────────────────────
    This file is one half of a two-file content ecosystem and expects its
    companion data file to sit in the SAME DIRECTORY at all times:
@@ -780,11 +780,16 @@ footer{border-top:1px solid var(--border);padding:18px 0}
 // CONFIG — update CSV_FILE to match your filename if you rename the data file
 // ─────────────────────────────────────────────────────────────────────────────
 const CSV_FILE = 'Explorer.csv';
-const FILTER_REPUTATION = 'Acceptable'; // only rows matching this are shown
+// NOTE: previously this file only showed rows with Journal Reputation ===
+// 'Acceptable'. That filter has been removed by design decision — all rows
+// regardless of Journal Reputation (Acceptable / Mixed Reputation /
+// Predatory) are now loaded and shown. Journal Reputation remains a column
+// in the data model and drawer detail view, it is simply no longer used to
+// exclude rows.
 // Update this date whenever Explorer.csv OR this HTML file is changed —
 // it drives the "Last updated" note in the footer. This is a manual flag
 // (not a file-system timestamp), since static hosting can't read file mtimes.
-const DATA_LAST_UPDATED = 'June 28, 2026';
+const DATA_LAST_UPDATED = 'July 22, 2026';
 const PER_PAGE = 10;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -927,9 +932,10 @@ async function loadData() {
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const text = await resp.text();
     const raw = parseCSV(text);
-    // Filter by reputation, map fields, add sort key
+    // Map fields and add sort key. All rows are included regardless of
+    // Journal Reputation (Acceptable / Mixed Reputation / Predatory) — the
+    // Acceptable-only filter that used to run here has been removed.
     STUDIES = raw
-      .filter(r => r['Journal Reputation'] === FILTER_REPUTATION)
       .map((r, idx) => {
         // CSV column was renamed from "Subtopic" to "Topic - Subtopic" to match
         // Library.csv's header naming (both hold the same "Topic - Subtopic"
@@ -985,8 +991,10 @@ async function loadData() {
     document.getElementById('loading-state').style.display='none';
     document.getElementById('app-content').style.display='block';
     // Build the Intervention filter's option list dynamically from whatever
-    // interventions actually appear in the (already reputation-filtered) data —
-    // never hardcoded, so the dropdown stays correct if the CSV changes.
+    // interventions actually appear in the full dataset — never hardcoded,
+    // so the dropdown (and the Body/Mind/Population/Duration widgets, which
+    // all read from STUDIES) automatically stay correct as new interventions
+    // are added to Explorer.csv, with no code change needed here.
     const ivSet = new Set();
     STUDIES.forEach(s => s.interventions.forEach(i => ivSet.add(i)));
     INTERVENTIONS = [...ivSet].sort((a,b)=>a.localeCompare(b));
