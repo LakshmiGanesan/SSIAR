@@ -234,17 +234,13 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 .map-legend-item{display:flex;align-items:center;gap:.3rem;font-size:10px;color:var(--text-faint);letter-spacing:.02em}
 .map-bubble{border-radius:50%;background:rgba(13,158,122,.55);border:1px solid rgba(13,158,122,.8);display:inline-block}
 
-@media(max-width:1300px){
+@media(max-width:960px){
   .dash-row.row-a,.dash-row.row-b{grid-template-columns:1fr}
   #map-wrap{height:260px}
-}
-@media(max-width:900px){
-  .dash-row.row-a,.dash-row.row-b{grid-template-columns:1fr 1fr}
 }
 @media(max-width:720px){
   .dash-scorecards{grid-template-columns:1fr 1fr}
   .dash-scard-combo{flex-wrap:wrap;gap:14px}
-  .dash-row.row-a,.dash-row.row-b{grid-template-columns:1fr}
 }
 @media(max-width:520px){
   .dash-scorecards{grid-template-columns:1fr}
@@ -371,7 +367,7 @@ td.col-journal{font-size:11px}
         <h3>Welcome to Timeless Compass</h3>
         <p>Curated by the Sri Sri Institute for Advanced Research (SSIAR), the research wing of the Art of Living, the Timeless Compass: Research Repository is an interactive digital repository of global studies on Ancient Systems of Knowledge (ASK) that connects ancient wisdom with modern scientific inquiry.</p>
 
-        <p><strong>How to navigate:</strong> the repository is organized into two tabs, each with the same Advanced Search sidebar on the left and always sharing the same filters.</p>
+        <p><strong>How to navigate:</strong> the repository is organized into two tabs, sharing one set of filters.</p>
 
         <p>📊 <strong>Dashboard</strong> — Scorecards and visualizations offering a bird's-eye view of the repository: publication trends by year, research topics by volume, geographic distribution, and research partnerships. Click any chart to filter the studies — that filter carries straight over to the Database tab.</p>
 
@@ -388,7 +384,7 @@ td.col-journal{font-size:11px}
 
         <p><strong>Start with what you want to know.</strong> Curious about what science has discovered? Looking for evidence on a specific question? Here's how to find it.</p>
 
-        <p><strong>The Advanced Search sidebar is always there.</strong> It sits to the left of both tabs — the same filters, the same selections, whichever tab you're on. Set a filter on the Dashboard and it's already applied when you switch to the Database, and vice versa.</p>
+        <p><strong>Two tabs, one set of filters.</strong> The Dashboard stands on its own — its charts double as filters. The Database tab adds a search bar and an Advanced Search sidebar. Whatever you set in one is already applied in the other; nothing resets when you switch tabs.</p>
 
         <p><strong>Explore by curiosity (the scenic route):</strong> Start on the <strong>Dashboard</strong> tab. Click "Mental Health" in the topics chart to see studies on stress, anxiety, or depression. Hover over the year chart to spot research peaks. Click a bubble on the map to explore studies from a specific country. Every click updates the shared filter state — switch to the Database tab any time to see the matching studies.</p>
 
@@ -427,11 +423,10 @@ td.col-journal{font-size:11px}
   <div class="container">
 
     <!-- ══════════════════════ DASHBOARD TAB ══════════════════════
-         Same suite-layout grid as the Database tab: an Advanced Search
-         sidebar on the left, main content on the right. The sidebar is
-         the very same component (just a second instance, prefix
-         "dashadv") so a change here is already reflected if you switch
-         to the Database tab. -->
+         Stands on its own — no sidebar here. Its charts double as
+         filters: clicking a bar/slice/bubble sets S.chartF, the same
+         shared state the Database tab's Advanced Search sidebar and
+         table read, so the two stay in sync without any UI here. -->
     <div class="tab-panel active" id="dashboard-panel">
 
       <div class="filters-row" id="filters-row-dashboard">
@@ -439,23 +434,7 @@ td.col-journal{font-size:11px}
         <div class="active-pills-inner"></div>
       </div>
 
-      <div class="suite-layout">
-
-        <aside class="filters-sidebar">
-          <div class="adv-filter sidebar-mode">
-            <div class="adv-panel">
-              <div class="adv-panel-hdr">
-                <span class="adv-panel-title">Advanced Search</span>
-              </div>
-              <div class="adv-grid" id="dashadv-filter-body"></div>
-              <div class="adv-footer">
-                <button class="btn-cancel" onclick="clearAll()" type="button">Clear All</button>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        <div class="dash-main">
+      <div class="dash-main">
 
           <!-- Scorecards -->
           <div class="dash-scorecards">
@@ -536,9 +515,7 @@ td.col-journal{font-size:11px}
             </div>
           </div>
 
-        </div><!-- /dash-main -->
-
-      </div><!-- /suite-layout -->
+      </div><!-- /dash-main -->
 
     </div><!-- /dashboard-panel -->
 
@@ -991,12 +968,11 @@ const S = {
   activeTab: 'dashboard',
 };
 
-// The Advanced Search sidebar exists twice on the page — once on the
-// Dashboard tab (prefix "dashadv"), once on the Database tab (prefix
-// "dbadv") — both driven by the same S state, so a change made in either
-// one is instantly reflected in the other. This mirrors the multi-tab,
-// single-filter-state pattern in evidence_finder.html.
-const SIDEBAR_PREFIXES = ['dashadv','dbadv'];
+// The Advanced Search sidebar lives only on the Database tab now — the
+// Dashboard stands on its own, with its charts acting as filters (clicking
+// a bar/slice/bubble sets S.chartF, which the Database tab's sidebar and
+// table both reflect immediately since they all read the same S state).
+const SIDEBAR_PREFIXES = ['dbadv'];
 
 /* ─────────────────────────────────────────
    COMPUTE FILTERED DATASET
