@@ -45,7 +45,7 @@
   --border:#cec8b8;--border2:#bdb6a5;
   --serif:"EB Garamond",Georgia,serif;
   --sans:"DM Sans",system-ui,sans-serif;
-  --r:8px;--r12:12px;--r13:13px;
+  --r:8px;--r12:12px;--r13:13px;--card-r:13px;
   --indigo:#1c1b18;--deep:#1c1b18;--indigo-mid:#3a3830;--indigo-lt:#78746b;
   --gold:#0a7865;--gold-lt:#12a68c;--gold-pale:#ddf0ea;--gold-glow:rgba(10,120,101,.1);
   --jade:#0a7865;--jade-lt:#ddf0ea;
@@ -96,37 +96,96 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
 
 /* =========================================================================
    TAB NAVIGATION (Dashboard / Database)
+   Same pill-tab component as evidence_finder.html's .tabs-nav/.tab-btn.on,
+   so the two tools in the Timeless Compass suite read as one family.
    ========================================================================= */
 #tab-nav{background:var(--paper);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:490;backdrop-filter:blur(10px);background:rgba(248,246,241,.97)}
-#tab-nav .container{display:flex;gap:4px}
-.tab-btn{display:flex;align-items:center;gap:7px;padding:16px 4px;margin-right:30px;background:none;border:none;border-bottom:2.5px solid transparent;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--ink3);cursor:pointer;transition:all .18s;letter-spacing:.01em}
-.tab-btn:hover{color:var(--ink)}
-.tab-btn.active{color:var(--teal);border-bottom-color:var(--teal)}
-.tab-btn-icon{font-size:14px;opacity:.85}
+.tabs-inner{display:flex;gap:6px;padding:10px 0}
+.tab-btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border:1px solid transparent;border-radius:9px;background:none;font-family:var(--sans);font-size:13.5px;font-weight:500;color:var(--ink3);cursor:pointer;transition:all .16s;letter-spacing:.01em}
+.tab-btn:hover{color:var(--ink);background:var(--paper2)}
+.tab-btn svg{flex-shrink:0;opacity:.7}
+.tab-btn.on{background:var(--teal-l);color:var(--teal-d);border-color:rgba(10,120,101,.18)}
+.tab-btn.on svg{opacity:1}
+@media(max-width:560px){
+  .tabs-inner{padding:8px 0;gap:4px}
+  .tab-btn{flex:1;justify-content:center;padding:9px 8px;font-size:12.5px}
+}
 
-/* Shared "Active Filters" strip — appears at the top of both tab panels
-   and always reflects the single shared S state. */
-.af-bar{background:var(--paper2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:20px;min-height:20px}
-.af-label{display:flex;align-items:center;gap:6px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink4);flex-shrink:0}
-.af-label svg{opacity:.6}
-.fpill{display:inline-flex;align-items:center;gap:5px;background:var(--paper);border:1px solid var(--border2);border-radius:14px;padding:4px 6px 4px 10px;font-size:12px;font-weight:500;color:var(--ink2)}
-.pill-x{width:16px;height:16px;border-radius:50%;background:var(--rose);color:#fff;border:none;cursor:pointer;font-family:var(--font-body);font-size:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--t);line-height:1;font-weight:700;opacity:.8}
-.pill-x:hover{opacity:1;transform:scale(1.1)}
-.clear-all{font-size:11.5px;font-weight:700;color:var(--rose);cursor:pointer;text-decoration:none;background:none;border:none;font-family:var(--font-body);margin-left:.3rem;transition:opacity var(--t)}
-.clear-all:hover{opacity:.8;text-decoration:underline}
-.af-empty{font-size:12.5px;color:var(--text-muted);font-style:italic;font-weight:400;letter-spacing:.01em}
+/* ACTIVE-FILTER CHIPS — identical component to evidence_finder.html's
+   .filters-row/.fchip, so a chip means the same thing in both tools. */
+.filters-row{display:none;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.filters-row.show{display:flex}
+.filter-row-lbl{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);font-weight:500;flex-shrink:0}
+.fchip{display:inline-flex;align-items:center;gap:3px;padding:3px 9px 3px 10px;border-radius:14px;font-size:12px;background:var(--teal);color:#fff;border:none;cursor:pointer;font-family:var(--sans);transition:opacity .12s;line-height:1.4}
+.fchip:hover{opacity:.8}
+.fchip-x{opacity:.7;font-size:14px;margin-left:1px;line-height:1}
+.chip-clear-all{font-size:11.5px;font-weight:700;color:var(--rose);cursor:pointer;text-decoration:none;background:none;border:none;font-family:var(--sans);margin-left:.3rem;transition:opacity var(--t)}
+.chip-clear-all:hover{opacity:.8;text-decoration:underline}
 
 /* Tab panels */
 .tab-panel{display:none}
 .tab-panel.active{display:block}
 
 /* =========================================================================
+   SHARED SUITE LAYOUT — 272px Advanced Search sidebar + main content,
+   used identically by both the Dashboard tab (sidebar + charts) and the
+   Database tab (sidebar + table), matching evidence_finder.html's
+   .search-layout. Each tab's main content stays visually its own by
+   virtue of what's inside it; the sidebar and shell are shared.
+   ========================================================================= */
+.suite-layout{display:grid;grid-template-columns:272px 1fr;gap:22px;align-items:start}
+@media(max-width:900px){.suite-layout{grid-template-columns:1fr}}
+.filters-sidebar{position:sticky;top:76px}
+@media(max-width:900px){.filters-sidebar{position:static}}
+
+/* ADVANCED SEARCH — the same adv-filter component from evidence_finder.html,
+   permanently re-skinned via .sidebar-mode (no dropdown/toggle behavior
+   needed here since both tabs show it statically at all times). */
+.adv-filter.sidebar-mode{width:100%}
+.adv-panel{
+  display:block;position:static;width:100%;max-width:none;
+  background:var(--paper);border:1px solid var(--border);border-radius:var(--card-r);box-shadow:var(--sh-xs);
+}
+.adv-panel-hdr{display:flex;align-items:center;justify-content:space-between;padding:15px 16px 13px;background:var(--paper2);border-radius:var(--card-r) var(--card-r) 0 0;border-bottom:1px solid var(--border)}
+.adv-panel-title{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3)}
+.adv-grid{display:grid;grid-template-columns:1fr;gap:16px;padding:16px}
+.fg{display:flex;flex-direction:column;gap:8px}
+.fg label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3);display:flex;align-items:center;gap:6px}
+select.fsel{width:100%;padding:10px 30px 10px 11px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;appearance:none;-webkit-appearance:none;-moz-appearance:none;transition:all .18s;font-weight:400;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233a3830' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 9px center;background-size:16px}
+select.fsel:hover{border-color:var(--ink3);background-color:var(--paper3)}
+select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1);background-color:var(--paper)}
+.adv-footer{display:flex;gap:12px;padding:13px 16px;border-top:1px solid var(--border)}
+.adv-footer .btn-cancel{flex:1;padding:11px 14px;background:transparent;border:1px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;transition:all .18s}
+.adv-footer .btn-cancel:hover{background:var(--paper3);border-color:var(--teal-m);color:var(--ink)}
+
+/* INTERVENTION — multi-select dropdown, same iv-dropdown component as
+   evidence_finder.html: click to open a checklist, tick as many as you
+   like, click elsewhere to close. Matches studies with ANY ticked value. */
+.iv-dropdown{position:relative}
+.iv-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;transition:all .18s;text-align:left}
+.iv-trigger:hover{border-color:var(--ink3);background-color:var(--paper3)}
+.iv-dropdown.open .iv-trigger{border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1);background:var(--paper)}
+.iv-trigger.has-filters{background:var(--teal-l);border-color:var(--teal-m);color:var(--teal-d)}
+.iv-trigger-chevron{transition:transform .2s;flex-shrink:0;color:var(--ink3)}
+.iv-dropdown.open .iv-trigger-chevron{transform:rotate(180deg)}
+.iv-dropdown .adv-iv-box{display:none;position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:60;box-shadow:var(--sh-sm)}
+.iv-dropdown.open .adv-iv-box{display:block}
+.adv-iv-box{max-height:160px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;background:var(--paper);padding:6px}
+.iv-opt{display:flex;align-items:center;gap:9px;padding:6px 8px;border-radius:6px;cursor:pointer;font-size:12.5px;color:var(--ink2);font-family:var(--sans);line-height:1.3}
+.iv-opt:hover{background:var(--paper3)}
+.iv-opt input{flex-shrink:0;width:14px;height:14px;accent-color:var(--teal-m);cursor:pointer}
+.iv-opt-all{font-weight:500;color:var(--ink)}
+.iv-opt-divider{height:1px;background:var(--border);margin:5px 2px}
+
+/* =========================================================================
    DASHBOARD TAB
    ========================================================================= */
 
+.dash-main{min-width:0}
+
 /* Scorecards — 3 wide, condensed stat cards */
 .dash-scorecards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:18px}
-.dash-scard{background:var(--paper2);border:1px solid var(--border);border-radius:14px;padding:22px 22px;display:flex;flex-direction:column;gap:4px;transition:all .18s}
+.dash-scard{background:var(--paper2);border:1px solid var(--border);border-radius:var(--card-r);padding:22px 22px;display:flex;flex-direction:column;gap:4px;transition:all .18s}
 .dash-scard:hover{box-shadow:var(--sh-sm);border-color:var(--teal-m);transform:translateY(-2px)}
 .dash-scard-top{display:flex;align-items:center;gap:8px}
 .dash-scard-icon{font-size:1.2rem;opacity:.65}
@@ -142,11 +201,11 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
 .dash-row.row-a{grid-template-columns:1.15fr 1fr}
 .dash-row.row-b{grid-template-columns:1fr 1.3fr}
 
-.dash-card{background:var(--paper);border:1px solid var(--border);border-radius:14px;padding:20px 20px 16px;box-shadow:none;overflow:visible;display:flex;flex-direction:column;transition:all .18s}
+.dash-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--card-r);padding:20px 20px 16px;box-shadow:none;overflow:visible;display:flex;flex-direction:column;transition:all .18s}
 .dash-card:hover{box-shadow:var(--sh-sm);border-color:var(--teal-m)}
 .dash-card-hdr{display:flex;align-items:center;margin-bottom:14px;gap:9px}
 .dash-card-num{width:24px;height:24px;border-radius:50%;background:var(--teal);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(10,120,101,.15)}
-.dash-card-title{font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--ink);flex:1;font-family:var(--serif)}
+.dash-card-title{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-d);flex:1;font-family:var(--sans)}
 .dash-card-hint{position:relative;display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;min-width:16px;border-radius:50%;background:var(--paper3);border:1px solid var(--border2);color:var(--ink3);font-size:10px;font-weight:700;font-family:var(--sans);cursor:help;flex-shrink:0;line-height:1;user-select:none;transition:all .15s}
 .dash-card-hint::before{content:"i"}
 .dash-card-hint:hover{background:var(--teal-m);color:#fff;border-color:var(--teal-m)}
@@ -175,13 +234,17 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
 .map-legend-item{display:flex;align-items:center;gap:.3rem;font-size:10px;color:var(--text-faint);letter-spacing:.02em}
 .map-bubble{border-radius:50%;background:rgba(13,158,122,.55);border:1px solid rgba(13,158,122,.8);display:inline-block}
 
-@media(max-width:1160px){
+@media(max-width:1300px){
   .dash-row.row-a,.dash-row.row-b{grid-template-columns:1fr}
   #map-wrap{height:260px}
+}
+@media(max-width:900px){
+  .dash-row.row-a,.dash-row.row-b{grid-template-columns:1fr 1fr}
 }
 @media(max-width:720px){
   .dash-scorecards{grid-template-columns:1fr 1fr}
   .dash-scard-combo{flex-wrap:wrap;gap:14px}
+  .dash-row.row-a,.dash-row.row-b{grid-template-columns:1fr}
 }
 @media(max-width:520px){
   .dash-scorecards{grid-template-columns:1fr}
@@ -190,20 +253,18 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
 /* =========================================================================
    DATABASE TAB
    ========================================================================= */
-.db-search-row{margin-bottom:18px}
+.search-hero{margin-bottom:18px}
 .search-outer{position:relative;max-width:640px}
 .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none;font-size:16px}
 #search-input{width:100%;padding:14px 18px 14px 46px;border:1.5px solid var(--border);border-radius:11px;background:var(--paper);font-size:14.5px;font-family:var(--sans);color:var(--ink);outline:none;transition:border .18s,box-shadow .18s}
 #search-input:focus{border-color:var(--teal-m);box-shadow:0 0 0 4px rgba(18,166,140,.1)}
 #search-input::placeholder{color:var(--ink4)}
 
-.db-layout{display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start}
-
-.db-card{background:var(--paper);border:1px solid var(--border);border-radius:13px;box-shadow:none;overflow:visible;display:flex;flex-direction:column;transition:all .18s}
+.db-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--card-r);box-shadow:none;overflow:visible;display:flex;flex-direction:column;transition:all .18s}
 .db-card:hover{box-shadow:0 4px 16px rgba(15,14,23,.10);border-color:var(--teal-m)}
 .db-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--paper);flex-shrink:0;flex-wrap:wrap;gap:8px}
 .db-title-wrap{display:flex;align-items:center;gap:8px}
-.db-title-text{font-size:14px;font-weight:600;color:var(--ink);letter-spacing:.02em}
+.db-title-text{font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--teal-d)}
 .db-showing{font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:6px}
 .db-showing strong{color:var(--ink2);font-weight:700}
 .db-sort-icon{opacity:.6}
@@ -235,23 +296,6 @@ td.col-journal{font-size:11px}
 .mob-tap-hint{display:none;text-align:center;font-size:11px;color:var(--text-faint);font-style:italic;padding:.45rem 0 .15rem;letter-spacing:.02em}
 @media(max-width:960px){.mob-tap-hint{display:block}}
 
-/* Advanced Search sidebar — always visible, replaces the old dropdown panel */
-.filter-sidebar{background:var(--paper);border:1px solid var(--border);border-radius:13px;padding:18px 18px 20px;display:flex;flex-direction:column;gap:14px;position:sticky;top:76px}
-.filter-sidebar-hdr{display:flex;align-items:center;justify-content:space-between;padding-bottom:12px;border-bottom:1px solid var(--border)}
-.filter-sidebar-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink3)}
-.filter-sidebar-body{display:flex;flex-direction:column;gap:14px}
-.fg{display:flex;flex-direction:column;gap:6px}
-.fg label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3);display:block}
-select.fsel{width:100%;padding:10px 30px 10px 11px;border:1px solid var(--border);border-radius:7px;background:var(--paper2);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;appearance:none;-webkit-appearance:none;-moz-appearance:none;transition:all .18s;font-weight:400;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233a3830' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 9px center;background-size:16px}
-select.fsel:hover{border-color:var(--ink3);background-color:var(--paper3)}
-select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1);background-color:var(--paper)}
-.filter-sidebar-clear{width:100%;padding:12px;background:transparent;border:1.5px solid var(--rose);color:var(--rose);border-radius:8px;font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.03em;cursor:pointer;transition:all .18s;margin-top:2px}
-.filter-sidebar-clear:hover{background:var(--rose);color:#fff}
-
-@media(max-width:900px){
-  .db-layout{grid-template-columns:1fr}
-  .filter-sidebar{position:static;order:2}
-}
 @media(max-width:640px){
   table{min-width:380px;font-size:11.5px}
   td.col-journal{display:none}
@@ -327,11 +371,11 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
         <h3>Welcome to Timeless Compass</h3>
         <p>Curated by the Sri Sri Institute for Advanced Research (SSIAR), the research wing of the Art of Living, the Timeless Compass: Research Repository is an interactive digital repository of global studies on Ancient Systems of Knowledge (ASK) that connects ancient wisdom with modern scientific inquiry.</p>
 
-        <p><strong>How to navigate:</strong> the repository is organized into two tabs, always sharing the same filters.</p>
+        <p><strong>How to navigate:</strong> the repository is organized into two tabs, each with the same Advanced Search sidebar on the left and always sharing the same filters.</p>
 
         <p>📊 <strong>Dashboard</strong> — Scorecards and visualizations offering a bird's-eye view of the repository: publication trends by year, research topics by volume, geographic distribution, and research partnerships. Click any chart to filter the studies — that filter carries straight over to the Database tab.</p>
 
-        <p>📋 <strong>Database</strong> — The full research table, useful for direct comparison and study selection. Search by keyword, or use the Advanced Search panel beside the table to narrow studies by topic, population, intervention, year, location and more. Click any row to open a study's full details, including a link to the original peer-reviewed work.</p>
+        <p>📋 <strong>Database</strong> — The full research table, useful for direct comparison and study selection. Search by keyword, or use the Advanced Search sidebar to narrow studies by topic, population, intervention, partnership, language, year, or country. Intervention is a multi-select — tick as many as you like and a study matching any of them will show. Click any row to open a study's full details, including a link to the original peer-reviewed work.</p>
 
         <p style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.92em;color:var(--ink4)"><strong>A note on AI use:</strong> This repository presents bibliographic and publication metadata as reported in the original sources. AI tools assisted in extracting this metadata, which was reviewed and validated by the SSIAR team; classification into partnership type, topic, and subtopic was carried out entirely by expert human review.</p>
       </div>
@@ -344,11 +388,15 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 
         <p><strong>Start with what you want to know.</strong> Curious about what science has discovered? Looking for evidence on a specific question? Here's how to find it.</p>
 
+        <p><strong>The Advanced Search sidebar is always there.</strong> It sits to the left of both tabs — the same filters, the same selections, whichever tab you're on. Set a filter on the Dashboard and it's already applied when you switch to the Database, and vice versa.</p>
+
         <p><strong>Explore by curiosity (the scenic route):</strong> Start on the <strong>Dashboard</strong> tab. Click "Mental Health" in the topics chart to see studies on stress, anxiety, or depression. Hover over the year chart to spot research peaks. Click a bubble on the map to explore studies from a specific country. Every click updates the shared filter state — switch to the Database tab any time to see the matching studies.</p>
 
-        <p><strong>Search by specifics (the direct route):</strong> Switch to the <strong>Database</strong> tab and use the search bar for keywords — "anxiety in nurses," "heart disease," "brain imaging," or an author name. The Advanced Search panel beside the table lets you filter by topic, population, intervention, partnership, language, year, or country at the same time. The table updates live.</p>
+        <p><strong>Search by specifics (the direct route):</strong> Switch to the <strong>Database</strong> tab and use the search bar for keywords — "anxiety in nurses," "heart disease," "brain imaging," or an author name. The Advanced Search sidebar lets you filter by topic, population, intervention, partnership, language, year, or country at the same time. The table updates live.</p>
 
-        <p><strong>Combine filters to answer real questions:</strong> Select multiple filters to refine further. Want research on anxiety or depression in young people from the past five years? Set Topic, Population and Year in the sidebar. Every active filter appears as a removable chip above the table — click × to remove any, or use Clear All Filters to start over.</p>
+        <p><strong>Intervention is multi-select.</strong> Click the Intervention field to open a checklist, tick as many interventions as you like, and click elsewhere to close it — a study matching any of your picks will show.</p>
+
+        <p><strong>Combine filters to answer real questions:</strong> Select multiple filters to refine further. Want research on anxiety or depression in young people from the past five years? Set Topic, Population and Year in the sidebar. Every active filter appears as a removable chip above the results — click × to remove any, or use Clear All to start over.</p>
 
         <p><strong>Dive into individual studies:</strong> Click any row in the Database table to open a study's full details — findings, population, intervention, study design, author affiliation, and a link to the published paper.</p>
 
@@ -359,183 +407,217 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 </header>
 
 <!-- ═══ TAB NAVIGATION ═══════════════════════════════════════════════ -->
-<div id="tab-nav">
+<nav id="tab-nav">
   <div class="container">
-    <button class="tab-btn active" data-tab="dashboard">
-      <span class="tab-btn-icon">📊</span> Dashboard
-    </button>
-    <button class="tab-btn" data-tab="database">
-      <span class="tab-btn-icon">📋</span> Database
-    </button>
+    <div class="tabs-inner">
+      <button class="tab-btn on" data-tab="dashboard" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M3 3v16a2 2 0 0 0 2 2h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 15l4-5 3 3 5-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span>Dashboard</span>
+      </button>
+      <button class="tab-btn" data-tab="database" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span>Database</span>
+      </button>
+    </div>
   </div>
-</div>
+</nav>
 
 <!-- ═══ MAIN CONTENT ══════════════════════════════════════════════ -->
 <div id="main">
   <div class="container">
 
-    <!-- ══════════════════════ DASHBOARD TAB ══════════════════════ -->
+    <!-- ══════════════════════ DASHBOARD TAB ══════════════════════
+         Same suite-layout grid as the Database tab: an Advanced Search
+         sidebar on the left, main content on the right. The sidebar is
+         the very same component (just a second instance, prefix
+         "dashadv") so a change here is already reflected if you switch
+         to the Database tab. -->
     <div class="tab-panel active" id="dashboard-panel">
 
-      <div class="af-bar">
-        <span class="af-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-          Active Filters
-        </span>
-        <span class="active-pills-inner"></span>
+      <div class="filters-row" id="filters-row-dashboard">
+        <span class="filter-row-lbl">Active Filters:</span>
+        <div class="active-pills-inner"></div>
       </div>
 
-      <!-- Scorecards -->
-      <div class="dash-scorecards">
-        <div class="dash-scard">
-          <div class="dash-scard-top"><span class="dash-scard-icon">📋</span><span class="dash-scard-lbl">No. of Studies</span></div>
-          <div class="dash-scard-val" id="sc-sel">…</div>
-          <div class="dash-scard-sub"><span id="sc-pct">100%</span> of the repository</div>
-        </div>
-        <div class="dash-scard">
-          <div class="dash-scard-top"><span class="dash-scard-icon">📅</span><span class="dash-scard-lbl">Time Range</span></div>
-          <div class="dash-scard-val" id="sc-yrs">—</div>
-          <div class="dash-scard-sub">years of publication covered</div>
-        </div>
-        <div class="dash-scard">
-          <div class="dash-scard-top"><span class="dash-scard-icon">🌍</span><span class="dash-scard-lbl">Geographic Reach</span></div>
-          <div class="dash-scard-combo">
-            <div class="dash-scard-combo-item"><div class="dash-scard-val" id="sc-con">—</div><div class="dash-scard-sub">continents</div></div>
-            <div class="dash-scard-combo-item"><div class="dash-scard-val" id="sc-cty">—</div><div class="dash-scard-sub">countries</div></div>
-          </div>
-        </div>
-      </div>
+      <div class="suite-layout">
 
-      <!-- Row A: Year histogram + Partnership -->
-      <div class="dash-row row-a">
-        <div class="dash-card">
-          <div class="dash-card-hdr">
-            <span class="dash-card-num">1</span>
-            <span class="dash-card-title">Studies by Year</span>
-            <span class="dash-card-hint" data-tip="Shows how many studies were published each year. Click any bar to filter the database to that year."></span>
+        <aside class="filters-sidebar">
+          <div class="adv-filter sidebar-mode">
+            <div class="adv-panel">
+              <div class="adv-panel-hdr">
+                <span class="adv-panel-title">Advanced Search</span>
+              </div>
+              <div class="adv-grid" id="dashadv-filter-body"></div>
+              <div class="adv-footer">
+                <button class="btn-cancel" onclick="clearAll()" type="button">Clear All</button>
+              </div>
+            </div>
           </div>
-          <div class="dash-canvas-wrap" style="height:210px">
-            <canvas id="year-chart"></canvas>
-          </div>
-          <div class="dash-card-caption">Click a bar to filter by year.</div>
-        </div>
+        </aside>
 
-        <div class="dash-card">
-          <div class="dash-card-hdr">
-            <span class="dash-card-num">4</span>
-            <span class="dash-card-title">Studies by Partnership</span>
-            <span class="dash-card-hint" data-tip="Shows the split between independent, collaborative, and internal research. Click a row to filter."></span>
-          </div>
-          <div class="partner-rows" id="partner-chart"></div>
-          <div class="dash-card-caption">Independent research: <span id="sc-ind">—</span> · Languages: <span id="sc-lng">—</span></div>
-        </div>
-      </div>
+        <div class="dash-main">
 
-      <!-- Row B: Topics donut + World map -->
-      <div class="dash-row row-b">
-        <div class="dash-card">
-          <div class="dash-card-hdr">
-            <span class="dash-card-num">2</span>
-            <span class="dash-card-title">Explore by Topics</span>
-            <span class="dash-card-hint" data-tip="Inner ring groups studies by topic; outer ring breaks them into subtopics. Click any slice to filter."></span>
+          <!-- Scorecards -->
+          <div class="dash-scorecards">
+            <div class="dash-scard">
+              <div class="dash-scard-top"><span class="dash-scard-icon">📋</span><span class="dash-scard-lbl">No. of Studies</span></div>
+              <div class="dash-scard-val" id="sc-sel">…</div>
+              <div class="dash-scard-sub"><span id="sc-pct">100%</span> of the repository</div>
+            </div>
+            <div class="dash-scard">
+              <div class="dash-scard-top"><span class="dash-scard-icon">📅</span><span class="dash-scard-lbl">Time Range</span></div>
+              <div class="dash-scard-val" id="sc-yrs">—</div>
+              <div class="dash-scard-sub">years of publication covered</div>
+            </div>
+            <div class="dash-scard">
+              <div class="dash-scard-top"><span class="dash-scard-icon">🌍</span><span class="dash-scard-lbl">Geographic Reach</span></div>
+              <div class="dash-scard-combo">
+                <div class="dash-scard-combo-item"><div class="dash-scard-val" id="sc-con">—</div><div class="dash-scard-sub">continents</div></div>
+                <div class="dash-scard-combo-item"><div class="dash-scard-val" id="sc-cty">—</div><div class="dash-scard-sub">countries</div></div>
+              </div>
+            </div>
           </div>
-          <div class="dash-canvas-wrap" style="height:280px">
-            <canvas id="topic-chart"></canvas>
-          </div>
-          <div class="topic-legend" id="topic-legend"></div>
-          <div class="dash-card-caption">Click a topic or subtopic segment to filter.</div>
-        </div>
 
-        <div class="dash-card">
-          <div class="dash-card-hdr">
-            <span class="dash-card-num">3</span>
-            <span class="dash-card-title">Global Research Map</span>
-            <span class="dash-card-hint" data-tip="Bubble size reflects how many studies came from each country; the light map tint shows continent regions. Click a bubble to filter by that country."></span>
+          <!-- Row A: Year histogram + Partnership -->
+          <div class="dash-row row-a">
+            <div class="dash-card">
+              <div class="dash-card-hdr">
+                <span class="dash-card-num">1</span>
+                <span class="dash-card-title">Studies by Year</span>
+                <span class="dash-card-hint" data-tip="Shows how many studies were published each year. Click any bar to filter the database to that year."></span>
+              </div>
+              <div class="dash-canvas-wrap" style="height:210px">
+                <canvas id="year-chart"></canvas>
+              </div>
+              <div class="dash-card-caption">Click a bar to filter by year.</div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-hdr">
+                <span class="dash-card-num">4</span>
+                <span class="dash-card-title">Studies by Partnership</span>
+                <span class="dash-card-hint" data-tip="Shows the split between independent, collaborative, and internal research. Click a row to filter."></span>
+              </div>
+              <div class="partner-rows" id="partner-chart"></div>
+              <div class="dash-card-caption">Independent research: <span id="sc-ind">—</span> · Languages: <span id="sc-lng">—</span></div>
+            </div>
           </div>
-          <div id="map-wrap">
-            <svg id="world-svg"></svg>
-            <div class="map-tooltip" id="map-tooltip"></div>
+
+          <!-- Row B: Topics donut + World map -->
+          <div class="dash-row row-b">
+            <div class="dash-card">
+              <div class="dash-card-hdr">
+                <span class="dash-card-num">2</span>
+                <span class="dash-card-title">Explore by Topics</span>
+                <span class="dash-card-hint" data-tip="Inner ring groups studies by topic; outer ring breaks them into subtopics. Click any slice to filter."></span>
+              </div>
+              <div class="dash-canvas-wrap" style="height:280px">
+                <canvas id="topic-chart"></canvas>
+              </div>
+              <div class="topic-legend" id="topic-legend"></div>
+              <div class="dash-card-caption">Click a topic or subtopic segment to filter.</div>
+            </div>
+
+            <div class="dash-card">
+              <div class="dash-card-hdr">
+                <span class="dash-card-num">3</span>
+                <span class="dash-card-title">Global Research Map</span>
+                <span class="dash-card-hint" data-tip="Bubble size reflects how many studies came from each country; the light map tint shows continent regions. Click a bubble to filter by that country."></span>
+              </div>
+              <div id="map-wrap">
+                <svg id="world-svg"></svg>
+                <div class="map-tooltip" id="map-tooltip"></div>
+              </div>
+              <div class="map-legend">
+                <div class="map-legend-item"><span class="map-bubble" style="width:14px;height:14px"></span> More publications</div>
+                <div class="map-legend-item"><span class="map-bubble" style="width:7px;height:7px"></span> Fewer publications</div>
+              </div>
+              <div class="dash-card-caption">Click a country bubble to filter.</div>
+            </div>
           </div>
-          <div class="map-legend">
-            <div class="map-legend-item"><span class="map-bubble" style="width:14px;height:14px"></span> More publications</div>
-            <div class="map-legend-item"><span class="map-bubble" style="width:7px;height:7px"></span> Fewer publications</div>
-          </div>
-          <div class="dash-card-caption">Click a country bubble to filter.</div>
-        </div>
-      </div>
+
+        </div><!-- /dash-main -->
+
+      </div><!-- /suite-layout -->
 
     </div><!-- /dashboard-panel -->
 
     <!-- ══════════════════════ DATABASE TAB ══════════════════════ -->
     <div class="tab-panel" id="database-panel">
 
-      <div class="af-bar">
-        <span class="af-label">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-          Active Filters
-        </span>
-        <span class="active-pills-inner"></span>
-      </div>
-
-      <div class="db-search-row">
+      <div class="search-hero">
         <div class="search-outer">
           <span class="search-icon">🔍</span>
           <input id="search-input" type="search" autocomplete="off" placeholder="Search title, abstract, author, keyword, journal…" oninput="onSearch()">
         </div>
       </div>
 
-      <div class="db-layout">
+      <div class="filters-row" id="filters-row-database">
+        <span class="filter-row-lbl">Active Filters:</span>
+        <div class="active-pills-inner"></div>
+      </div>
 
-        <!-- Studies table -->
-        <div class="db-card">
-          <div class="db-header">
-            <div class="db-title-wrap" title="Every study in the repository, in one sortable table. Click a row to preview its details, or use search and the Advanced Search panel to narrow it down.">
-              <span class="db-title-text">RESEARCH DATABASE</span>
-            </div>
-            <div class="db-showing">
-              Showing <strong id="showing-label">Loading…</strong> records
-              <svg class="db-sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-            </div>
-          </div>
-          <div class="table-scroll">
-            <table id="main-table">
-              <thead>
-                <tr>
-                  <th style="width:38px" class="col-num">#</th>
-                  <th onclick="doSort('type')" id="th-type">Type</th>
-                  <th onclick="doSort('title')" id="th-title">Title</th>
-                  <th onclick="doSort('citation')" id="th-citation">Citation</th>
-                  <th onclick="doSort('journal')" id="th-journal">Journal / Source</th>
-                </tr>
-              </thead>
-              <tbody id="table-body"></tbody>
-            </table>
-          </div>
-          <div class="mob-tap-hint">Tap a row to preview the study</div>
-          <div class="db-footer">
-            <div class="rpp-wrap">
-              <span>Rows per page:</span>
-              <select class="rpp-sel" onchange="onRPP(this.value)">
-                <option value="10" selected>10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-              </select>
-            </div>
-            <span id="showing-footer">Loading records…</span>
-            <div class="pager" id="pager"></div>
-          </div>
-        </div>
+      <div class="suite-layout">
 
-        <!-- Advanced Search — always-visible sidebar -->
-        <div class="filter-sidebar">
-          <div class="filter-sidebar-hdr">
-            <span class="filter-sidebar-title">⚙ Advanced Search</span>
+        <!-- Advanced Search — always-visible sidebar; same component as
+             the Dashboard tab's, prefix "dbadv" -->
+        <aside class="filters-sidebar">
+          <div class="adv-filter sidebar-mode">
+            <div class="adv-panel">
+              <div class="adv-panel-hdr">
+                <span class="adv-panel-title">Advanced Search</span>
+              </div>
+              <div class="adv-grid" id="dbadv-filter-body"></div>
+              <div class="adv-footer">
+                <button class="btn-cancel" onclick="clearAll()" type="button">Clear All</button>
+              </div>
+            </div>
           </div>
-          <div class="filter-sidebar-body" id="sidebar-filter-body"></div>
-          <button class="filter-sidebar-clear" onclick="clearAll()">Clear All Filters</button>
-        </div>
+        </aside>
 
-      </div><!-- /db-layout -->
+        <div class="search-main">
+          <!-- Studies table -->
+          <div class="db-card">
+            <div class="db-header">
+              <div class="db-title-wrap" title="Every study in the repository, in one sortable table. Click a row to preview its details, or use search and the Advanced Search panel to narrow it down.">
+                <span class="db-title-text">Research Database</span>
+              </div>
+              <div class="db-showing">
+                Showing <strong id="showing-label">Loading…</strong> records
+                <svg class="db-sort-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table id="main-table">
+                <thead>
+                  <tr>
+                    <th style="width:38px" class="col-num">#</th>
+                    <th onclick="doSort('type')" id="th-type">Type</th>
+                    <th onclick="doSort('title')" id="th-title">Title</th>
+                    <th onclick="doSort('citation')" id="th-citation">Citation</th>
+                    <th onclick="doSort('journal')" id="th-journal">Journal / Source</th>
+                  </tr>
+                </thead>
+                <tbody id="table-body"></tbody>
+              </table>
+            </div>
+            <div class="mob-tap-hint">Tap a row to preview the study</div>
+            <div class="db-footer">
+              <div class="rpp-wrap">
+                <span>Rows per page:</span>
+                <select class="rpp-sel" onchange="onRPP(this.value)">
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <span id="showing-footer">Loading records…</span>
+              <div class="pager" id="pager"></div>
+            </div>
+          </div>
+        </div><!-- /search-main -->
+
+      </div><!-- /suite-layout -->
 
     </div><!-- /database-panel -->
 
@@ -836,11 +918,13 @@ async function loadLibraryData() {
 let FILTER_DEFS = [];
 
 function buildFilterDefs() {
+  // NOTE: Intervention is intentionally excluded here — it's rendered as
+  // its own multi-select checkbox dropdown (see buildInterventionDropdown),
+  // matching evidence_finder.html's iv-dropdown component.
   FILTER_DEFS = [
     {key:'topic',       label:'Topic',       opts:F_TOPICS,    all:'All Topics'},
     {key:'subtopic',    label:'Subtopic',    opts:F_SUBS,      all:'All Subtopics'},
     {key:'population',  label:'Population',  opts:F_POPS,      all:'All Populations'},
-    {key:'intervention',label:'Intervention',opts:F_INTS,      all:'All Interventions'},
     {key:'partnership', label:'Partnership', opts:F_PARTNERS,  all:'All Partnerships'},
     {key:'institute',   label:'Top Contributing Institutes', opts:F_INSTITUTES, all:'All Institutes'},
     {key:'language',    label:'Language',    opts:F_LANGS,     all:'All Languages'},
@@ -896,7 +980,8 @@ const ISO_CONTINENT = {"533":"North America","4":"Asia","24":"Africa","660":"Nor
    ───────────────────────────────────────── */
 const S = {
   query: '',
-  filters: {topic:'',subtopic:'',population:'',intervention:'',partnership:'',language:'',year:'',country:''},
+  filters: {topic:'',subtopic:'',population:'',partnership:'',institute:'',language:'',year:'',country:''},
+  interventions: [],    // multi-select — matches studies with ANY of these
   chartF: {},           // chart-click filters
   filtered: [...RAW],
   sort: {col:'rating_sort', dir:'desc'},
@@ -906,16 +991,12 @@ const S = {
   activeTab: 'dashboard',
 };
 
-function buildFilterHTML(prefix){
-  return FILTER_DEFS.map(({key,label,opts,all})=>`
-    <div class="fg">
-      <label for="${prefix}-${key}">${label}</label>
-      <select class="fsel" id="${prefix}-${key}" onchange="onFilter('${key}',this.value)">
-        <option value="">${all}</option>
-        ${opts.map(o=> (o && typeof o === 'object') ? `<option value="${o.value}">${o.label}</option>` : `<option value="${o}">${o}</option>`).join('')}
-      </select>
-    </div>`).join('');
-}
+// The Advanced Search sidebar exists twice on the page — once on the
+// Dashboard tab (prefix "dashadv"), once on the Database tab (prefix
+// "dbadv") — both driven by the same S state, so a change made in either
+// one is instantly reflected in the other. This mirrors the multi-tab,
+// single-filter-state pattern in evidence_finder.html.
+const SIDEBAR_PREFIXES = ['dashadv','dbadv'];
 
 /* ─────────────────────────────────────────
    COMPUTE FILTERED DATASET
@@ -929,11 +1010,14 @@ function compute(){
       ...(p.topics||[]),...(p.subtopics||[]),...(p.interventions||[])
     ].some(v=>v&&String(v).toLowerCase().includes(q)));
   }
-  const {topic,subtopic,population,intervention,partnership,institute,language,year,country} = S.filters;
+  const {topic,subtopic,population,partnership,institute,language,year,country} = S.filters;
   if(topic)       d = d.filter(p=>p.topics&&p.topics.includes(topic));
   if(subtopic)    d = d.filter(p=>p.subtopics&&p.subtopics.includes(subtopic));
   if(population)  d = d.filter(p=>p.populations&&p.populations.includes(population));
-  if(intervention)d = d.filter(p=>p.interventions&&p.interventions.includes(intervention));
+  // Intervention — multi-select: a study matches if it has ANY of the
+  // ticked interventions (same "matches any of your picks" philosophy as
+  // evidence_finder.html's iv-dropdown).
+  if(S.interventions.length) d = d.filter(p=>p.interventions&&p.interventions.some(iv=>S.interventions.includes(iv)));
   if(partnership) d = d.filter(p=>p.partnership===partnership);
   if(institute)   d = d.filter(p=>p.affiliation&&p.affiliation.toLowerCase().includes(institute.toLowerCase()));
   if(language)    d = d.filter(p=>p.language===language);
@@ -961,10 +1045,11 @@ function setChartFilter(key,val){
   S.page=1; update();
 }
 function clearAll(){
-  S.filters={topic:'',subtopic:'',population:'',intervention:'',partnership:'',institute:'',language:'',year:'',country:''};
+  S.filters={topic:'',subtopic:'',population:'',partnership:'',institute:'',language:'',year:'',country:''};
+  S.interventions=[];
   S.chartF={}; S.query=''; S.page=1;
   const inp=document.getElementById('search-input'); if(inp) inp.value='';
-  syncSelects(); update();
+  syncSelects(); syncIvUI(); update();
 }
 function removeFilter(type,key){
   if(type==='f') { S.filters[key]=''; syncSelects(); }
@@ -972,11 +1057,19 @@ function removeFilter(type,key){
   S.page=1; update();
 }
 function removeSearchFilter(){ S.query=''; document.getElementById('search-input').value=''; S.page=1; update(); }
+function removeIntervention(name){
+  S.interventions = S.interventions.filter(x=>x!==name);
+  S.page=1; syncIvUI(); update();
+}
 
+// Keeps both sidebar instances' single-select dropdowns showing whatever
+// is currently active — including selections made via chart clicks.
 function syncSelects(){
-  FILTER_DEFS.forEach(({key})=>{
-    const el=document.getElementById(`sidebar-${key}`);
-    if(el) el.value=S.filters[key]||'';
+  SIDEBAR_PREFIXES.forEach(prefix=>{
+    FILTER_DEFS.forEach(({key})=>{
+      const el=document.getElementById(`${prefix}-${key}`);
+      if(el) el.value=S.filters[key]||'';
+    });
   });
 }
 
@@ -1169,23 +1262,25 @@ function closeStudyModal(){
    RENDER ACTIVE FILTERS (shared strip, appears on both tabs)
    ───────────────────────────────────────── */
 function renderActivePills(){
-  const pills=[];
-  if(S.query) pills.push(`<span class="fpill">Search: "${S.query.slice(0,25)}${S.query.length>25?'…':''}" <button class="pill-x" onclick="removeSearchFilter()">×</button></span>`);
+  const chips=[];
+  if(S.query) chips.push(`<button class="fchip" onclick="removeSearchFilter()">Search: "${S.query.slice(0,25)}${S.query.length>25?'…':''}" <span class="fchip-x">×</span></button>`);
   FILTER_DEFS.forEach(({key,label,opts})=>{
     const v=S.filters[key]; if(!v) return;
     const match = Array.isArray(opts) ? opts.find(o=>o&&typeof o==='object'&&o.value===v) : null;
     const displayV = match ? match.label : v;
-    pills.push(`<span class="fpill">${label}: ${displayV} <button class="pill-x" onclick="removeFilter('f','${key}')">×</button></span>`);
+    chips.push(`<button class="fchip" onclick="removeFilter('f','${key}')">${label}: ${displayV} <span class="fchip-x">×</span></button>`);
+  });
+  S.interventions.forEach(name=>{
+    chips.push(`<button class="fchip" onclick="removeIntervention('${name.replace(/'/g,"\\'")}')">${name} <span class="fchip-x">×</span></button>`);
   });
   const CF_LABELS={year:'Year',topic:'Topic',subtopic:'Subtopic',partnership:'Partnership',country:'Country'};
   Object.entries(S.chartF).forEach(([k,v])=>{
-    if(v) pills.push(`<span class="fpill">${CF_LABELS[k]||k}: ${v} <button class="pill-x" onclick="removeFilter('c','${k}')">×</button></span>`);
+    if(v) chips.push(`<button class="fchip" onclick="removeFilter('c','${k}')">${CF_LABELS[k]||k}: ${v} <span class="fchip-x">×</span></button>`);
   });
-  const clearBtn=pills.length?`<button class="clear-all" onclick="clearAll()">Clear all</button>`:'';
-  const html = pills.length
-    ? pills.join('')+clearBtn
-    : `<span class="af-empty">No filters applied — showing all ${RAW.length} publications</span>`;
+  const clearBtn=chips.length?`<button class="chip-clear-all" onclick="clearAll()">Clear All</button>`:'';
+  const html = chips.join('')+clearBtn;
   document.querySelectorAll('.active-pills-inner').forEach(el=>{ el.innerHTML = html; });
+  document.querySelectorAll('.filters-row').forEach(el=>{ el.classList.toggle('show', chips.length>0); });
 }
 
 /* ─────────────────────────────────────────
@@ -1415,7 +1510,7 @@ function renderPartnerChart(){
    ───────────────────────────────────────── */
 function switchTab(tab){
   S.activeTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('on', b.dataset.tab===tab));
   document.getElementById('dashboard-panel').classList.toggle('active', tab==='dashboard');
   document.getElementById('database-panel').classList.toggle('active', tab==='database');
   if(tab==='database'){ renderTable(); }
@@ -1426,6 +1521,111 @@ function switchTab(tab){
    UTILITY
    ───────────────────────────────────────── */
 function $(sel){ return document.getElementById(sel)||document.querySelector(sel); }
+
+/* ─────────────────────────────────────────
+   INTERVENTION FILTER — multi-select dropdown
+   Same iv-dropdown/iv-trigger/adv-iv-box component as evidence_finder.html.
+   Built twice (once per sidebar prefix); both stay in sync via syncIvUI().
+   ───────────────────────────────────────── */
+function ivFieldHTML(prefix){
+  return `
+    <div class="fg">
+      <label for="${prefix}-iv-trigger">Intervention</label>
+      <div class="iv-dropdown" id="${prefix}-iv-dropdown">
+        <button type="button" class="iv-trigger" id="${prefix}-iv-trigger">
+          <span id="${prefix}-iv-trigger-label">All Interventions</span>
+          <svg class="iv-trigger-chevron" width="9" height="6" viewBox="0 0 9 6" fill="none"><path d="M1 1L4.5 4.5L8 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="adv-iv-box" id="${prefix}-iv-box">
+          <label class="iv-opt iv-opt-all" id="${prefix}-iv-opt-all">
+            <input type="checkbox" id="${prefix}-iv-check-all" checked>
+            <span>All Interventions</span>
+          </label>
+          <div class="iv-opt-divider"></div>
+          <div id="${prefix}-iv-opt-list"></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// Builds one sidebar's full Advanced Search grid: Topic / Subtopic /
+// Population / Intervention (multi-select) / Partnership / Institute /
+// Language / Year / Country — in that order, matching the finder's layout.
+function buildSidebarHTML(prefix){
+  const before = FILTER_DEFS.slice(0,3); // topic, subtopic, population
+  const after  = FILTER_DEFS.slice(3);   // partnership, institute, language, year, country
+  const fg = ({key,label,opts,all})=>`
+    <div class="fg">
+      <label for="${prefix}-${key}">${label}</label>
+      <select class="fsel" id="${prefix}-${key}" onchange="onFilter('${key}',this.value)">
+        <option value="">${all}</option>
+        ${opts.map(o=> (o && typeof o === 'object') ? `<option value="${o.value}">${o.label}</option>` : `<option value="${o}">${o}</option>`).join('')}
+      </select>
+    </div>`;
+  return before.map(fg).join('') + ivFieldHTML(prefix) + after.map(fg).join('');
+}
+
+function updateIvFilterLabel(prefix){
+  const n = S.interventions.length;
+  const triggerLabel = document.getElementById(`${prefix}-iv-trigger-label`);
+  if (triggerLabel) triggerLabel.textContent = n === 0 ? 'All Interventions' : (n === 1 ? S.interventions[0] : `${n} Interventions Selected`);
+  const trigger = document.getElementById(`${prefix}-iv-trigger`);
+  if (trigger) trigger.classList.toggle('has-filters', n > 0);
+  const checkAll = document.getElementById(`${prefix}-iv-check-all`);
+  if (checkAll) checkAll.checked = (n === 0);
+}
+
+// Keeps both sidebar instances' checkbox states + trigger labels showing
+// the same S.interventions array, however it was last changed.
+function syncIvUI(){
+  SIDEBAR_PREFIXES.forEach(prefix=>{
+    updateIvFilterLabel(prefix);
+    document.querySelectorAll(`#${prefix}-iv-opt-list input[data-iv]`).forEach(cb=>{
+      cb.checked = S.interventions.includes(cb.dataset.iv);
+    });
+  });
+}
+
+function buildInterventionDropdown(prefix){
+  const list = document.getElementById(`${prefix}-iv-opt-list`);
+  if(!list) return;
+  list.innerHTML = F_INTS.map(name => {
+    const safeId = `${prefix}-iv-` + name.replace(/[^a-z0-9]+/gi,'-');
+    return `<label class="iv-opt" for="${safeId}">
+      <input type="checkbox" id="${safeId}" data-iv="${name.replace(/"/g,'&quot;')}">
+      <span>${name}</span>
+    </label>`;
+  }).join('');
+  list.querySelectorAll('input[data-iv]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const name = cb.dataset.iv;
+      if (cb.checked) { if (!S.interventions.includes(name)) S.interventions.push(name); }
+      else { S.interventions = S.interventions.filter(x=>x!==name); }
+      S.page = 1; syncIvUI(); update();
+    });
+  });
+  updateIvFilterLabel(prefix);
+
+  const checkAll = document.getElementById(`${prefix}-iv-check-all`);
+  if(checkAll) checkAll.addEventListener('change', () => {
+    S.interventions = [];
+    S.page = 1; syncIvUI(); update();
+  });
+
+  const trigger = document.getElementById(`${prefix}-iv-trigger`);
+  if(trigger) trigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById(`${prefix}-iv-dropdown`).classList.toggle('open');
+  });
+}
+
+// Close any open intervention dropdown when clicking elsewhere on the page.
+document.addEventListener('click', (e) => {
+  SIDEBAR_PREFIXES.forEach(prefix=>{
+    const wrap = document.getElementById(`${prefix}-iv-dropdown`);
+    if (wrap && !wrap.contains(e.target)) wrap.classList.remove('open');
+  });
+});
 
 /* ─────────────────────────────────────────
    MASTER UPDATE
@@ -1497,8 +1697,13 @@ document.addEventListener('DOMContentLoaded',()=>{
 // INITIALIZE APPLICATION
 // ─────────────────────────────────────────────────────────────────────────────
 function initializeApplication() {
-  // Build the always-visible Advanced Search sidebar
-  document.getElementById('sidebar-filter-body').innerHTML=buildFilterHTML('sidebar');
+  // Build both always-visible Advanced Search sidebars (Dashboard + Database)
+  // — same component, same shared S state, kept in sync via syncSelects()/syncIvUI().
+  SIDEBAR_PREFIXES.forEach(prefix=>{
+    const body = document.getElementById(`${prefix}-filter-body`);
+    if(body) body.innerHTML = buildSidebarHTML(prefix);
+    buildInterventionDropdown(prefix);
+  });
 
   // Reflect the data file's last-updated date in the footer, if known
   const footerLU = document.getElementById('footer-last-updated');
