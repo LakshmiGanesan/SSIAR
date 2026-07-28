@@ -196,6 +196,17 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 select.fsel{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;appearance:none;-webkit-appearance:none;-moz-appearance:none;transition:all .18s;font-weight:400;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%233a3830' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 10px center;background-size:18px;padding-right:36px;box-sizing:border-box}
 select.fsel:hover{border-color:var(--ink3);background-color:var(--paper3)}
 select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1);background-color:var(--paper)}
+/* INTERVENTION — multi-select dropdown (closed by default, like the other
+   filter selects) instead of an always-expanded checkbox list. */
+.iv-dropdown{position:relative}
+.iv-trigger{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:6px;background:var(--paper);font-family:var(--sans);font-size:12px;color:var(--ink2);cursor:pointer;transition:all .18s;text-align:left}
+.iv-trigger:hover{border-color:var(--ink3);background-color:var(--paper3)}
+.iv-dropdown.open .iv-trigger{border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1);background:var(--paper)}
+.iv-trigger.has-filters{background:var(--teal-l);border-color:var(--teal-m);color:var(--teal-d)}
+.iv-trigger-chevron{transition:transform .2s;flex-shrink:0;color:var(--ink3)}
+.iv-dropdown.open .iv-trigger-chevron{transform:rotate(180deg)}
+.iv-dropdown .adv-iv-box{display:none;position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:60;box-shadow:var(--sh-sm)}
+.iv-dropdown.open .adv-iv-box{display:block}
 .adv-iv-box{max-height:132px;overflow-y:auto;border:1px solid var(--border);border-radius:6px;background:var(--paper);padding:6px}
 .adv-footer{display:flex;gap:12px;padding:12px 16px;border-top:1px solid var(--border)}
 .adv-footer .btn-cancel{flex:1;padding:11px 14px;background:transparent;border:1px solid var(--border);border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:500;color:var(--ink2);cursor:pointer;transition:all .18s}
@@ -795,14 +806,20 @@ footer{border-top:1px solid var(--border);padding:18px 0}
                     <select class="fsel" id="adv-population"><option value="">All Populations</option></select>
                   </div>
                   <div class="fg">
-                    <label>Intervention <span class="fg-badge" id="iv-count-badge"></span></label>
-                    <div class="adv-iv-box" id="adv-iv-box">
-                      <label class="iv-opt iv-opt-all" id="iv-opt-all">
-                        <input type="checkbox" id="iv-check-all" checked>
-                        <span>All Interventions</span>
-                      </label>
-                      <div class="iv-opt-divider"></div>
-                      <div id="iv-opt-list"></div>
+                    <label for="iv-trigger">Intervention</label>
+                    <div class="iv-dropdown" id="iv-dropdown">
+                      <button type="button" class="iv-trigger" id="iv-trigger">
+                        <span id="iv-trigger-label">All Interventions</span>
+                        <svg class="iv-trigger-chevron" width="9" height="6" viewBox="0 0 9 6" fill="none"><path d="M1 1L4.5 4.5L8 1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                      <div class="adv-iv-box" id="adv-iv-box">
+                        <label class="iv-opt iv-opt-all" id="iv-opt-all">
+                          <input type="checkbox" id="iv-check-all" checked>
+                          <span>All Interventions</span>
+                        </label>
+                        <div class="iv-opt-divider"></div>
+                        <div id="iv-opt-list"></div>
+                      </div>
                     </div>
                   </div>
                   <div class="fg">
@@ -1778,8 +1795,10 @@ document.getElementById('srch-clr').addEventListener('click', () => {
 // ─────────────────────────────────────────────────────────────────────────────
 function updateIvFilterLabel() {
   const n = state.interventionFilter.length;
-  const badge = document.getElementById('iv-count-badge');
-  if (badge) badge.textContent = n === 0 ? '' : (n === 1 ? `— ${state.interventionFilter[0]}` : `— ${n} selected`);
+  const triggerLabel = document.getElementById('iv-trigger-label');
+  if (triggerLabel) triggerLabel.textContent = n === 0 ? 'All Interventions' : (n === 1 ? state.interventionFilter[0] : `${n} Interventions Selected`);
+  const trigger = document.getElementById('iv-trigger');
+  if (trigger) trigger.classList.toggle('has-filters', n > 0);
   document.getElementById('iv-check-all').checked = (n === 0);
 }
 function buildInterventionDropdown() {
@@ -1807,6 +1826,14 @@ document.getElementById('iv-check-all').addEventListener('change', () => {
   document.querySelectorAll('#iv-opt-list input[data-iv]').forEach(cb=>cb.checked=false);
   updateIvFilterLabel();
   state.page = 1; refresh();
+});
+document.getElementById('iv-trigger').addEventListener('click', (e) => {
+  e.stopPropagation();
+  document.getElementById('iv-dropdown').classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+  const ivWrap = document.getElementById('iv-dropdown');
+  if (ivWrap && !ivWrap.contains(e.target)) ivWrap.classList.remove('open');
 });
 document.getElementById('adv-btn').addEventListener('click', (e) => {
   e.stopPropagation();
