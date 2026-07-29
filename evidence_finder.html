@@ -79,6 +79,7 @@
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 /* ════════════════════════════════════════════════════════════════════════════
    TIMELESS COMPASS — EVIDENCE FINDER — STYLESHEET
@@ -172,6 +173,9 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-heigh
 .clear-all-btn{display:none;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:var(--paper2);font-family:var(--sans);font-size:12.5px;color:var(--ink3);cursor:pointer;transition:all .14s;white-space:nowrap}
 .clear-all-btn.show{display:flex}
 .clear-all-btn:hover{border-color:var(--teal-m);color:var(--teal)}
+.dl-report-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;border:1px solid var(--teal-m);background:var(--teal);font-family:var(--sans);font-size:12.5px;font-weight:600;color:#fff;cursor:pointer;transition:all .14s;white-space:nowrap}
+.dl-report-btn:hover{background:var(--teal-d);border-color:var(--teal-d)}
+.dl-report-btn:disabled{background:var(--paper3);border-color:var(--border2);color:var(--ink4);cursor:not-allowed}
 
 /* ADVANCED SEARCH FILTER PANEL — Topic / Subtopic / Population / Intervention /
    Intervention Duration / Country, in one dropdown grid (mirrors the Research
@@ -265,6 +269,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
   .search-field{flex:1 1 100%;max-width:none;order:1}
   .adv-filter{flex:1 1 calc(60% - 4px);max-width:none;order:2}
   .clear-all-btn{flex:1 1 calc(40% - 4px);justify-content:center;order:3}
+  .dl-report-btn{flex:1 1 calc(40% - 4px);justify-content:center;order:4}
   .adv-panel{left:0;right:auto;width:calc(100vw - 1.5rem);max-width:none}
   .adv-grid{grid-template-columns:1fr 1fr;gap:14px 16px;padding:14px}
 }
@@ -274,7 +279,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 @media(max-width:480px){
   .masthead{padding:32px 0 22px}
   .masthead-sub{padding:0 16px}
-  .adv-filter,.clear-all-btn{flex:1 1 100%}
+  .adv-filter,.clear-all-btn,.dl-report-btn{flex:1 1 100%}
   .adv-btn{padding:10px 12px;justify-content:center;width:100%}
   .search-field input{padding:10px 36px 10px 38px;font-size:13.5px}
   .adv-panel{left:0;right:0;width:100%;max-width:none}
@@ -782,6 +787,11 @@ footer{border-top:1px solid var(--border);padding:18px 0}
               <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/><line x1="4" y1="4" x2="9" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/><line x1="9" y1="4" x2="4" y2="9" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>
               Clear All
             </button>
+            <button class="dl-report-btn" id="dl-report-btn" type="button" onclick="downloadReport()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Download Report
+            </button>
+            <span class="tip tip--left" tabindex="0" data-tip="Generates a PDF with the full details of every study in the current filtered view — not just the current page."></span><span class="tip-arrow"></span>
           </div>
         </div>
       </div>
@@ -1177,6 +1187,7 @@ async function loadData() {
           subtopics,
           citation: r['Citation Short'],
           journal:  r['Journal'],
+          journal_reputation: r['Journal Reputation'] || '',
           affiliation: aff,
           country:  r['Country'],
           link:     r['Link to Published Study'],
@@ -1617,6 +1628,8 @@ function renderTable() {
   const sorted = sortedFiltered();
   const total = sorted.length;
   document.getElementById('vis-count').textContent = total;
+  const dlBtn = document.getElementById('dl-report-btn');
+  if (dlBtn) dlBtn.disabled = (total === 0);
 
   const totalPages = Math.ceil(total / PER_PAGE);
   if (state.page > totalPages) state.page = Math.max(1, totalPages);
@@ -2038,6 +2051,182 @@ function initApp() {
   renderTable();
   syncAdvSelects();
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DOWNLOAD REPORT (PDF) — every study in the CURRENT filtered view (all
+// matching studies, not just the current table page), one block per study
+// with the fields below, Citation hyperlinked to the published study.
+// ─────────────────────────────────────────────────────────────────────────────
+function currentFilterSummary() {
+  // Reuses whatever renderFilterStrip() already rendered as chips, so the
+  // report's subtitle always matches what's on screen.
+  const chips = [...document.querySelectorAll('#active-chips .fchip')]
+    .map(el => el.textContent.replace(/×\s*$/,'').trim())
+    .filter(Boolean);
+  return chips;
+}
+
+function downloadReport() {
+  const studies = sortedFiltered();
+  if (!studies.length) return;
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
+
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const marginX = 50;
+  const marginTop = 56;
+  const marginBottom = 50;
+  const contentW = pageW - marginX * 2;
+  const lineH = 13.5;
+  let y = marginTop;
+
+  function ensureSpace(needed) {
+    if (y + needed > pageH - marginBottom) {
+      doc.addPage();
+      y = marginTop;
+    }
+  }
+
+  // ── Report header ──
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(7, 92, 77); // teal-d
+  doc.text('Evidence Finder — Research Report', marginX, y);
+  y += 20;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(90, 88, 80);
+  const generated = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  doc.text(`Generated ${generated}  ·  ${studies.length} matching ${studies.length===1?'study':'studies'}`, marginX, y);
+  y += 14;
+  const activeFilters = currentFilterSummary();
+  if (activeFilters.length) {
+    const filterLines = doc.splitTextToSize(`Active filters: ${activeFilters.join(' · ')}`, contentW);
+    doc.setTextColor(120, 116, 107);
+    filterLines.forEach(line => { doc.text(line, marginX, y); y += 12; });
+  } else {
+    doc.setTextColor(120, 116, 107);
+    doc.text('No filters applied — full research library.', marginX, y);
+    y += 12;
+  }
+  y += 6;
+  doc.setDrawColor(206, 200, 184);
+  doc.setLineWidth(0.75);
+  doc.line(marginX, y, pageW - marginX, y);
+  y += 20;
+
+  // Renders one "Label: value" field, wrapping onto extra lines as needed.
+  // Long fields put the label on its own line with the value wrapped below;
+  // short fields that fit stay on a single "Label: value" line.
+  function drawField(label, value) {
+    value = (value == null || value === '') ? '—' : String(value);
+    const labelStr = label + ': ';
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(58, 56, 48);
+    const labelW = doc.getTextWidth(labelStr);
+    doc.setFont('helvetica', 'normal');
+    const oneLineW = doc.getTextWidth(value);
+
+    ensureSpace(lineH * 2);
+    if (labelW + oneLineW <= contentW) {
+      // Fits on one line: bold label + value together
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(58, 56, 48);
+      doc.text(labelStr, marginX, y);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(28, 27, 24);
+      doc.text(value, marginX + labelW, y);
+      y += lineH;
+    } else {
+      // Wraps: label on its own line, value wrapped beneath it
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(58, 56, 48);
+      doc.text(labelStr.trim(), marginX, y);
+      y += lineH;
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(28, 27, 24);
+      const lines = doc.splitTextToSize(value, contentW);
+      lines.forEach(line => { ensureSpace(lineH); doc.text(line, marginX, y); y += lineH; });
+    }
+  }
+
+  // Renders the Citation field as a clickable hyperlink to the published
+  // study, when a link is available; otherwise renders it as plain text.
+  function drawCitationField(label, citation, url) {
+    const labelStr = label + ': ';
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+    const labelW = doc.getTextWidth(labelStr);
+    const value = citation || '—';
+    const hasLink = !!(url && /^https?:\/\//i.test(url));
+
+    ensureSpace(lineH * 2);
+    doc.setTextColor(58, 56, 48);
+    doc.text(labelStr, marginX, y);
+
+    doc.setFont('helvetica', hasLink ? 'bolditalic' : 'normal');
+    if (hasLink) doc.setTextColor(26, 72, 128); else doc.setTextColor(28, 27, 24); // blue-ish for links
+
+    const remainingW = contentW - labelW;
+    const fits = doc.getTextWidth(value) <= remainingW;
+    if (fits) {
+      if (hasLink) doc.textWithLink(value, marginX + labelW, y, { url });
+      else doc.text(value, marginX + labelW, y);
+      if (hasLink) doc.line(marginX + labelW, y + 1.5, marginX + labelW + doc.getTextWidth(value), y + 1.5);
+      y += lineH;
+    } else {
+      y += lineH;
+      const lines = doc.splitTextToSize(value, contentW);
+      lines.forEach(line => {
+        ensureSpace(lineH);
+        if (hasLink) {
+          doc.textWithLink(line, marginX, y, { url });
+          doc.line(marginX, y + 1.5, marginX + doc.getTextWidth(line), y + 1.5);
+        } else {
+          doc.text(line, marginX, y);
+        }
+        y += lineH;
+      });
+    }
+    doc.setFont('helvetica', 'normal');
+  }
+
+  studies.forEach((s, i) => {
+    ensureSpace(lineH * 3); // keep the study heading from stranding at page bottom
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.setTextColor(7, 92, 77);
+    doc.text(`Study ${s.serial || (i+1)}`, marginX, y);
+    y += 17;
+
+    drawField('Research Highlight', s.highlight);
+    drawField('Population', s.population);
+    drawField('Participant Type', s.participant_type);
+    drawField('Sample Size', s.n);
+    drawField('Duration', s.duration);
+    drawField('Follow-up', s.followup);
+    drawField('Study Design', s.design);
+    drawField('Proven Benefits Statement', (s.benefits && s.benefits.length) ? s.benefits.join(' | ') : '');
+    drawField('Journal', s.journal);
+    drawField('Journal Reputation', s.journal_reputation);
+    drawField('Author Affiliation', s.affiliation);
+    drawField('Country', s.country);
+    drawField('Year', s.year);
+    drawCitationField('Citation', s.citation, s.link);
+
+    y += 10;
+    if (i < studies.length - 1) {
+      ensureSpace(14);
+      doc.setDrawColor(226, 221, 208);
+      doc.setLineWidth(0.5);
+      doc.line(marginX, y, pageW - marginX, y);
+      y += 18;
+    }
+  });
+
+  // Footer: page numbers
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    doc.setPage(p);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(150, 146, 135);
+    doc.text(`Page ${p} of ${pageCount}`, pageW - marginX, pageH - 26, { align: 'right' });
+    doc.text('Timeless Compass — Evidence Finder', marginX, pageH - 26);
+  }
+
+  const stamp = new Date().toISOString().slice(0,10);
+  doc.save(`Evidence-Finder-Report-${stamp}.pdf`);
+}
+window.downloadReport = downloadReport;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TABS — Visual Explorer / Searchable Highlights
