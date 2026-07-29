@@ -289,6 +289,15 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 .fchip:hover{opacity:.8}
 .fchip-x{opacity:.7;font-size:14px;margin-left:1px;line-height:1}
 
+/* Footnote — appears at the bottom of a filterable view (Visual Explorer)
+   to make clear that its selections have been applied to the linked
+   results table elsewhere (Searchable Highlights). */
+.filter-footnote{display:none;align-items:center;gap:8px;margin-top:14px;padding:10px 14px;background:var(--teal-l);border:1px solid rgba(10,120,101,.25);border-radius:9px;font-size:12px;color:var(--teal-d);flex-wrap:wrap}
+.filter-footnote.show{display:flex}
+.filter-footnote svg{flex-shrink:0;opacity:.85}
+.footnote-link{background:none;border:none;color:var(--teal-d);font-family:var(--sans);font-size:12px;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;margin-left:auto}
+.footnote-link:hover{opacity:.75}
+
 /* ── LAYOUT ── */
 .container{max-width:1280px;margin:0 auto;padding:0 24px}
 .page-body{padding:22px 0 60px}
@@ -686,6 +695,11 @@ footer{border-top:1px solid var(--border);padding:18px 0}
     <div class="page-body">
       <div class="container">
 
+        <div class="filters-row" id="filters-row-visual">
+          <span class="filter-row-lbl">Active Filters:</span>
+          <div id="active-chips-visual"></div>
+        </div>
+
         <div class="exp-row row-1">
           <div class="exp-card">
             <div class="exp-card-head">
@@ -733,6 +747,12 @@ footer{border-top:1px solid var(--border);padding:18px 0}
               <p style="font-size:9.5px;color:var(--ink4);margin-top:7px;font-style:italic;text-align:center;letter-spacing:.01em">Geodistribution by corresponding author affiliation</p>
             </div>
           </div>
+        </div>
+
+        <div class="filter-footnote" id="visual-footnote">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <span id="visual-footnote-text"></span>
+          <button class="footnote-link" type="button" onclick="setTab('search')">Go to Searchable Highlights →</button>
         </div>
 
         <p style="text-align:center;font-size:12.5px;color:var(--ink3);margin-top:6px">
@@ -789,7 +809,7 @@ footer{border-top:1px solid var(--border);padding:18px 0}
               </button>
               <div class="adv-panel" id="adv-panel">
                 <div class="adv-panel-hdr">
-                  <span class="adv-panel-title">Advanced Search Filters</span>
+                  <span class="adv-panel-title">Advanced Search Filters<span class="tip tip--right" tabindex="0" data-tip="Filter by Topic, Subtopic, Population, Intervention, Duration, or Country. Intervention is multi-select — tick several to match any of them. All fields combine together."></span><span class="tip-arrow"></span></span>
                   <button class="adv-close" id="adv-close" type="button">✕</button>
                 </div>
                 <div class="adv-grid">
@@ -837,14 +857,13 @@ footer{border-top:1px solid var(--border);padding:18px 0}
                 </div>
               </div>
             </div>
-            <span class="tip" tabindex="0" style="display:none" data-tip="Filter by Topic, Subtopic, Population, Intervention, Intervention Duration, or Country. Selecting several Interventions or Populations shows studies matching any of them; all fields combine together with AND."></span><span class="tip-arrow"></span>
           </aside>
 
           <div class="search-main">
             <div class="db-section" style="margin-top:0">
               <div class="db-header">
                 <div>
-                  <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database<span class="tip" tabindex="0" data-tip="Updates live as you search and filter above — showing the research highlights matching your selections. Click any row or card to open its flashcard: full study details, key takeaways, and a link to the original published work."></span><span class="tip-arrow"></span></div>
+                  <div class="exp-heading" style="margin-bottom:0;font-size:13px;letter-spacing:.2em;color:var(--ink)">Evidence Database<span class="tip" tabindex="0" data-tip="Updates live as you search and filter. Click a row or card to open its flashcard: full details and a link to the published study."></span><span class="tip-arrow"></span></div>
                 </div>
                 <div class="db-right">
                   <span class="db-meta"><strong id="vis-count">—</strong> research highlights shown</span>
@@ -1666,17 +1685,38 @@ function renderFilterStrip() {
   if (state.countryFilter) chips.push({ label:state.countryFilter, clear:()=>{ state.countryFilter=''; } });
   if (state.search) chips.push({ label:`"${state.search.length>18?state.search.slice(0,18)+'…':state.search}"`, clear:()=>{ state.search=''; document.getElementById('search-input').value=''; document.getElementById('srch-clr').classList.remove('show'); } });
 
+  const chipsHTML = chips.map((c,i) => `<button class="fchip" data-i="${i}">${c.label}<span class="fchip-x">×</span></button>`).join('');
   const chipsDiv = document.getElementById('active-chips');
-  chipsDiv.innerHTML = chips.map((c,i) => `<button class="fchip" data-i="${i}">${c.label}<span class="fchip-x">×</span></button>`).join('');
-  chipsDiv.querySelectorAll('.fchip').forEach((el,i) => {
-    el.addEventListener('click', () => { chips[i].clear(); state.page=1; refresh(); });
+  const chipsDivVisual = document.getElementById('active-chips-visual');
+  chipsDiv.innerHTML = chipsHTML;
+  if (chipsDivVisual) chipsDivVisual.innerHTML = chipsHTML;
+  [chipsDiv, chipsDivVisual].forEach(div=>{
+    if (!div) return;
+    div.querySelectorAll('.fchip').forEach((el,i) => {
+      el.addEventListener('click', () => { chips[i].clear(); state.page=1; refresh(); });
+    });
   });
 
   const hasFilters = chips.length > 0;
   const filtersRow = document.getElementById('filters-row');
+  const filtersRowVisual = document.getElementById('filters-row-visual');
   const clearAll = document.getElementById('clear-all');
   filtersRow.classList.toggle('show', hasFilters);
+  if (filtersRowVisual) filtersRowVisual.classList.toggle('show', hasFilters);
   clearAll.classList.toggle('show', hasFilters);
+
+  // Bottom-of-Visual-Explorer footnote — makes clear that whatever's
+  // selected up here is the same thing narrowing Searchable Highlights.
+  const footnote = document.getElementById('visual-footnote');
+  const footnoteText = document.getElementById('visual-footnote-text');
+  if (footnote && footnoteText) {
+    footnote.classList.toggle('show', hasFilters);
+    if (hasFilters) {
+      const n = chips.length;
+      const shown = applyFilters().length;
+      footnoteText.textContent = `${n} filter${n!==1?'s':''} applied — Searchable Highlights is showing the same ${shown.toLocaleString()} matching ${shown===1?'study':'studies'}.`;
+    }
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
