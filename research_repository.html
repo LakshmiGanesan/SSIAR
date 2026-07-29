@@ -31,6 +31,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   /* =========================================================================
      CSS SECTION 1: DESIGN TOKENS & VARIABLES (unchanged from original)
@@ -259,11 +260,19 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
    DATABASE TAB
    ========================================================================= */
 .search-hero{margin-bottom:18px}
-.search-outer{position:relative;max-width:640px}
+.search-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.search-outer{position:relative;max-width:640px;flex:1 1 380px}
 .search-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:var(--ink4);pointer-events:none;font-size:16px}
 #search-input{width:100%;padding:14px 18px 14px 46px;border:1.5px solid var(--border);border-radius:11px;background:var(--paper);font-size:14.5px;font-family:var(--sans);color:var(--ink);outline:none;transition:border .18s,box-shadow .18s}
 #search-input:focus{border-color:var(--teal-m);box-shadow:0 0 0 4px rgba(18,166,140,.1)}
 #search-input::placeholder{color:var(--ink4)}
+.dl-report-btn{display:flex;align-items:center;gap:6px;padding:12px 16px;border-radius:10px;border:1px solid var(--teal-m);background:var(--teal);font-family:var(--sans);font-size:13px;font-weight:600;color:#fff;cursor:pointer;transition:all .14s;white-space:nowrap}
+.dl-report-btn:hover{background:var(--teal-d);border-color:var(--teal-d)}
+.dl-report-btn:disabled{background:var(--paper3);border-color:var(--border2);color:var(--ink4);cursor:not-allowed}
+@media(max-width:640px){
+  .search-row{flex-direction:column;align-items:stretch}
+  .dl-report-btn{justify-content:center}
+}
 
 .db-card{background:var(--paper);border:1px solid var(--border);border-radius:var(--card-r);box-shadow:none;overflow:visible;display:flex;flex-direction:column;transition:all .18s}
 .db-card:hover{box-shadow:0 4px 16px rgba(15,14,23,.10);border-color:var(--teal-m)}
@@ -538,9 +547,16 @@ td.col-journal{font-size:11px}
     <div class="tab-panel" id="database-panel">
 
       <div class="search-hero">
-        <div class="search-outer">
-          <span class="search-icon">🔍</span>
-          <input id="search-input" type="search" autocomplete="off" placeholder="Search title, abstract, author, keyword, journal…" oninput="onSearch()">
+        <div class="search-row">
+          <div class="search-outer">
+            <span class="search-icon">🔍</span>
+            <input id="search-input" type="search" autocomplete="off" placeholder="Search title, abstract, author, keyword, journal…" oninput="onSearch()">
+          </div>
+          <button class="dl-report-btn" id="dl-report-btn" type="button" onclick="downloadReport()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download Report
+          </button>
+          <span class="tip" data-tip="Generates a PDF with the full details of every study in the current filtered view — not just the current page."></span>
         </div>
       </div>
 
@@ -1634,6 +1650,225 @@ document.addEventListener('click', (e) => {
 });
 
 /* ─────────────────────────────────────────
+   DOWNLOAD REPORT (PDF) — every study in the CURRENT filtered view (all
+   matching studies, not just the current table page). Same structure and
+   footer style as the Evidence Finder's report, adapted to this app's
+   fields: Title, Journal / Source, Type, Topic / Subtopic, Interventions,
+   Study Population, Partnership, Abstract, Author, Year, and a hyperlinked
+   Citation.
+   ───────────────────────────────────────── */
+function currentFilterSummaryRR(){
+  // Reuses whatever renderActivePills() already rendered as chips, so the
+  // report's subtitle always matches what's on screen.
+  const chips = [...document.querySelectorAll('.active-pills-inner .fchip')]
+    .map(el => el.textContent.replace(/×\s*$/,'').trim())
+    .filter(Boolean);
+  return [...new Set(chips)];
+}
+
+function downloadReport(){
+  const studies = sortedData(S.filtered);
+  if (!studies.length) return;
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'pt', format: 'a4' });
+
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const marginX = 50;
+  const marginTop = 56;
+  const marginBottom = 76;
+  const contentW = pageW - marginX * 2;
+  const lineH = 13.5;
+  let y = marginTop;
+
+  function ensureSpace(needed){
+    if (y + needed > pageH - marginBottom) { doc.addPage(); y = marginTop; }
+  }
+
+  // jsPDF's standard fonts only support WinAnsi (roughly Latin-1) glyphs.
+  // Swap known symbols for ASCII equivalents, then drop anything else
+  // outside the supported range, so odd characters in the source data
+  // can't garble text or throw off wrapping/width calculations.
+  function sanitizeText(str){
+    if (str == null) return str;
+    str = String(str);
+    const map = { '\u2191':'+', '\u2193':'-', '\u2192':'->', '\u2013':'-', '\u2014':'--',
+                  '\u2018':"'", '\u2019':"'", '\u201C':'"', '\u201D':'"', '\u2026':'...', '\u00A0':' ' };
+    str = str.replace(/[\u2191\u2193\u2192\u2013\u2014\u2018\u2019\u201C\u201D\u2026\u00A0]/g, ch => map[ch] || ch);
+    return str.replace(/[^\x20-\x7E\u00A1-\u00FF]/g, '');
+  }
+
+  // ── Report header ──
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(7, 92, 77); // teal-d
+  doc.text('Timeless Compass — Research Repository Report', marginX, y);
+  y += 20;
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(90, 88, 80);
+  const generated = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  doc.text(`Generated ${generated}  ·  ${studies.length} matching ${studies.length===1?'study':'studies'}`, marginX, y);
+  y += 14;
+  const activeFilters = currentFilterSummaryRR().map(sanitizeText);
+  doc.setTextColor(120, 116, 107);
+  if (activeFilters.length){
+    const filterLines = doc.splitTextToSize(`Active filters: ${activeFilters.join(' · ')}`, contentW);
+    filterLines.forEach(line => { doc.text(line, marginX, y); y += 12; });
+  } else {
+    doc.text('No filters applied — full research repository.', marginX, y);
+    y += 12;
+  }
+  y += 6;
+  doc.setDrawColor(206, 200, 184); doc.setLineWidth(0.75);
+  doc.line(marginX, y, pageW - marginX, y);
+  y += 20;
+
+  // Renders one "Label: value" field, wrapping onto extra lines as needed.
+  // Long fields put the label on its own line with the value wrapped below;
+  // short fields that fit stay on a single "Label: value" line.
+  function drawField(label, value){
+    value = (value == null || value === '') ? '—' : sanitizeText(value);
+    const labelStr = label + ': ';
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(58, 56, 48);
+    const labelW = doc.getTextWidth(labelStr);
+    doc.setFont('helvetica', 'normal');
+    const oneLineW = doc.getTextWidth(value);
+
+    ensureSpace(lineH * 2);
+    if (labelW + oneLineW <= contentW){
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(58, 56, 48);
+      doc.text(labelStr, marginX, y);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(28, 27, 24);
+      doc.text(value, marginX + labelW, y);
+      y += lineH;
+    } else {
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(58, 56, 48);
+      doc.text(labelStr.trim(), marginX, y);
+      y += lineH;
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(28, 27, 24);
+      const lines = doc.splitTextToSize(value, contentW);
+      lines.forEach(line => { ensureSpace(lineH); doc.text(line, marginX, y); y += lineH; });
+    }
+  }
+
+  // Renders the Citation field (Author, Year) as a clickable hyperlink to
+  // the published study, when a link is available; otherwise plain text.
+  function drawCitationField(label, citation, url){
+    const labelStr = label + ': ';
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
+    const labelW = doc.getTextWidth(labelStr);
+    const value = sanitizeText(citation) || '—';
+    const hasLink = !!(url && /^https?:\/\//i.test(url));
+
+    ensureSpace(lineH * 2);
+    doc.setTextColor(58, 56, 48);
+    doc.text(labelStr, marginX, y);
+
+    doc.setFont('helvetica', hasLink ? 'bolditalic' : 'normal');
+    if (hasLink) doc.setTextColor(26, 72, 128); else doc.setTextColor(28, 27, 24);
+
+    const remainingW = contentW - labelW;
+    const fits = doc.getTextWidth(value) <= remainingW;
+    if (fits){
+      if (hasLink) doc.textWithLink(value, marginX + labelW, y, { url });
+      else doc.text(value, marginX + labelW, y);
+      if (hasLink) doc.line(marginX + labelW, y + 1.5, marginX + labelW + doc.getTextWidth(value), y + 1.5);
+      y += lineH;
+    } else {
+      y += lineH;
+      const lines = doc.splitTextToSize(value, contentW);
+      lines.forEach(line => {
+        ensureSpace(lineH);
+        if (hasLink){
+          doc.textWithLink(line, marginX, y, { url });
+          doc.line(marginX, y + 1.5, marginX + doc.getTextWidth(line), y + 1.5);
+        } else {
+          doc.text(line, marginX, y);
+        }
+        y += lineH;
+      });
+    }
+    doc.setFont('helvetica', 'normal');
+  }
+
+  studies.forEach((p, i) => {
+    ensureSpace(lineH * 3); // keep the study heading from stranding at page bottom
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.setTextColor(7, 92, 77);
+    doc.text(`Study ${p.id || (i+1)}`, marginX, y);
+    y += 17;
+
+    drawField('Title', p.title);
+    drawField('Journal / Source', p.journal);
+    drawField('Type', p.type);
+    drawField('Topic / Subtopic', p.topic_subtopic_raw);
+    drawField('Interventions', p.interventions_raw || (p.interventions||[]).join(', '));
+    drawField('Study Population', p.population_raw || (p.populations||[]).join(', '));
+    drawField('Partnership', p.partnership);
+    drawField('Abstract', p.abstract);
+    drawField('Author', p.author);
+    drawField('Year', p.year);
+    drawCitationField('Citation', p.citation, p.url);
+
+    y += 10;
+    if (i < studies.length - 1){
+      ensureSpace(14);
+      doc.setDrawColor(226, 221, 208); doc.setLineWidth(0.5);
+      doc.line(marginX, y, pageW - marginX, y);
+      y += 18;
+    }
+  });
+
+  // Footer — same style as the Evidence Finder's report: author-credit
+  // note, an explicit copy-pasteable citation for this compilation, then
+  // the org credit/links line and page number.
+  function drawFooterSegments(segments, xStart, yPos, fontSize){
+    let x = xStart;
+    doc.setFontSize(fontSize);
+    segments.forEach(seg => {
+      const isLink = !!seg.url;
+      doc.setFont('helvetica', isLink ? 'bold' : 'normal');
+      doc.setTextColor(...(isLink ? [26, 72, 128] : [130, 126, 116]));
+      const w = doc.getTextWidth(seg.text);
+      if (isLink){
+        doc.textWithLink(seg.text, x, yPos, { url: seg.url });
+        doc.setDrawColor(26, 72, 128); doc.setLineWidth(0.4);
+        doc.line(x, yPos + 1.5, x + w, yPos + 1.5);
+      } else {
+        doc.text(seg.text, x, yPos);
+      }
+      x += w;
+    });
+  }
+
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++){
+    doc.setPage(p);
+    doc.setDrawColor(226, 221, 208); doc.setLineWidth(0.5);
+    doc.line(marginX, pageH - 54, pageW - marginX, pageH - 54);
+
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(120, 116, 107);
+    doc.text('Individual studies are credited to their original authors above. Please cite this compilation as:', marginX, pageH - 42);
+
+    drawFooterSegments([
+      { text: 'SSIAR Research Repository (2026). ' },
+      { text: 'research.artofliving.org', url: 'http://research.artofliving.org/' },
+    ], marginX, pageH - 30, 8.5);
+
+    drawFooterSegments([
+      { text: '© 2026 SSIAR   |   ' },
+      { text: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+      { text: '   |   ' },
+      { text: 'researchstudies@ssiar.org', url: 'mailto:researchstudies@ssiar.org' },
+    ], marginX, pageH - 16, 7.5);
+
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(130, 126, 116);
+    doc.text(`Page ${p} of ${pageCount}`, pageW - marginX, pageH - 16, { align: 'right' });
+  }
+
+  const stamp = new Date().toISOString().slice(0,10);
+  doc.save(`Research-Repository-Report-${stamp}.pdf`);
+}
+window.downloadReport = downloadReport;
+
+/* ─────────────────────────────────────────
    MASTER UPDATE
    ───────────────────────────────────────── */
 function update(){
@@ -1646,6 +1881,8 @@ function update(){
   renderTopicChart();
   renderPartnerChart();
   renderMap();
+  const dlBtn = document.getElementById('dl-report-btn');
+  if (dlBtn) dlBtn.disabled = (S.filtered.length === 0);
 }
 
 /* ─────────────────────────────────────────
