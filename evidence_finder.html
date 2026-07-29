@@ -287,7 +287,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 }
 /* ACTIVE-FILTER CHIPS — the row of removable chips shown beneath the search
    bar once any filter is applied (e.g. "Diabetes ×", "Patients ×") */
-.filters-row{display:none;align-items:center;gap:6px;flex-wrap:wrap}
+.filters-row{display:none;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:18px}
 .filters-row.show{display:flex}
 .filter-row-lbl{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);font-weight:500;flex-shrink:0}
 .fchip{display:inline-flex;align-items:center;gap:3px;padding:3px 9px 3px 10px;border-radius:14px;font-size:12px;background:var(--teal);color:#fff;border:none;cursor:pointer;font-family:var(--sans);transition:opacity .12s;line-height:1.4}
@@ -588,7 +588,7 @@ tr:last-child td{border-bottom:none}
 .search-layout{display:grid;grid-template-columns:272px 1fr;gap:22px;align-items:start}
 @media(max-width:900px){.search-layout{grid-template-columns:1fr}}
 
-.filters-sidebar{position:sticky;top:76px}
+.filters-sidebar{position:sticky;top:76px;z-index:20}
 @media(max-width:900px){.filters-sidebar{position:static}}
 
 /* Re-skin the existing Advanced Search dropdown component as a permanently
