@@ -1148,7 +1148,7 @@ async function loadData() {
         // tag format — see taxonomy.csv). Support both header spellings so an
         // older Explorer.csv export doesn't silently break this parse.
         const subtopics = (r['Topic - Subtopic'] || r['Subtopic'] || '').split(',').map(s=>s.trim()).filter(Boolean);
-        const benefits  = r['Proven Benefits Statement'].split('|').map(s=>s.trim()).filter(Boolean);
+        const benefits  = r['Key Findings'].split('|').map(s=>s.trim()).filter(Boolean);
         const aff = (r['Corresponding Author Affiliation']||'').replace(/\s+/g,' ').trim();
         // Rating is retained in the data model (used only for default sort order
         // below) but is intentionally never rendered in the UI.
@@ -2088,7 +2088,7 @@ function downloadReport() {
 
   // jsPDF's standard fonts only support WinAnsi (roughly Latin-1) glyphs.
   // Source data sometimes uses characters outside that range (e.g. the
-  // "↑ / ↓" arrows in Proven Benefits Statement), which render as garbled,
+  // "↑ / ↓" arrows in Key Findings), which render as garbled,
   // oddly-spaced glyphs and can throw off width calculations, causing text
   // to overflow the page. Swap known symbols for ASCII equivalents, then
   // drop anything else outside the supported range.
@@ -2162,7 +2162,7 @@ function downloadReport() {
     }
   }
 
-  // Renders a pipe-separated field (Proven Benefits Statement) as its own
+  // Renders a pipe-separated field (Key Findings) as its own
   // bulleted line per item, rather than one long run-on line, so a study
   // with several benefits never overflows the page width.
   function drawBulletList(label, rawItems) {
@@ -2244,7 +2244,7 @@ function downloadReport() {
     drawField('Duration', s.duration);
     drawField('Follow-up', s.followup);
     drawField('Study Design', s.design);
-    drawBulletList('Proven Benefits Statement', s.benefits);
+    drawBulletList('Key Findings', s.benefits);
     drawField('Journal', s.journal);
     // Journal Reputation is intentionally excluded from the report — internal use only.
     drawField('Author Affiliation', s.affiliation);
