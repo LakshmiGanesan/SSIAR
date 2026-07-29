@@ -2077,7 +2077,7 @@ function downloadReport() {
   const pageH = doc.internal.pageSize.getHeight();
   const marginX = 50;
   const marginTop = 56;
-  const marginBottom = 62;
+  const marginBottom = 76;
   const contentW = pageW - marginX * 2;
   const lineH = 13.5;
   let y = marginTop;
@@ -2282,20 +2282,30 @@ function downloadReport() {
   for (let p = 1; p <= pageCount; p++) {
     doc.setPage(p);
     doc.setDrawColor(226, 221, 208); doc.setLineWidth(0.5);
-    doc.line(marginX, pageH - 40, pageW - marginX, pageH - 40);
+    doc.line(marginX, pageH - 54, pageW - marginX, pageH - 54);
+
+    // Individual studies are already credited via their own Citation field
+    // above — this just makes clear that crediting the original authors
+    // and citing this compilation are two separate, both-welcome things.
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.setTextColor(120, 116, 107);
+    doc.text('Individual studies are credited to their original authors above. Please cite this compilation as:', marginX, pageH - 42);
+
+    // An explicit, copy-pasteable citation string for the compilation
+    // itself — spelled out so it doesn't get cited inconsistently.
+    drawFooterSegments([
+      { text: 'SSIAR Evidence Finder (2026). ' },
+      { text: 'research.artofliving.org', url: 'http://research.artofliving.org/' },
+    ], marginX, pageH - 30, 8.5);
 
     drawFooterSegments([
-      { text: 'Curated by SSIAR   |   ' },
       { text: '© 2026 SSIAR   |   ' },
-      { text: 'research.artofliving.org', url: 'http://research.artofliving.org/' },
-      { text: '   |   ' },
       { text: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
       { text: '   |   ' },
       { text: 'researchstudies@ssiar.org', url: 'mailto:researchstudies@ssiar.org' },
-    ], marginX, pageH - 26, 7.5);
+    ], marginX, pageH - 16, 7.5);
 
     doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(130, 126, 116);
-    doc.text(`Page ${p} of ${pageCount}`, pageW - marginX, pageH - 12, { align: 'right' });
+    doc.text(`Page ${p} of ${pageCount}`, pageW - marginX, pageH - 16, { align: 'right' });
   }
 
   const stamp = new Date().toISOString().slice(0,10);
