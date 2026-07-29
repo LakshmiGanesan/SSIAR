@@ -2077,10 +2077,25 @@ function downloadReport() {
   const pageH = doc.internal.pageSize.getHeight();
   const marginX = 50;
   const marginTop = 56;
-  const marginBottom = 50;
+  const marginBottom = 62;
   const contentW = pageW - marginX * 2;
   const lineH = 13.5;
   let y = marginTop;
+
+  // jsPDF's standard fonts only support WinAnsi (roughly Latin-1) glyphs.
+  // Source data sometimes uses characters outside that range (e.g. the
+  // "↑ / ↓" arrows in Proven Benefits Statement), which render as garbled,
+  // oddly-spaced glyphs and can throw off width calculations, causing text
+  // to overflow the page. Swap known symbols for ASCII equivalents, then
+  // drop anything else outside the supported range.
+  function sanitizeText(str) {
+    if (str == null) return str;
+    str = String(str);
+    const map = { '\u2191':'+', '\u2193':'-', '\u2192':'->', '\u2013':'-', '\u2014':'--',
+                  '\u2018':"'", '\u2019':"'", '\u201C':'"', '\u201D':'"', '\u2026':'...', '\u00A0':' ' };
+    str = str.replace(/[\u2191\u2193\u2192\u2013\u2014\u2018\u2019\u201C\u201D\u2026\u00A0]/g, ch => map[ch] || ch);
+    return str.replace(/[^\x20-\x7E\u00A1-\u00FF]/g, '');
+  }
 
   function ensureSpace(needed) {
     if (y + needed > pageH - marginBottom) {
@@ -2097,7 +2112,7 @@ function downloadReport() {
   const generated = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
   doc.text(`Generated ${generated}  ·  ${studies.length} matching ${studies.length===1?'study':'studies'}`, marginX, y);
   y += 14;
-  const activeFilters = currentFilterSummary();
+  const activeFilters = currentFilterSummary().map(sanitizeText);
   if (activeFilters.length) {
     const filterLines = doc.splitTextToSize(`Active filters: ${activeFilters.join(' · ')}`, contentW);
     doc.setTextColor(120, 116, 107);
@@ -2117,7 +2132,7 @@ function downloadReport() {
   // Long fields put the label on its own line with the value wrapped below;
   // short fields that fit stay on a single "Label: value" line.
   function drawField(label, value) {
-    value = (value == null || value === '') ? '—' : String(value);
+    value = (value == null || value === '') ? '—' : sanitizeText(value);
     const labelStr = label + ': ';
     doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(58, 56, 48);
     const labelW = doc.getTextWidth(labelStr);
@@ -2143,13 +2158,42 @@ function downloadReport() {
     }
   }
 
+  // Renders a pipe-separated field (Proven Benefits Statement) as its own
+  // bulleted line per item, rather than one long run-on line, so a study
+  // with several benefits never overflows the page width.
+  function drawBulletList(label, rawItems) {
+    const items = (rawItems || []).map(sanitizeText).filter(Boolean);
+    ensureSpace(lineH * 2);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5); doc.setTextColor(58, 56, 48);
+    doc.text(label + ':', marginX, y);
+    y += lineH;
+
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(28, 27, 24);
+    if (!items.length) {
+      ensureSpace(lineH);
+      doc.text('—', marginX + 12, y);
+      y += lineH;
+      return;
+    }
+    const bulletW = doc.getTextWidth('•  ');
+    items.forEach(item => {
+      const lines = doc.splitTextToSize(item, contentW - 12);
+      lines.forEach((line, idx) => {
+        ensureSpace(lineH);
+        doc.text(idx === 0 ? '•' : '', marginX, y);
+        doc.text(line, marginX + 12, y);
+        y += lineH;
+      });
+    });
+  }
+
   // Renders the Citation field as a clickable hyperlink to the published
   // study, when a link is available; otherwise renders it as plain text.
   function drawCitationField(label, citation, url) {
     const labelStr = label + ': ';
     doc.setFont('helvetica', 'bold'); doc.setFontSize(9.5);
     const labelW = doc.getTextWidth(labelStr);
-    const value = citation || '—';
+    const value = sanitizeText(citation) || '—';
     const hasLink = !!(url && /^https?:\/\//i.test(url));
 
     ensureSpace(lineH * 2);
@@ -2196,7 +2240,7 @@ function downloadReport() {
     drawField('Duration', s.duration);
     drawField('Follow-up', s.followup);
     drawField('Study Design', s.design);
-    drawField('Proven Benefits Statement', (s.benefits && s.benefits.length) ? s.benefits.join(' | ') : '');
+    drawBulletList('Proven Benefits Statement', s.benefits);
     drawField('Journal', s.journal);
     drawField('Journal Reputation', s.journal_reputation);
     drawField('Author Affiliation', s.affiliation);
@@ -2214,13 +2258,44 @@ function downloadReport() {
     }
   });
 
-  // Footer: page numbers
+  // Footer — SSIAR credit line (with clickable links) + page number, on every page.
+  function drawFooterSegments(segments, xStart, yPos, fontSize) {
+    let x = xStart;
+    doc.setFontSize(fontSize);
+    segments.forEach(seg => {
+      const isLink = !!seg.url;
+      doc.setFont('helvetica', isLink ? 'bold' : 'normal');
+      doc.setTextColor(...(isLink ? [26, 72, 128] : [130, 126, 116]));
+      const w = doc.getTextWidth(seg.text);
+      if (isLink) {
+        doc.textWithLink(seg.text, x, yPos, { url: seg.url });
+        doc.setDrawColor(26, 72, 128); doc.setLineWidth(0.4);
+        doc.line(x, yPos + 1.5, x + w, yPos + 1.5);
+      } else {
+        doc.text(seg.text, x, yPos);
+      }
+      x += w;
+    });
+  }
+
   const pageCount = doc.internal.getNumberOfPages();
   for (let p = 1; p <= pageCount; p++) {
     doc.setPage(p);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(150, 146, 135);
-    doc.text(`Page ${p} of ${pageCount}`, pageW - marginX, pageH - 26, { align: 'right' });
-    doc.text('Timeless Compass — Evidence Finder', marginX, pageH - 26);
+    doc.setDrawColor(226, 221, 208); doc.setLineWidth(0.5);
+    doc.line(marginX, pageH - 40, pageW - marginX, pageH - 40);
+
+    drawFooterSegments([
+      { text: 'Curated by SSIAR   |   ' },
+      { text: '© 2026 SSIAR   |   ' },
+      { text: 'research.artofliving.org', url: 'http://research.artofliving.org/' },
+      { text: '   |   ' },
+      { text: 'CC BY 4.0', url: 'https://creativecommons.org/licenses/by/4.0/' },
+      { text: '   |   ' },
+      { text: 'researchstudies@ssiar.org', url: 'mailto:researchstudies@ssiar.org' },
+    ], marginX, pageH - 26, 7.5);
+
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5); doc.setTextColor(130, 126, 116);
+    doc.text(`Page ${p} of ${pageCount}`, pageW - marginX, pageH - 12, { align: 'right' });
   }
 
   const stamp = new Date().toISOString().slice(0,10);
