@@ -221,6 +221,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 .tip:hover{background:var(--teal-m);color:#fff;border-color:var(--teal-m)}
 .tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%);width:230px;max-width:min(230px,76vw);background:var(--ink);color:#fdfcf9;font-size:11.5px;line-height:1.45;font-weight:400;font-family:var(--sans);letter-spacing:0;text-align:left;padding:9px 12px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s,visibility .15s;z-index:350}
 .tip:hover::after{opacity:1;visibility:visible}
+.tip--down::after{bottom:auto;top:calc(100% + 9px)}
 .dash-card-caption{font-size:10px;color:var(--ink3);margin-top:10px;text-align:center;font-style:italic;letter-spacing:.02em}
 
 .dash-canvas-wrap{position:relative;flex:1;overflow:visible}
@@ -556,7 +557,7 @@ td.col-journal{font-size:11px}
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download Report
           </button>
-          <span class="tip" data-tip="Generates a PDF with the full details of every study in the current filtered view — not just the current page."></span>
+          <span class="tip tip--down" data-tip="Generates a PDF with the full details of every study in the current filtered view — not just the current page."></span>
         </div>
       </div>
 
@@ -574,7 +575,7 @@ td.col-journal{font-size:11px}
             <div class="adv-panel">
               <div class="adv-panel-hdr">
                 <span class="adv-panel-title">Advanced Search</span>
-                <span class="tip" tabindex="0" data-tip="Filter by Topic, Subtopic, Population, Intervention, Partnership, Institute, Language, Year, or Country. Intervention is multi-select — tick several to match any of them. All fields combine together."></span>
+                <span class="tip tip--down" tabindex="0" data-tip="Filter by Topic, Subtopic, Population, Intervention, Partnership, Institute, Language, Year, or Country. Intervention is multi-select — tick several to match any of them. All fields combine together."></span>
               </div>
               <div class="adv-grid" id="dbadv-filter-body"></div>
               <div class="adv-footer">
@@ -590,7 +591,7 @@ td.col-journal{font-size:11px}
             <div class="db-header">
               <div class="db-title-wrap">
                 <span class="db-title-text">Research Database</span>
-                <span class="tip" tabindex="0" data-tip="Updates live as you search and filter. Click a column header to sort, or click any row to open its full details and a link to the published study."></span>
+                <span class="tip tip--down" tabindex="0" data-tip="Updates live as you search and filter. Click a column header to sort, or click any row to open its full details and a link to the published study."></span>
               </div>
               <div class="db-showing">
                 Showing <strong id="showing-label">Loading…</strong> records
