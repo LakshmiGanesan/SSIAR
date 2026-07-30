@@ -145,7 +145,7 @@ body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:
    ========================================================================= */
 .suite-layout{display:grid;grid-template-columns:272px 1fr;gap:22px;align-items:start}
 @media(max-width:900px){.suite-layout{grid-template-columns:1fr}}
-.filters-sidebar{position:sticky;top:76px}
+.filters-sidebar{position:sticky;top:76px;z-index:20}
 @media(max-width:900px){.filters-sidebar{position:static}}
 
 /* ADVANCED SEARCH — the same adv-filter component from evidence_finder.html,
@@ -222,6 +222,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 .tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 9px);left:50%;transform:translateX(-50%);width:230px;max-width:min(230px,76vw);background:var(--ink);color:#fdfcf9;font-size:11.5px;line-height:1.45;font-weight:400;font-family:var(--sans);letter-spacing:0;text-align:left;padding:9px 12px;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.2);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .15s,visibility .15s;z-index:350}
 .tip:hover::after{opacity:1;visibility:visible}
 .tip--down::after{bottom:auto;top:calc(100% + 9px)}
+.tip--left::after{left:auto;right:-6px;transform:none}
 .dash-card-caption{font-size:10px;color:var(--ink3);margin-top:10px;text-align:center;font-style:italic;letter-spacing:.02em}
 
 .dash-canvas-wrap{position:relative;flex:1;overflow:visible}
@@ -236,7 +237,7 @@ select.fsel:focus{outline:none;border-color:var(--teal-m);box-shadow:0 0 0 3px r
 .partner-name{font-size:12.5px;font-weight:600;color:var(--text-mid);width:96px;flex-shrink:0}
 .partner-bar-wrap{flex:1;height:11px;background:var(--paper3);border-radius:6px;overflow:hidden}
 .partner-bar{height:100%;border-radius:6px;transition:width .55s cubic-bezier(.4,0,.2,1)}
-.partner-count{font-size:12.5px;font-weight:700;color:var(--text-muted);width:30px;text-align:right;flex-shrink:0}
+.partner-count{font-size:12.5px;font-weight:700;color:var(--text-muted);width:34px;text-align:right;flex-shrink:0}
 
 #map-wrap{position:relative;width:100%;height:300px;overflow:hidden;border-radius:var(--r8);background:var(--paper2)}
 #world-svg{width:100%;height:100%;display:block}
@@ -575,7 +576,7 @@ td.col-journal{font-size:11px}
             <div class="adv-panel">
               <div class="adv-panel-hdr">
                 <span class="adv-panel-title">Advanced Search</span>
-                <span class="tip tip--down" tabindex="0" data-tip="Filter by Topic, Subtopic, Population, Intervention, Partnership, Institute, Language, Year, or Country. Intervention is multi-select — tick several to match any of them. All fields combine together."></span>
+                <span class="tip tip--down tip--left" tabindex="0" data-tip="Filter by Topic, Subtopic, Population, Intervention, Partnership, Institute, Language, Year, or Country. Intervention is multi-select — tick several to match any of them. All fields combine together."></span>
               </div>
               <div class="adv-grid" id="dbadv-filter-body"></div>
               <div class="adv-footer">
@@ -1511,17 +1512,17 @@ function renderPartnerChart(){
   S.filtered.forEach(p=>{ if(p.partnership) counts[p.partnership]=(counts[p.partnership]||0)+1; });
   const partners=['Independent','Collaborative','Internal'];
   const active=S.chartF.partnership;
+  const total=S.filtered.length;
   const el=document.getElementById('partner-chart'); if(!el) return;
 
   el.innerHTML=partners.map(p=>{
     const n=counts[p]||0;
-    const maxN=Math.max(...partners.map(pp=>counts[pp]||0),1);
-    const pct=Math.round(n/maxN*100);
+    const pct=total?Math.round(n/total*100):0;
     const isA=active===p;
     return `<div class="partner-row${isA?' pactive':''}" onclick="setChartFilter('partnership','${p}')">
       <span class="partner-name">${p}</span>
       <div class="partner-bar-wrap"><div class="partner-bar" style="width:${pct}%;background:${PARTNER_COLORS[p]}"></div></div>
-      <span class="partner-count">${n}</span>
+      <span class="partner-count">${pct}%</span>
     </div>`;
   }).join('');
 }
