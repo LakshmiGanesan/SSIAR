@@ -1,0 +1,442 @@
+<!--
+===============================================================================
+  TIMELESS COMPASS SUITE — "GET INVOLVED" FORM (prototype)
+  Built from the "Form with Pathways to Get Involved" content spec
+  (SSIAR_Website_Content_.pdf). A step-by-step wizard, since the source
+  content is genuinely a numbered sequence of questions — one question per
+  screen keeps a long multi-select form from feeling like a wall of text.
+  Question 4 (Expertise) only appears if the person selected Student or
+  Researcher in Question 1, matching the spec's own "[Students / Researchers]"
+  qualifier — a small bit of conditional logic the content itself calls for.
+  Visual language matches the rest of the suite: EB Garamond + DM Sans,
+  teal/paper palette, card system, SSIAR seal.
+===============================================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sangam — Get Involved with SSIAR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#1c1b18;--ink2:#3a3830;--ink3:#78746b;--ink4:#aaa69e;
+  --paper:#f8f6f1;--paper2:#f1ede5;--paper3:#e5dfd2;--paper4:#d2ccbe;
+  --teal:#0a7865;--teal-l:#ddf0ea;--teal-m:#12a68c;--teal-d:#075c4d;
+  --rose:#7e1e3c;--rose-l:#fae2ea;--rose-m:#ad2b55;
+  --blue:#1a4880;--blue-l:#e2ecf8;--blue-m:#2460b5;
+  --amber:#7b5006;--amber-l:#fdf0d6;--amber-m:#b0740f;
+  --border:#cec8b8;--border2:#bdb6a5;
+  --serif:"EB Garamond",Georgia,serif;
+  --sans:"DM Sans",system-ui,sans-serif;
+  --card-r:13px;
+  --sh-xs:0 1px 3px rgba(15,14,23,.06);
+  --sh-sm:0 2px 8px rgba(15,14,23,.08),0 1px 2px rgba(15,14,23,.05);
+  --sh-md:0 8px 28px rgba(15,14,23,.14),0 2px 8px rgba(15,14,23,.08);
+  --t:.18s cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);font-size:15px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+.container{max-width:720px;margin:0 auto;padding:0 24px;width:100%}
+a{color:inherit}
+
+/* ── MASTHEAD ── */
+#masthead{background:var(--paper);border-bottom:1px solid var(--border)}
+.mh-row{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+.mh-back{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink3);text-decoration:none;font-weight:500;transition:color var(--t)}
+.mh-back:hover{color:var(--teal)}
+.mh-brand-text{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--ink3)}
+
+/* ── SANGAM HERO ── */
+#sangam-hero{padding:44px 0 34px;border-bottom:1px solid var(--border)}
+.sg-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-d);background:var(--teal-l);padding:6px 13px;border-radius:20px;margin-bottom:18px}
+.sg-eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.sg-title{font-family:var(--serif);font-weight:600;font-size:clamp(2.2rem,5vw,3.1rem);line-height:1.06;letter-spacing:-.01em;color:var(--ink);margin-bottom:14px}
+.sg-sub{font-size:15.5px;color:var(--ink2);max-width:560px;line-height:1.65}
+.sg-sub strong{color:var(--ink);font-weight:700}
+
+/* ── PROGRESS ── */
+#progress-wrap{background:var(--paper);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.progress-track{height:4px;background:var(--paper3)}
+.progress-fill{height:100%;background:var(--teal);transition:width .3s cubic-bezier(.4,0,.2,1);width:0%}
+.progress-meta{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+.progress-step-lbl{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3)}
+.progress-pct{font-size:11px;color:var(--ink4)}
+
+/* ── MAIN ── */
+main{flex:1;display:flex;align-items:flex-start;padding:52px 0 40px}
+.form-shell{width:100%}
+
+.q-eyebrow{font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-d);margin-bottom:14px}
+.q-title{font-family:var(--serif);font-weight:600;font-size:clamp(1.5rem,3.4vw,2rem);line-height:1.24;color:var(--ink);margin-bottom:8px}
+.q-sub{font-size:13.5px;color:var(--ink3);margin-bottom:28px}
+
+/* option pills (multi & single select) */
+.opt-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:8px}
+.opt{display:flex;align-items:center;gap:13px;padding:15px 18px;border:1.5px solid var(--border);border-radius:11px;background:var(--paper);cursor:pointer;transition:all var(--t);font-size:14.5px;color:var(--ink2);font-weight:500}
+.opt:hover{border-color:var(--teal-m);background:var(--teal-l)}
+.opt-mark{width:20px;height:20px;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;transition:all var(--t)}
+.opt-mark.mk-check{border-radius:6px}
+.opt-mark.mk-radio{border-radius:50%}
+.opt.on{border-color:var(--teal);background:var(--teal-l);color:var(--teal-d);font-weight:700}
+.opt.on .opt-mark{background:var(--teal);border-color:var(--teal)}
+.opt-other-input{margin-top:2px;margin-left:33px;margin-bottom:6px}
+.opt-other-input input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;background:var(--paper);font-family:var(--sans);font-size:13.5px;color:var(--ink);outline:none;transition:all var(--t)}
+.opt-other-input input:focus{border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1)}
+
+/* textarea step */
+.pitch-wrap textarea{width:100%;min-height:180px;padding:16px 18px;border:1.5px solid var(--border);border-radius:11px;background:var(--paper);font-family:var(--sans);font-size:14.5px;color:var(--ink);line-height:1.6;resize:vertical;outline:none;transition:all var(--t)}
+.pitch-wrap textarea:focus{border-color:var(--teal-m);box-shadow:0 0 0 3px rgba(18,166,140,.1)}
+.word-count{display:flex;justify-content:flex-end;font-size:12px;color:var(--ink4);margin-top:8px}
+.word-count.over{color:var(--rose-m);font-weight:600}
+
+/* nav buttons */
+.step-nav{display:flex;align-items:center;justify-content:space-between;margin-top:34px;gap:14px}
+.btn-back{display:flex;align-items:center;gap:6px;background:none;border:none;font-family:var(--sans);font-size:13.5px;font-weight:600;color:var(--ink3);cursor:pointer;padding:10px 4px;transition:color var(--t)}
+.btn-back:hover{color:var(--ink)}
+.btn-back:disabled{opacity:0;pointer-events:none}
+.btn-next{display:flex;align-items:center;gap:8px;background:var(--teal);color:#fff;border:none;padding:14px 26px;border-radius:10px;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;transition:all var(--t);box-shadow:var(--sh-sm)}
+.btn-next:hover{background:var(--teal-d)}
+.btn-next:disabled{background:var(--paper3);color:var(--ink4);cursor:not-allowed;box-shadow:none}
+.req-hint{font-size:11.5px;color:var(--ink4);text-align:right;margin-top:8px}
+
+/* review recap (shown just before submit) */
+.recap-card{background:var(--paper2);border:1px solid var(--border);border-radius:var(--card-r);padding:20px 22px;margin-bottom:8px}
+.recap-row{padding:10px 0;border-bottom:1px solid var(--border)}
+.recap-row:last-child{border-bottom:none}
+.recap-lbl{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink4);margin-bottom:4px}
+.recap-val{font-size:13.5px;color:var(--ink2);line-height:1.5}
+
+/* ── THANK YOU ── */
+#thankyou{display:none;text-align:center;padding:40px 0 20px}
+.ty-icon{width:64px;height:64px;border-radius:50%;background:var(--teal-l);color:var(--teal-d);display:flex;align-items:center;justify-content:center;margin:0 auto 22px}
+#thankyou h2{font-family:var(--serif);font-weight:600;font-size:1.9rem;color:var(--ink);margin-bottom:12px}
+#thankyou p{font-size:14.5px;color:var(--ink3);max-width:440px;margin:0 auto 28px;line-height:1.6}
+.btn-whatsapp{display:inline-flex;align-items:center;gap:9px;background:#25D366;color:#fff;border:none;padding:14px 26px;border-radius:10px;font-family:var(--sans);font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;transition:all var(--t);box-shadow:var(--sh-sm)}
+.btn-whatsapp:hover{background:#1ebc59;transform:translateY(-1px)}
+.ty-recap{margin-top:36px;text-align:left}
+.ty-recap-lbl{font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);margin-bottom:12px;text-align:center}
+
+/* ── FOOTER ── */
+#footer{background:var(--paper);border-top:1px solid var(--border);padding:24px 0;margin-top:auto}
+.footer-row{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink3)}
+.footer-row a{color:var(--ink3);text-decoration:none;transition:color var(--t)}
+.footer-row a:hover{color:var(--teal)}
+
+@media(max-width:640px){
+  .container{padding:0 18px}
+  main{padding:36px 0 28px}
+  .opt{padding:13px 15px;font-size:14px}
+  .step-nav{flex-direction:row}
+}
+</style>
+</head>
+<body>
+
+<header id="masthead">
+  <div class="container mh-row">
+    <a class="mh-back" href="#">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Back to SSIAR
+    </a>
+    <span class="mh-brand-text">SRI SRI INSTITUTE FOR ADVANCED RESEARCH</span>
+  </div>
+</header>
+
+<section id="sangam-hero">
+  <div class="container">
+    <span class="sg-eyebrow"><span class="sg-eyebrow-dot"></span>Get Involved</span>
+    <h1 class="sg-title">Join Sangam</h1>
+    <p class="sg-sub">A <strong>confluence</strong> of researchers, educators, and practitioners working where ancient wisdom meets modern science. Add your stream — it takes about two minutes.</p>
+  </div>
+</section>
+
+<div id="progress-wrap">
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="container progress-meta">
+    <span class="progress-step-lbl" id="progress-step-lbl">Step 1 of 6</span>
+    <span class="progress-pct" id="progress-pct">Get Involved</span>
+  </div>
+</div>
+
+<main>
+  <div class="container">
+
+    <div class="form-shell" id="form-shell">
+      <!-- Steps are rendered here by JS -->
+    </div>
+
+    <div id="thankyou">
+      <div class="ty-icon">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+      </div>
+      <span class="sg-eyebrow" style="margin-bottom:18px"><span class="sg-eyebrow-dot"></span>Welcome to Sangam</span>
+      <h2>Thank you for your interest and response</h2>
+      <p>Your response has been recorded. We're glad you want to be part of the SSIAR research community — someone from our team will be in touch about next steps.</p>
+      <a class="btn-whatsapp" href="https://wa.me/message/SSIARCOMMUNITY" target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.46 1.32 4.96L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.8 14.11c-.24.68-1.4 1.32-1.93 1.38-.5.06-1.02.28-3.42-.71-2.9-1.2-4.75-4.14-4.9-4.33-.14-.19-1.17-1.55-1.17-2.96 0-1.41.74-2.1 1-2.39.26-.28.57-.35.76-.35.19 0 .38 0 .55.01.18.01.42-.07.65.5.24.58.81 2 .88 2.15.07.14.12.31.02.5-.1.19-.15.31-.29.48-.15.17-.31.38-.44.5-.15.14-.3.3-.13.58.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.14.46.12.63-.07.17-.19.72-.84.92-1.13.19-.29.38-.24.65-.14.26.1 1.68.79 1.97.94.29.14.48.21.55.33.07.12.07.7-.17 1.38z"/></svg>
+        Join our WhatsApp Community
+      </a>
+
+      <div class="ty-recap">
+        <div class="ty-recap-lbl">What you told us</div>
+        <div class="recap-card" id="recap-card"></div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer id="footer">
+  <div class="container footer-row" style="justify-content:center">
+    <div>© 2026 SSIAR &nbsp;|&nbsp; <a href="http://research.artofliving.org/" target="_blank" rel="noopener">research.artofliving.org</a> &nbsp;|&nbsp; <a href="mailto:researchstudies@ssiar.org">researchstudies@ssiar.org</a></div>
+  </div>
+</footer>
+
+<script>
+/* ─────────────────────────────────────────────────────────────────────────
+   FORM DEFINITION — mirrors the six questions in the "Get Involved" spec.
+   Question 4 (Expertise) is marked visibleIf, since the source content
+   itself qualifies it as "[Students / Researchers]".
+   ───────────────────────────────────────────────────────────────────────── */
+const STEPS = [
+  {
+    id: 'audience', type: 'multi',
+    eyebrow: 'Question 1 · Audience Type',
+    title: 'I am a…',
+    sub: 'Select all that apply.',
+    options: ['Student','Researcher','Educator','Volunteer','Practitioner / Meditator','Art of Living / Meditation / Yoga Teacher'],
+    other: true,
+  },
+  {
+    id: 'cta', type: 'multi',
+    eyebrow: 'Question 2 · Get Involved',
+    title: 'How would you like to get involved?',
+    sub: 'Select all that apply.',
+    options: ['Collaborate with us','Partner with us','Write for us','Donate for research'],
+    other: false,
+  },
+  {
+    id: 'qualification', type: 'single',
+    eyebrow: 'Question 3 · Science Literacy',
+    title: "What's your highest qualification?",
+    sub: 'Select one.',
+    options: ["Bachelor's",'Masters','PhD','Post-doctoral research'],
+    other: true, otherLabel: 'Other (currently pursuing)',
+  },
+  {
+    id: 'expertise', type: 'multi',
+    eyebrow: 'Question 4 · Expertise',
+    title: "What's your expertise or field of study?",
+    sub: 'For students & researchers — select all that apply.',
+    options: ['Medicine','Biochemistry / Molecular Biology','Human Genetics','Neuroscience','Immunology','Pharmacology','Traditional Medicine','Science Journalism / Science Communication','Data Science'],
+    other: true,
+    visibleIf: (answers) => (answers.audience || []).some(v => v === 'Student' || v === 'Researcher'),
+  },
+  {
+    id: 'skills', type: 'multi',
+    eyebrow: 'Question 5 · Skills',
+    title: 'What skillsets would you like to contribute?',
+    sub: 'Select all that apply.',
+    options: ['Science writing / journalism','Video editing for science','Animation','Audio / video editing','Design / illustration'],
+    other: true,
+  },
+  {
+    id: 'pitch', type: 'textarea',
+    eyebrow: 'Question 6 · Your Pitch',
+    title: "Tell us how you'd like to contribute",
+    sub: 'A brief description, around 100 words.',
+    maxWords: 100,
+  },
+];
+
+const answers = {}; // { stepId: string[] | string }
+const otherText = {}; // { stepId: string }
+let stepIdx = 0;
+
+function visibleSteps(){ return STEPS.filter(s => !s.visibleIf || s.visibleIf(answers)); }
+
+function labelFor(step){
+  const v = answers[step.id];
+  if (step.type === 'multi') return (v && v.length) ? v.join(', ') : '—';
+  if (step.type === 'single') return v || '—';
+  if (step.type === 'textarea') return v || '—';
+  return '—';
+}
+
+function isStepValid(step){
+  if (step.type === 'textarea') return !!(answers[step.id] && answers[step.id].trim().length > 0);
+  const v = answers[step.id];
+  const hasSelection = step.type === 'multi' ? !!(v && v.length) : !!v;
+  if (!hasSelection) return false;
+  const usesOther = step.type === 'multi' ? (v || []).includes('Other') : v === 'Other';
+  if (usesOther && !(otherText[step.id] && otherText[step.id].trim())) return false;
+  return true;
+}
+
+function toggleMulti(step, opt){
+  answers[step.id] = answers[step.id] || [];
+  const arr = answers[step.id];
+  if (opt === 'Other'){
+    const idx = arr.findIndex(v => v === 'Other' || v.startsWith('Other:'));
+    if (idx === -1) arr.push('Other'); else arr.splice(idx, 1);
+  } else {
+    const idx = arr.indexOf(opt);
+    if (idx === -1) arr.push(opt); else arr.splice(idx, 1);
+  }
+  render();
+}
+function setSingle(step, opt){
+  answers[step.id] = opt;
+  render();
+}
+function setOther(step, val){
+  otherText[step.id] = val;
+  // Reflect the free-text "Other" value into the answer array/string itself
+  if (step.type === 'multi'){
+    answers[step.id] = (answers[step.id] || []).map(v => v === 'Other' ? (val ? `Other: ${val}` : 'Other') : v);
+  } else {
+    if (answers[step.id] === 'Other' || (answers[step.id]||'').startsWith('Other:')){
+      answers[step.id] = val ? `Other: ${val}` : 'Other';
+    }
+  }
+  updateNextButton();
+}
+function setPitch(val){
+  answers['pitch'] = val;
+  const words = val.trim().split(/\s+/).filter(Boolean).length;
+  const wc = document.getElementById('word-count');
+  if (wc){
+    wc.textContent = `${words} / 100 words`;
+    wc.classList.toggle('over', words > 100);
+  }
+  updateNextButton();
+}
+
+function updateNextButton(){
+  const btn = document.getElementById('btn-next');
+  if (!btn) return;
+  const step = visibleSteps()[stepIdx];
+  btn.disabled = !isStepValid(step);
+}
+
+function renderOption(step, opt){
+  const isOtherPill = opt === 'Other';
+  let selected;
+  if (step.type === 'multi'){
+    const arr = answers[step.id] || [];
+    selected = isOtherPill ? arr.some(v => v === 'Other' || v.startsWith('Other:')) : arr.includes(opt);
+  } else {
+    const val = answers[step.id];
+    selected = isOtherPill ? (val === 'Other' || (val||'').startsWith('Other:')) : val === opt;
+  }
+  const markClass = step.type === 'multi' ? 'mk-check' : 'mk-radio';
+  const markIcon = step.type === 'multi'
+    ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+    : '<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>';
+  return `
+    <div class="opt${selected?' on':''}" data-opt="${opt.replace(/"/g,'&quot;')}">
+      <span class="opt-mark ${markClass}">${selected?markIcon:''}</span>
+      <span>${opt}</span>
+    </div>`;
+}
+
+function render(){
+  const vSteps = visibleSteps();
+  if (stepIdx >= vSteps.length) stepIdx = vSteps.length - 1;
+  const step = vSteps[stepIdx];
+  const total = vSteps.length;
+
+  document.getElementById('progress-fill').style.width = `${Math.round(((stepIdx)/(total))*100 + (100/total)*0.15)}%`;
+  document.getElementById('progress-step-lbl').textContent = `Step ${stepIdx+1} of ${total}`;
+  document.getElementById('progress-pct').textContent = step.eyebrow.split('·')[1] ? step.eyebrow.split('·')[1].trim() : 'Get Involved';
+
+  const shell = document.getElementById('form-shell');
+  let bodyHTML = '';
+
+  if (step.type === 'multi' || step.type === 'single'){
+    bodyHTML += `<div class="opt-grid" id="opt-grid">`;
+    step.options.forEach(opt => { bodyHTML += renderOption(step, opt); });
+    if (step.other) bodyHTML += renderOption(step, 'Other');
+    bodyHTML += `</div>`;
+    const usesOther = step.type === 'multi'
+      ? (answers[step.id]||[]).some(v => v==='Other' || v.startsWith('Other:'))
+      : (answers[step.id]==='Other' || (answers[step.id]||'').startsWith('Other:'));
+    if (step.other && usesOther){
+      bodyHTML += `<div class="opt-other-input"><input type="text" id="other-input" placeholder="${step.otherLabel || 'Please specify'}" value="${(otherText[step.id]||'').replace(/"/g,'&quot;')}"></div>`;
+    }
+  } else if (step.type === 'textarea'){
+    const words = (answers[step.id]||'').trim().split(/\s+/).filter(Boolean).length;
+    bodyHTML += `
+      <div class="pitch-wrap">
+        <textarea id="pitch-input" placeholder="I'd love to help by…">${answers[step.id]||''}</textarea>
+        <div class="word-count${words>100?' over':''}" id="word-count">${words} / 100 words</div>
+      </div>`;
+  }
+
+  const isLast = stepIdx === total - 1;
+  shell.innerHTML = `
+    <div class="q-eyebrow">${step.eyebrow}</div>
+    <h1 class="q-title">${step.title}</h1>
+    <p class="q-sub">${step.sub}</p>
+    ${bodyHTML}
+    <div class="step-nav">
+      <button class="btn-back" id="btn-back" ${stepIdx===0?'disabled':''}>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Back
+      </button>
+      <button class="btn-next" id="btn-next">
+        ${isLast ? 'Submit' : 'Next'}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+  `;
+
+  // Wire events
+  shell.querySelectorAll('.opt').forEach(el => {
+    el.addEventListener('click', () => {
+      const opt = el.dataset.opt;
+      if (step.type === 'multi') toggleMulti(step, opt); else setSingle(step, opt);
+    });
+  });
+  const otherInput = document.getElementById('other-input');
+  if (otherInput){
+    otherInput.addEventListener('input', (e) => setOther(step, e.target.value));
+    otherInput.addEventListener('click', (e) => e.stopPropagation());
+  }
+  const pitchInput = document.getElementById('pitch-input');
+  if (pitchInput) pitchInput.addEventListener('input', (e) => setPitch(e.target.value));
+
+  document.getElementById('btn-back').addEventListener('click', () => { stepIdx--; render(); window.scrollTo({top:0,behavior:'smooth'}); });
+  document.getElementById('btn-next').addEventListener('click', () => {
+    if (isLast) { submitForm(); return; }
+    stepIdx++; render(); window.scrollTo({top:0,behavior:'smooth'});
+  });
+
+  updateNextButton();
+}
+
+function submitForm(){
+  document.getElementById('form-shell').style.display = 'none';
+  document.getElementById('progress-wrap').style.display = 'none';
+  const ty = document.getElementById('thankyou');
+  ty.style.display = 'block';
+
+  const recap = document.getElementById('recap-card');
+  recap.innerHTML = STEPS.map(step => `
+    <div class="recap-row">
+      <div class="recap-lbl">${step.title}</div>
+      <div class="recap-val">${labelFor(step)}</div>
+    </div>
+  `).join('');
+
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+render();
+</script>
+
+</body>
+</html>
