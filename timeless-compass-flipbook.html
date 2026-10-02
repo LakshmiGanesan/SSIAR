@@ -394,7 +394,18 @@
     await Promise.all(Array.from({ length: RENDER_CONCURRENCY }, worker));
   }
 
-  function initFlipbook(){
+  // Rebuilds the PageFlip instance from scratch against whatever size the
+  // container currently is. "stretch" mode is supposed to recalculate on a
+  // window resize on its own, but that turned out not to be reliable across
+  // fullscreen transitions — destroying and recreating against the live
+  // container size is slower but actually correct every time.
+  function buildFlipbook(startPage){
+    if(pageFlip){
+      pageFlip.destroy();
+      pageFlip = null;
+    }
+    flipbookEl.innerHTML = '';
+
     pageFlip = new St.PageFlip(flipbookEl, {
       width: 480,
       height: 679,
@@ -421,8 +432,25 @@
 
     pageFlip.on('init', ()=>{
       loadingNote.style.display = 'none';
+      if(startPage && startPage > 1){
+        pageFlip.turnToPage(startPage - 1);
+      }
       syncUI();
     });
+  }
+
+  function initFlipbook(){
+    buildFlipbook(1);
+  }
+
+  // Debounced rebuild — several things (mode toggle, fullscreen enter/exit,
+  // window resize) can trigger this in quick succession; only act once
+  // things settle, and always rebuild at whatever page is currently open.
+  let rebuildTimer = null;
+  function scheduleRebuild(delay){
+    if(!pageFlip) return; // nothing to rebuild yet (still loading)
+    clearTimeout(rebuildTimer);
+    rebuildTimer = setTimeout(()=> buildFlipbook(currentPage), delay);
   }
 
   function syncUI(){
@@ -492,10 +520,9 @@
     if(mode === 'single') stageEl.classList.add('mode-single');
     if(mode === 'double') stageEl.classList.add('mode-double');
     Object.entries(modeButtons).forEach(([key,btn])=> btn.classList.toggle('active', key === mode));
-    // The flipbook is in "stretch" size mode, which relays out on window resize.
-    // Changing the stage's max-width needs that same recalculation, so after the
-    // CSS transition we nudge it with a resize event rather than re-initializing.
-    window.setTimeout(()=> window.dispatchEvent(new Event('resize')), 260);
+    // Wait for the CSS max-width transition on .stage to finish, then rebuild
+    // against the new size.
+    scheduleRebuild(280);
   }
 
   function updateModeAvailability(){
@@ -526,14 +553,14 @@
     }
   });
 
-  // The book is in "stretch" size mode, which only recalculates on a window
-  // resize event. Entering/exiting fullscreen changes the available space
-  // dramatically but doesn't fire that event on its own, so without this the
-  // book stays sized for whatever small space it had before — nudge it.
-  document.addEventListener('fullscreenchange', ()=>{
-    window.dispatchEvent(new Event('resize'));
-    window.setTimeout(()=> window.dispatchEvent(new Event('resize')), 300);
-  });
+  // Entering/exiting fullscreen changes the available space dramatically —
+  // rebuild the book so it's sized correctly for whichever space it's in now.
+  document.addEventListener('fullscreenchange', ()=> scheduleRebuild(150));
+
+  // Also rebuild on an ordinary window resize (debounced), since the
+  // "stretch" auto-relayout this library claims to do on resize hasn't
+  // proven reliable — this guarantees it actually happens.
+  window.addEventListener('resize', ()=> scheduleRebuild(200));
 
   /* ---------------------------- Thumbnail rail ---------------------------- */
   const thumbRail = el('thumbRail');
