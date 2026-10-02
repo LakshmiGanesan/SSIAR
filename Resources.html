@@ -109,6 +109,46 @@
   .view-toggle button.active{background:var(--ink);color:#fff;}
   .view-toggle button:not(.active):hover{color:var(--ink);}
 
+  /* ---------- Featured resource ---------- */
+  .featured-wrap{max-width:1180px;margin:0 auto;padding:0 32px 36px;}
+  .featured-label{font-size:13px;font-weight:700;color:var(--accent-deep);margin-bottom:12px;letter-spacing:0.01em;}
+  .featured-card{
+    display:flex;gap:28px;background:var(--white);border:1px solid var(--line);
+    border-radius:14px;padding:22px;box-shadow:var(--shadow-card);
+    align-items:stretch;
+  }
+  .featured-cover{
+    flex-shrink:0;width:160px;border-radius:9px;overflow:hidden;position:relative;
+    aspect-ratio:3/4;display:flex;align-items:flex-end;padding:14px;
+    background:linear-gradient(160deg, #3E6B8A 0%, #28455B 100%);
+  }
+  .featured-cover .doc-icon{position:absolute;top:14px;left:14px;width:22px;height:22px;color:rgba(255,255,255,0.85);}
+  .featured-cover .cover-title{position:relative;color:#fff;font-weight:700;font-size:13px;line-height:1.35;}
+  .featured-info{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0;}
+  .featured-info h3{margin:0 0 8px;font-size:21px;font-weight:800;}
+  .featured-info p{margin:0 0 18px;font-size:14.5px;line-height:1.6;color:var(--ink-soft);max-width:600px;}
+  .featured-meta{font-size:12.5px;color:var(--ink-faint);margin-bottom:16px;font-weight:600;}
+  .featured-actions{display:flex;gap:10px;flex-wrap:wrap;}
+  .btn-primary{
+    display:flex;align-items:center;gap:7px;padding:11px 18px;border-radius:8px;
+    background:var(--ink);color:#fff;font-size:13.5px;font-weight:700;border:1.5px solid var(--ink);
+    transition:background .15s ease;
+  }
+  .btn-primary:hover{background:var(--accent-deep);border-color:var(--accent-deep);}
+  .btn-primary svg{width:15px;height:15px;}
+  .btn-secondary{
+    display:flex;align-items:center;gap:7px;padding:11px 18px;border-radius:8px;
+    background:transparent;color:var(--ink);font-size:13.5px;font-weight:700;border:1.5px solid var(--line);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .btn-secondary:hover{border-color:var(--ink);background:var(--cream-100);}
+  .btn-secondary svg{width:15px;height:15px;}
+  @media (max-width:640px){
+    .featured-wrap{padding:0 18px 28px;}
+    .featured-card{flex-direction:column;}
+    .featured-cover{width:100%;aspect-ratio:16/8;}
+  }
+
   /* ---------- Category quick nav ---------- */
   .cat-nav-wrap{
     position:sticky;top:0;z-index:20;
@@ -213,6 +253,22 @@
   }
   .btn-download:hover{background:var(--ink);border-color:var(--ink);color:#fff;}
   .btn-download svg{width:14px;height:14px;}
+  .btn-read{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+    padding:8px 10px;border-radius:7px;border:1.5px solid var(--accent);
+    font-size:12.5px;font-weight:700;color:var(--accent-deep);background:transparent;
+    transition:background .15s ease, color .15s ease;
+  }
+  .btn-read:hover{background:var(--accent);color:#fff;}
+  .btn-read svg{width:14px;height:14px;}
+  .res-cover-link{display:block;}
+  .res-title-link{display:block;min-width:0;}
+  .res-title-link:hover .res-title{color:var(--accent-deep);}
+  /* In list view, .res-card lays its DIRECT children out in a row — when a
+     cover/title is wrapped in a link, that link (not the element inside it)
+     is the actual flex item, so the sizing rules need to target it too. */
+  .categories.view-list .res-cover-link{flex-shrink:0;}
+  .categories.view-list .res-title-link{flex:1 1 auto;min-width:0;}
 
   /* ---------- List-view card ---------- */
   .categories.view-list .res-card{
@@ -326,6 +382,8 @@
   </div>
 </section>
 
+<div class="featured-wrap" id="featuredWrap"></div>
+
 <div class="cat-nav-wrap">
   <div class="cat-nav" id="catNav"></div>
 </div>
@@ -391,6 +449,7 @@ const CATEGORIES = [
     color: "#3E6B8A",
     icon: `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><path d="M4 5c3-1.5 6-1.5 8 0c2-1.5 5-1.5 8 0v14c-3-1.5-6-1.5-8 0c-2-1.5-5-1.5-8 0Z"/><line x1="12" y1="5" x2="12" y2="19"/></svg>`,
     items: [
+      { id: "timeless-compass", title: "The Timeless Compass", description: "Exploring ancient wisdom through the lens of science — 145 referenced studies on SKY and allied practices.", fileSize: "7 MB", pages: 124, date: "Oct 2026", url: "timeless-compass.pdf", viewer: "timeless-compass", thumbnailUrl: "timeless-compass-cover.jpg", featured: true },
       { title: "Ancient Systems, Modern Evidence: An Introduction", fileSize: "4.8 MB", pages: 58, date: "Jun 2026", url: "#" },
       { title: "A Decade of Sudarshan Kriya Research — Compiled Digest", fileSize: "6.2 MB", pages: 84, date: "Feb 2026", url: "#" }
     ]
@@ -455,6 +514,44 @@ viewButtons.forEach(btn=>{
 
 function totalCount(){ return CATEGORIES.reduce((n,c)=>n+c.items.length,0); }
 
+function renderFeatured(){
+  const wrap = document.getElementById('featuredWrap');
+  let found = null;
+  for(const cat of CATEGORIES){
+    const item = cat.items.find(i => i.featured);
+    if(item){ found = { item, cat }; break; }
+  }
+  if(!found){ wrap.innerHTML = ''; return; }
+  const { item, cat } = found;
+  const viewerUrl = item.viewer ? `resource-viewer.html?resource=${item.viewer}` : '#';
+  const coverInner = item.thumbnailUrl
+    ? `<img src="${item.thumbnailUrl}" alt="${item.title} cover" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">`
+    : `<svg class="doc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h9l5 5v15H6Z"/><path d="M15 2v5h5"/></svg>
+        <div class="cover-title">${item.title}</div>`;
+  wrap.innerHTML = `
+    <div class="featured-label">Featured resource</div>
+    <div class="featured-card">
+      <a href="${viewerUrl}" class="featured-cover" style="text-decoration:none;">
+        ${coverInner}
+      </a>
+      <div class="featured-info">
+        <h3>${item.title}</h3>
+        <p>${item.description || ''}</p>
+        <div class="featured-meta">${cat.name} · ${item.pages} pages · ${item.fileSize}</div>
+        <div class="featured-actions">
+          <a class="btn-primary" href="${viewerUrl}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5c3-1.5 6-1.5 8 0c2-1.5 5-1.5 8 0v14c-3-1.5-6-1.5-8 0c-2-1.5-5-1.5-8 0Z"/><line x1="12" y1="5" x2="12" y2="19"/></svg>
+            Read in flipbook
+          </a>
+          <a class="btn-secondary" href="${item.url}" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
+            Download PDF
+          </a>
+        </div>
+      </div>
+    </div>`;
+}
+
 function renderNav(){
   const allPill = `<button class="cat-pill ${activeCat==='all'?'active':''}" data-key="all">All (${totalCount()})</button>`;
   const pills = CATEGORIES.map(c => `<button class="cat-pill ${activeCat===c.key?'active':''}" data-key="${c.key}">${c.name} (${c.items.length})</button>`).join('');
@@ -480,20 +577,39 @@ function cardHTML(item, cat){
   const cover = item.thumbnailUrl
     ? `<img src="${item.thumbnailUrl}" alt="">`
     : `<div style="position:absolute;inset:0;background:linear-gradient(160deg, ${cat.color} 0%, ${shade(cat.color,-18)} 100%);"></div>`;
-  return `
-  <div class="res-card">
-    <div class="res-cover">
+
+  const coverInner = `
       ${cover}
       <div class="fold"></div>
       <span class="pages-badge">${item.pages}p</span>
       <svg class="doc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 2h9l5 5v15H6Z"/><path d="M15 2v5h5"/></svg>
-      <div class="cover-title">${item.title}</div>
-    </div>
+      <div class="cover-title">${item.title}</div>`;
+
+  // Items with a `viewer` slug open the in-page flipbook; everything else
+  // is download-only (as before) until it has a viewer of its own.
+  const viewerUrl = item.viewer ? `resource-viewer.html?resource=${item.viewer}` : null;
+  const coverHTML = viewerUrl
+    ? `<a class="res-cover-link" href="${viewerUrl}"><div class="res-cover">${coverInner}</div></a>`
+    : `<div class="res-cover">${coverInner}</div>`;
+  const titleHTML = viewerUrl
+    ? `<a class="res-title-link" href="${viewerUrl}"><div class="res-title">${item.title}</div></a>`
+    : `<div class="res-title">${item.title}</div>`;
+  const readBtn = viewerUrl
+    ? `<a class="btn-read" href="${viewerUrl}">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5c3-1.5 6-1.5 8 0c2-1.5 5-1.5 8 0v14c-3-1.5-6-1.5-8 0c-2-1.5-5-1.5-8 0Z"/><line x1="12" y1="5" x2="12" y2="19"/></svg>
+         Read
+       </a>`
+    : '';
+
+  return `
+  <div class="res-card">
+    ${coverHTML}
     <div class="res-info">
-      <div class="res-title">${item.title}</div>
+      ${titleHTML}
       <span class="res-category-tag">${cat.name}</span>
       <div class="res-meta">${item.date} · ${item.fileSize}</div>
       <div class="res-actions">
+        ${readBtn}
         <a class="btn-download" href="${item.url}" download>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg>
           Download
@@ -555,6 +671,7 @@ function renderCategories(){
 
 searchInput.addEventListener('input', renderCategories);
 
+renderFeatured();
 renderNav();
 renderCategories();
 </script>
