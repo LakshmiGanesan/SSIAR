@@ -193,8 +193,14 @@
   }
 
   /* ---------- Fullscreen ---------- */
-  .viewer-frame:fullscreen{border-radius:0;display:flex;flex-direction:column;justify-content:center;}
-  .viewer-frame:fullscreen .stage{min-height:0;flex:1;}
+  .viewer-frame:fullscreen{
+    width:100%;height:100%;border-radius:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:24px 32px;
+  }
+  .viewer-frame:fullscreen .stage{min-height:0;flex:1;width:100%;}
+  .viewer-frame:fullscreen .stage.mode-single{max-width:620px;}
+  .viewer-frame:fullscreen .stage.mode-double{max-width:1400px;}
 
   footer{
     border-top:1px solid var(--line);padding:26px 32px;
@@ -394,9 +400,9 @@
       height: 679,
       size: "stretch",
       minWidth: 280,
-      maxWidth: 650,
+      maxWidth: 820,
       minHeight: 396,
-      maxHeight: 919,
+      maxHeight: 1160,
       maxShadowOpacity: 0.4,
       showCover: true,
       mobileScrollSupport: false,
@@ -518,6 +524,15 @@
     } else {
       document.exitFullscreen?.();
     }
+  });
+
+  // The book is in "stretch" size mode, which only recalculates on a window
+  // resize event. Entering/exiting fullscreen changes the available space
+  // dramatically but doesn't fire that event on its own, so without this the
+  // book stays sized for whatever small space it had before — nudge it.
+  document.addEventListener('fullscreenchange', ()=>{
+    window.dispatchEvent(new Event('resize'));
+    window.setTimeout(()=> window.dispatchEvent(new Event('resize')), 300);
   });
 
   /* ---------------------------- Thumbnail rail ---------------------------- */
