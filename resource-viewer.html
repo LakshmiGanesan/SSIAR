@@ -1,0 +1,681 @@
+<!--
+  Resource viewer — generic flipbook page for any PDF resource.
+  One file serves every resource: open it as
+    resource-viewer.html?resource=<slug>
+  where <slug> is a key in RESOURCE_DB below. Pages are rendered from the
+  PDF at runtime in the browser via pdf.js — no pre-baked image folder.
+
+  DEV NOTE: must be served over http(s) — GitHub Pages, any local dev server
+  (`python3 -m http.server`, `npx serve`, etc). Opening this file directly
+  via file:// will fail, because browsers block pdf.js's fetch of the PDF
+  under the file:// origin.
+
+  In production, RESOURCE_DB would come from the same backend/CMS source as
+  resources.html's RESOURCES array — this file only needs {title,
+  description, category, pdf} for whichever slug is requested.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resource Viewer — SSIAR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+  :root{
+    --cream-50:#FBF8F2;
+    --cream-100:#F3ECDD;
+    --cream-150:#EDE3CD;
+    --ink:#221C14;
+    --ink-soft:#6B6355;
+    --ink-faint:#9A917E;
+    --accent:#D9821F;
+    --accent-deep:#B4650F;
+    --line:#E7DFCC;
+    --white:#FFFFFF;
+    --stage:#2A2420;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Manrope',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--cream-50);
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  button{font-family:inherit;}
+
+  /* ---------- Header ---------- */
+  .site-header{
+    background:linear-gradient(180deg,var(--cream-150) 0%, var(--cream-50) 100%);
+    border-bottom:1px solid var(--line);
+  }
+  .header-inner{
+    max-width:1180px;margin:0 auto;padding:18px 32px;
+    display:flex;align-items:center;justify-content:space-between;gap:24px;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:38px;height:38px;border-radius:50%;
+    border:1.5px solid var(--accent);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .brand-mark svg{width:20px;height:20px;}
+  .brand-text .name{font-weight:800;font-size:14.5px;letter-spacing:0.01em;line-height:1.2;}
+  .brand-text .sub{font-size:11.5px;color:var(--ink-soft);margin-top:1px;}
+  nav.main-nav{display:flex;gap:30px;align-items:center;}
+  nav.main-nav a{font-size:14.5px;font-weight:600;color:var(--ink-soft);padding:6px 2px;border-bottom:2px solid transparent;}
+  nav.main-nav a:hover{color:var(--ink);}
+  nav.main-nav a.active{color:var(--ink);border-bottom-color:var(--accent);}
+
+  /* ---------- Hero / title block ---------- */
+  .pub-hero{max-width:1180px;margin:0 auto;padding:36px 32px 22px;display:flex;gap:22px;align-items:flex-start;}
+  .pub-hero-cover{flex-shrink:0;width:84px;aspect-ratio:3/4;border-radius:7px;overflow:hidden;box-shadow:var(--shadow-card);display:none;}
+  .pub-hero-cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .pub-hero-text{flex:1;min-width:0;}
+  @media (max-width:640px){
+    .pub-hero{gap:14px;}
+    .pub-hero-cover{width:60px;}
+  }
+  .eyebrow{
+    display:flex;align-items:center;gap:8px;font-size:13.5px;
+    color:var(--ink-faint);font-weight:600;margin-bottom:10px;
+  }
+  .eyebrow a{color:var(--ink-faint);transition:color .15s ease;}
+  .eyebrow a:hover{color:var(--accent-deep);}
+  .pub-hero h1{font-size:32px;font-weight:800;margin:0 0 8px;letter-spacing:-0.01em;}
+  .pub-hero p{font-size:15px;line-height:1.6;color:var(--ink-soft);max-width:680px;margin:0;}
+
+  /* ---------- Viewer shell ---------- */
+  .viewer-shell{max-width:1180px;margin:0 auto;padding:10px 32px 70px;}
+  .viewer-frame{
+    background:var(--stage);
+    border-radius:16px;
+    padding:28px 20px 18px;
+    position:relative;
+  }
+  .toolbar{
+    display:flex;align-items:center;justify-content:space-between;
+    gap:14px;flex-wrap:wrap;margin-bottom:18px;padding:0 6px;
+  }
+  .tb-group{display:flex;align-items:center;gap:6px;}
+  .tb-btn{
+    width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.14);
+    background:rgba(255,255,255,0.06);color:#F1EADA;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .tb-btn:hover{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.28);}
+  .tb-btn:disabled{opacity:0.35;cursor:default;}
+  .tb-btn:disabled:hover{background:rgba(255,255,255,0.06);}
+  .tb-btn svg{width:16px;height:16px;}
+  .page-indicator{
+    font-size:13px;color:#D8CFBC;font-weight:600;min-width:84px;text-align:center;
+    font-variant-numeric:tabular-nums;
+  }
+  .page-indicator input{
+    width:40px;background:transparent;border:none;color:#F1EADA;font:inherit;
+    font-weight:700;text-align:right;
+  }
+  .page-indicator input:focus{outline:none;}
+  .tb-divider{width:1px;height:22px;background:rgba(255,255,255,0.14);margin:0 4px;}
+  .tb-label-btn{
+    display:flex;align-items:center;gap:7px;padding:8px 13px;border-radius:8px;
+    border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.06);
+    color:#F1EADA;font-size:12.5px;font-weight:700;cursor:pointer;
+    transition:background .15s ease, border-color .15s ease;
+  }
+  .tb-label-btn:hover{background:rgba(255,255,255,0.14);}
+  .tb-label-btn svg{width:14px;height:14px;}
+  .tb-label-btn.on{background:var(--accent);border-color:var(--accent);color:#1a140d;}
+
+  /* ---------- View-mode segmented control ---------- */
+  .mode-toggle{
+    display:flex;align-items:center;gap:2px;border:1px solid rgba(255,255,255,0.14);
+    border-radius:8px;padding:2px;background:rgba(255,255,255,0.04);
+  }
+  .mode-btn{
+    display:flex;align-items:center;gap:6px;padding:7px 11px;border-radius:6px;
+    border:none;background:transparent;color:#C9BFAA;font-size:12px;font-weight:700;
+    cursor:pointer;transition:background .15s ease, color .15s ease;
+  }
+  .mode-btn svg{width:14px;height:14px;}
+  .mode-btn:hover:not(:disabled){color:#F1EADA;background:rgba(255,255,255,0.08);}
+  .mode-btn.active{background:var(--accent);color:#1a140d;}
+  .mode-btn:disabled{opacity:0.3;cursor:not-allowed;}
+
+  /* ---------- Stage ---------- */
+  .stage{
+    position:relative;display:flex;align-items:center;justify-content:center;
+    min-height:420px;
+    transition:max-width .25s ease;
+    max-width:100%;margin:0 auto;
+  }
+  .stage.mode-single{max-width:460px;}
+  .stage.mode-double{max-width:1000px;}
+  #flipbook{margin:0 auto;}
+  .stage-nav{
+    position:absolute;top:50%;transform:translateY(-50%);
+    width:44px;height:44px;border-radius:50%;
+    background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.16);
+    color:#F1EADA;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:background .15s ease;z-index:5;
+  }
+  .stage-nav:hover{background:rgba(255,255,255,0.2);}
+  .stage-nav.prev{left:-6px;}
+  .stage-nav.next{right:-6px;}
+  .stage-nav svg{width:18px;height:18px;}
+  @media (max-width:720px){
+    .stage-nav{display:none;}
+  }
+  .loading-note{
+    position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:10px;color:#D8CFBC;font-size:13.5px;text-align:center;padding:0 20px;
+  }
+  .spinner{
+    width:26px;height:26px;border-radius:50%;
+    border:2.5px solid rgba(255,255,255,0.18);border-top-color:var(--accent);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading-note .back-link{
+    margin-top:6px;color:var(--accent);font-weight:700;font-size:13px;
+  }
+
+  /* progress bar */
+  .progress-track{
+    height:3px;border-radius:2px;background:rgba(255,255,255,0.12);
+    margin-top:18px;overflow:hidden;
+  }
+  .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .25s ease;}
+
+  /* ---------- Thumbnail rail ---------- */
+  .thumb-rail{
+    display:none;gap:10px;overflow-x:auto;padding:16px 6px 2px;
+    margin-top:4px;
+  }
+  .thumb-rail.open{display:flex;}
+  .thumb-item{
+    flex-shrink:0;width:64px;cursor:pointer;opacity:0.55;
+    transition:opacity .15s ease, outline-color .15s ease;
+    border-radius:4px;overflow:hidden;outline:2px solid transparent;outline-offset:2px;
+  }
+  .thumb-item img{width:100%;display:block;}
+  .thumb-item:hover{opacity:0.85;}
+  .thumb-item.active{opacity:1;outline-color:var(--accent);}
+  .thumb-item .tnum{
+    font-size:9.5px;color:#C9BFAA;text-align:center;margin-top:3px;font-weight:600;
+  }
+
+  /* ---------- Fullscreen ---------- */
+  .viewer-frame:fullscreen{
+    width:100%;height:100%;border-radius:0;
+    display:flex;flex-direction:column;justify-content:center;
+    padding:24px 32px;
+  }
+  .viewer-frame:fullscreen .stage{min-height:0;flex:1;width:100%;}
+  .viewer-frame:fullscreen .stage.mode-single{max-width:620px;}
+  .viewer-frame:fullscreen .stage.mode-double{max-width:1400px;}
+
+  footer{
+    border-top:1px solid var(--line);padding:26px 32px;
+    text-align:center;font-size:13px;color:var(--ink-faint);
+  }
+  footer a{color:var(--accent-deep);font-weight:600;}
+
+  @media (max-width:640px){
+    .header-inner{padding:16px 18px;}
+    nav.main-nav{display:none;}
+    .pub-hero{padding:24px 18px 14px;}
+    .pub-hero h1{font-size:25px;}
+    .viewer-shell{padding:6px 10px 50px;}
+    .viewer-frame{padding:18px 8px 14px;border-radius:12px;}
+    .toolbar{padding:0 2px;}
+    .mode-btn span{display:none;}
+    .mode-btn{padding:8px;}
+  }
+  @media (max-width:420px){
+    .tb-label-btn span.lbl{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#D9821F" stroke-width="1.4"><circle cx="12" cy="12" r="2"/><circle cx="12" cy="4" r="1.4"/><circle cx="12" cy="20" r="1.4"/><circle cx="4" cy="12" r="1.4"/><circle cx="20" cy="12" r="1.4"/><circle cx="6.5" cy="6.5" r="1.2"/><circle cx="17.5" cy="17.5" r="1.2"/><circle cx="6.5" cy="17.5" r="1.2"/><circle cx="17.5" cy="6.5" r="1.2"/><line x1="12" y1="10" x2="12" y2="6"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="12" x2="6" y2="12"/><line x1="14" y1="12" x2="18" y2="12"/></svg>
+      </div>
+      <div class="brand-text">
+        <div class="name">Sri Sri Institute For Advanced Research</div>
+        <div class="sub">The Art Of Living Research Wing</div>
+      </div>
+    </div>
+    <nav class="main-nav">
+      <a href="#">Home</a>
+      <a href="#">Research</a>
+      <a href="#">Reflections</a>
+      <a href="resources.html" class="active">Resources</a>
+      <a href="#">About Us</a>
+    </nav>
+  </div>
+</header>
+
+<section class="pub-hero">
+  <div class="pub-hero-cover" id="pubHeroCover"><img id="pubHeroCoverImg" src="" alt=""></div>
+  <div class="pub-hero-text">
+    <div class="eyebrow">
+      <a href="resources.html">← Resources</a>
+      <span id="crumbCategory"></span>
+    </div>
+    <h1 id="pubTitle">Resource</h1>
+    <p id="pubDescription"></p>
+  </div>
+</section>
+
+<section class="viewer-shell">
+  <div class="viewer-frame" id="viewerFrame">
+    <div class="toolbar">
+      <div class="tb-group">
+        <button class="tb-btn" id="btnPrev" title="Previous page" aria-label="Previous page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="page-indicator"><input type="text" id="pageInput" value="1" inputmode="numeric"> / <span id="pageTotal">—</span></div>
+        <button class="tb-btn" id="btnNext" title="Next page" aria-label="Next page">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="tb-group">
+        <div class="mode-toggle" role="group" aria-label="Page layout">
+          <button class="mode-btn active" id="modeAuto" data-mode="auto" title="Auto — adapts to your screen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="2.5"/></svg>
+            <span>Auto</span>
+          </button>
+          <button class="mode-btn" id="modeSingle" data-mode="single" title="Single page">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="3" width="10" height="18" rx="1.2"/></svg>
+            <span>Single</span>
+          </button>
+          <button class="mode-btn" id="modeDouble" data-mode="double" title="Double page spread">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="9" height="16" rx="1"/><rect x="13" y="4" width="9" height="16" rx="1"/></svg>
+            <span>Double</span>
+          </button>
+        </div>
+        <div class="tb-divider"></div>
+        <button class="tb-label-btn" id="btnThumbs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span class="lbl">Pages</span>
+        </button>
+        <div class="tb-divider"></div>
+        <button class="tb-btn" id="btnZoomOut" title="Zoom out" aria-label="Zoom out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+        <button class="tb-btn" id="btnZoomIn" title="Zoom in" aria-label="Zoom in">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+        </button>
+        <div class="tb-divider"></div>
+        <button class="tb-btn" id="btnFullscreen" title="Fullscreen" aria-label="Fullscreen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="stage-nav prev" id="stagePrev" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      </div>
+      <div id="flipbook"></div>
+      <div class="stage-nav next" id="stageNext" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+      <div class="loading-note" id="loadingNote">
+        <div class="spinner" id="spinner"></div>
+        <span id="loadingText">Opening PDF…</span>
+      </div>
+    </div>
+
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="thumb-rail" id="thumbRail"></div>
+  </div>
+</section>
+
+<footer>
+  © 2026 SSIAR | <a href="http://research.artofliving.org/">research.artofliving.org</a> | researchstudies@ssiar.org
+</footer>
+
+<script>
+/* ==========================================================================
+   RESOURCE DATABASE
+   In production this would come from the same backend/CMS source as
+   resources.html's RESOURCES array — keyed by the same slug used there, so
+   a card's "Read now" link (resource-viewer.html?resource=<slug>) always
+   resolves. Add a new resource here (title, description, category, pdf)
+   and it's immediately viewable — no new page to build.
+   ========================================================================== */
+  const RESOURCE_DB = {
+    "timeless-compass": {
+      title: "The Timeless Compass",
+      description: "Exploring ancient wisdom through the lens of science — mapping Ancient Systems of Knowledge onto modern research through 145 referenced studies on SKY and allied practices.",
+      category: "E-books",
+      pdf: "timeless-compass.pdf",
+      cover: "timeless-compass-cover.jpg"
+    }
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const slug = params.get('resource');
+  const resource = slug ? RESOURCE_DB[slug] : null;
+
+  const el = id => document.getElementById(id);
+  const loadingNote = el('loadingNote');
+  const loadingText = el('loadingText');
+  const spinner = el('spinner');
+
+  if(!resource){
+    document.title = 'Resource not found — SSIAR';
+    el('pubTitle').textContent = 'Resource not found';
+    el('pubDescription').textContent = slug
+      ? `We couldn't find a resource called "${slug}". It may have been moved or the link is out of date.`
+      : 'No resource was specified. Open this page from a resource card on the Resources page.';
+    spinner.style.display = 'none';
+    loadingText.innerHTML = 'Nothing to show here.<br><a class="back-link" href="resources.html">← Back to Resources</a>';
+    el('crumbCategory').remove();
+  } else {
+    document.title = `${resource.title} — SSIAR`;
+    el('pubTitle').textContent = resource.title;
+    el('pubDescription').textContent = resource.description || '';
+    if(resource.category){
+      el('crumbCategory').textContent = `/ ${resource.category}`;
+    } else {
+      el('crumbCategory').remove();
+    }
+    if(resource.cover){
+      el('pubHeroCoverImg').src = resource.cover;
+      el('pubHeroCoverImg').alt = `${resource.title} cover`;
+      el('pubHeroCover').style.display = 'block';
+    }
+  }
+
+/* ==========================================================================
+   FLIPBOOK — renders pages straight from the PDF in the browser (pdf.js),
+   identical engine for every resource; only PDF_PATH changes per resource.
+   ========================================================================== */
+  const PDF_PATH = resource ? resource.pdf : null;
+  const RENDER_SCALE = 1.3;   // resolution pages are rasterized at for display
+  const RENDER_QUALITY = 0.74; // JPEG quality for the rendered pages
+  const RENDER_CONCURRENCY = 3; // pages rendered in parallel while loading
+
+  let PAGE_COUNT = 0;
+  let pageImages = [];
+  let pdfDoc = null;
+  let pageFlip = null;
+  let currentPage = 1;
+
+  const flipbookEl = el('flipbook');
+  const pageInput = el('pageInput');
+  const pageTotal = el('pageTotal');
+  const progressFill = el('progressFill');
+  const viewerFrame = el('viewerFrame');
+
+  if (window['pdfjs-dist/build/pdf']) {
+    // some CDN builds expose the library under this name instead of pdfjsLib
+    window.pdfjsLib = window['pdfjs-dist/build/pdf'];
+  }
+  if(window.pdfjsLib){
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  }
+
+  async function renderPageToDataURL(page){
+    const viewport = page.getViewport({ scale: RENDER_SCALE });
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d');
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    const dataUrl = canvas.toDataURL('image/jpeg', RENDER_QUALITY);
+    canvas.width = 0;
+    canvas.height = 0;
+    return dataUrl;
+  }
+
+  async function loadPdfAndRenderPages(){
+    pdfDoc = await pdfjsLib.getDocument(PDF_PATH).promise;
+    PAGE_COUNT = pdfDoc.numPages;
+    pageTotal.textContent = PAGE_COUNT;
+    pageImages = new Array(PAGE_COUNT);
+
+    let nextPage = 1;
+    let rendered = 0;
+    loadingText.textContent = `Rendering pages… 0 / ${PAGE_COUNT}`;
+
+    async function worker(){
+      while (nextPage <= PAGE_COUNT) {
+        const n = nextPage++;
+        const page = await pdfDoc.getPage(n);
+        pageImages[n - 1] = await renderPageToDataURL(page);
+        rendered++;
+        loadingText.textContent = `Rendering pages… ${rendered} / ${PAGE_COUNT}`;
+      }
+    }
+
+    await Promise.all(Array.from({ length: RENDER_CONCURRENCY }, worker));
+  }
+
+  // Rebuilds the PageFlip instance from scratch against whatever size the
+  // container currently is. "stretch" mode is supposed to recalculate on a
+  // window resize on its own, but that turned out not to be reliable across
+  // fullscreen transitions — destroying and recreating against the live
+  // container size is slower but actually correct every time.
+  function buildFlipbook(startPage){
+    if(pageFlip){
+      pageFlip.destroy();
+      pageFlip = null;
+    }
+    flipbookEl.innerHTML = '';
+
+    pageFlip = new St.PageFlip(flipbookEl, {
+      width: 480,
+      height: 679,
+      size: "stretch",
+      minWidth: 280,
+      maxWidth: 820,
+      minHeight: 396,
+      maxHeight: 1160,
+      maxShadowOpacity: 0.4,
+      showCover: true,
+      mobileScrollSupport: false,
+      usePortrait: true,
+      useMouseEvents: true,
+      drawShadow: true,
+      flippingTime: 650
+    });
+
+    pageFlip.loadFromImages(pageImages);
+
+    pageFlip.on('flip', (e)=>{
+      currentPage = e.data + 1;
+      syncUI();
+    });
+
+    pageFlip.on('init', ()=>{
+      loadingNote.style.display = 'none';
+      if(startPage && startPage > 1){
+        pageFlip.turnToPage(startPage - 1);
+      }
+      syncUI();
+    });
+  }
+
+  function initFlipbook(){
+    buildFlipbook(1);
+  }
+
+  // Debounced rebuild — several things (mode toggle, fullscreen enter/exit,
+  // window resize) can trigger this in quick succession; only act once
+  // things settle, and always rebuild at whatever page is currently open.
+  let rebuildTimer = null;
+  function scheduleRebuild(delay){
+    if(!pageFlip) return; // nothing to rebuild yet (still loading)
+    clearTimeout(rebuildTimer);
+    rebuildTimer = setTimeout(()=> buildFlipbook(currentPage), delay);
+  }
+
+  function syncUI(){
+    pageInput.value = currentPage;
+    progressFill.style.width = `${(currentPage / PAGE_COUNT) * 100}%`;
+    el('btnPrev').disabled = currentPage <= 1;
+    el('btnNext').disabled = currentPage >= PAGE_COUNT;
+    document.querySelectorAll('.thumb-item').forEach(t=>{
+      t.classList.toggle('active', Number(t.dataset.page) === currentPage);
+    });
+  }
+
+  function goTo(n){
+    n = Math.max(1, Math.min(PAGE_COUNT, n));
+    if(pageFlip) pageFlip.flip(n - 1);
+  }
+
+  el('btnPrev').addEventListener('click', ()=> pageFlip && pageFlip.flipPrev());
+  el('btnNext').addEventListener('click', ()=> pageFlip && pageFlip.flipNext());
+  el('stagePrev').addEventListener('click', ()=> pageFlip && pageFlip.flipPrev());
+  el('stageNext').addEventListener('click', ()=> pageFlip && pageFlip.flipNext());
+
+  pageInput.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){
+      goTo(parseInt(pageInput.value,10) || 1);
+      pageInput.blur();
+    }
+  });
+  pageInput.addEventListener('blur', ()=>{
+    goTo(parseInt(pageInput.value,10) || currentPage);
+  });
+
+  document.addEventListener('keydown', (e)=>{
+    if(document.activeElement === pageInput) return;
+    if(e.key === 'ArrowLeft') pageFlip && pageFlip.flipPrev();
+    if(e.key === 'ArrowRight') pageFlip && pageFlip.flipNext();
+  });
+
+  /* ---------------------------- Zoom ---------------------------- */
+  let zoomLevel = 1;
+  function applyZoom(){
+    flipbookEl.style.transform = `scale(${zoomLevel})`;
+    flipbookEl.style.transformOrigin = 'center center';
+  }
+  el('btnZoomIn').addEventListener('click', ()=>{
+    zoomLevel = Math.min(1.8, zoomLevel + 0.2);
+    applyZoom();
+  });
+  el('btnZoomOut').addEventListener('click', ()=>{
+    zoomLevel = Math.max(0.6, zoomLevel - 0.2);
+    applyZoom();
+  });
+
+  /* ---------------------------- View mode (single / double / auto) ---------------------------- */
+  const stageEl = el('stage');
+  const modeButtons = {
+    auto: el('modeAuto'),
+    single: el('modeSingle'),
+    double: el('modeDouble')
+  };
+  const DOUBLE_MIN_VIEWPORT = 760; // below this, a double spread can't fit readably
+  let viewMode = 'auto';
+
+  function applyMode(mode){
+    viewMode = mode;
+    stageEl.classList.remove('mode-single','mode-double');
+    if(mode === 'single') stageEl.classList.add('mode-single');
+    if(mode === 'double') stageEl.classList.add('mode-double');
+    Object.entries(modeButtons).forEach(([key,btn])=> btn.classList.toggle('active', key === mode));
+    // Wait for the CSS max-width transition on .stage to finish, then rebuild
+    // against the new size.
+    scheduleRebuild(280);
+  }
+
+  function updateModeAvailability(){
+    const tooNarrow = window.innerWidth < DOUBLE_MIN_VIEWPORT;
+    modeButtons.double.disabled = tooNarrow;
+    modeButtons.double.title = tooNarrow
+      ? 'Double page needs a wider screen'
+      : 'Double page spread';
+    if(tooNarrow && viewMode === 'double') applyMode('auto');
+  }
+
+  Object.values(modeButtons).forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(btn.disabled) return;
+      applyMode(btn.dataset.mode);
+    });
+  });
+
+  updateModeAvailability();
+  window.addEventListener('resize', updateModeAvailability);
+
+  /* ---------------------------- Fullscreen ---------------------------- */
+  el('btnFullscreen').addEventListener('click', ()=>{
+    if(!document.fullscreenElement){
+      viewerFrame.requestFullscreen?.();
+    } else {
+      document.exitFullscreen?.();
+    }
+  });
+
+  // Entering/exiting fullscreen changes the available space dramatically —
+  // rebuild the book so it's sized correctly for whichever space it's in now.
+  document.addEventListener('fullscreenchange', ()=> scheduleRebuild(150));
+
+  // Also rebuild on an ordinary window resize (debounced), since the
+  // "stretch" auto-relayout this library claims to do on resize hasn't
+  // proven reliable — this guarantees it actually happens.
+  window.addEventListener('resize', ()=> scheduleRebuild(200));
+
+  /* ---------------------------- Thumbnail rail ---------------------------- */
+  const thumbRail = el('thumbRail');
+  let thumbsBuilt = false;
+  el('btnThumbs').addEventListener('click', (e)=>{
+    thumbRail.classList.toggle('open');
+    e.currentTarget.classList.toggle('on');
+    if(!thumbsBuilt) buildThumbs();
+  });
+
+  function buildThumbs(){
+    thumbsBuilt = true;
+    const frag = document.createDocumentFragment();
+    for(let i=1;i<=PAGE_COUNT;i++){
+      const item = document.createElement('div');
+      item.className = 'thumb-item';
+      item.dataset.page = i;
+      // Reuses the already-rendered full page image, just displayed small —
+      // no separate thumbnail set to generate or ship.
+      item.innerHTML = `<img src="${pageImages[i-1]}" loading="lazy" alt="Page ${i}"><div class="tnum">${i}</div>`;
+      item.addEventListener('click', ()=> goTo(i));
+      frag.appendChild(item);
+    }
+    thumbRail.appendChild(frag);
+    syncUI();
+  }
+
+  if(resource){
+    loadPdfAndRenderPages()
+      .then(initFlipbook)
+      .catch(err=>{
+        console.error(err);
+        loadingText.textContent = 'Could not load the PDF. Check that it sits next to this HTML file.';
+        spinner.style.display = 'none';
+      });
+  } else {
+    // Toolbar controls are harmless with nothing loaded, but hide the
+    // progress bar since there's nothing to track.
+    el('progressFill').parentElement.style.display = 'none';
+  }
+</script>
+
+</body>
+</html>
